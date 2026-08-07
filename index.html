@@ -3,82 +3,254 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Citas</title>
+  <title>Salón de Belleza</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
+    :root {
+      --negro: #1a1a1a;
+      --crema: #FAF7F4;
+      --rosa: #D4537E;
+      --rosa-suave: #F7E8EF;
+      --dorado: #C9A96E;
+      --gris: #8a8a8a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--crema); color: var(--negro); overflow-x: hidden; }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, padding 0.4s;
+    }
+    .nav.scrolled { background: rgba(250,247,244,0.96); backdrop-filter: blur(8px); padding: 14px 48px; border-bottom: 0.5px solid #e8e0d8; }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; letter-spacing: 0.12em; color: white; transition: color 0.4s; }
+    .nav.scrolled .nav-logo { color: var(--negro); }
+    .nav-cta { font-size: 12px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: white; background: transparent; border: 1px solid rgba(255,255,255,0.6); padding: 10px 24px; cursor: pointer; transition: all 0.3s; }
+    .nav.scrolled .nav-cta { color: var(--negro); border-color: var(--negro); }
+    .nav-cta:hover { background: var(--rosa); border-color: var(--rosa); color: white !important; }
+
+    /* HERO */
     .hero {
-      background: linear-gradient(135deg, #FFF0F5 0%, #FFF8FA 100%);
-      padding: 60px 24px 40px;
-      text-align: center;
-      border-bottom: 0.5px solid var(--borde);
+      height: 100vh; min-height: 600px;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
     }
-    .hero h1 { font-size: 32px; font-weight: 700; color: var(--primario); margin-bottom: 8px; }
-    .hero p  { font-size: 17px; color: var(--texto-suave); }
-    .container { max-width: 640px; margin: 0 auto; padding: 32px 16px; }
-    .section-title { font-size: 13px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
-    .service-card {
-      background: var(--superficie);
-      border: 0.5px solid var(--borde);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: all 0.2s;
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1800&q=80');
+      background-size: cover; background-position: center;
+      transform: scale(1.05);
+      transition: transform 8s ease;
     }
-    .service-card:hover { border-color: var(--primario); box-shadow: var(--sombra); }
-    .service-card.selected { border-color: var(--primario); background: #FFF0F5; }
-    .service-name { font-weight: 500; font-size: 16px; }
-    .service-meta { font-size: 13px; color: var(--texto-suave); margin-top: 2px; }
-    .service-price { font-size: 17px; font-weight: 600; color: var(--primario); }
-    .check-icon { width: 22px; height: 22px; border-radius: 50%; background: var(--primario); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; opacity: 0; transition: opacity 0.2s; }
-    .service-card.selected .check-icon { opacity: 1; }
-    .sticky-bottom {
-      position: sticky;
-      bottom: 0;
-      background: var(--superficie);
-      border-top: 0.5px solid var(--borde);
-      padding: 16px 24px;
-      display: none;
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.55) 100%); }
+    .hero-content { position: relative; text-align: center; color: white; padding: 0 24px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado); margin-bottom: 20px; }
+    .hero-titulo { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 8vw, 96px); font-weight: 300; line-height: 1; letter-spacing: 0.04em; margin-bottom: 24px; }
+    .hero-titulo em { font-style: italic; color: #f0d5a0; }
+    .hero-sub { font-size: 15px; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); margin-bottom: 48px; }
+    .hero-btn {
+      display: inline-block; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+      background: var(--rosa); color: white; border: none;
+      padding: 18px 48px; cursor: pointer; transition: all 0.3s;
     }
-    .sticky-bottom.visible { display: block; }
-    .empty-state { text-align: center; padding: 48px 16px; color: var(--texto-suave); }
+    .hero-btn:hover { background: #b8416a; transform: translateY(-2px); }
+    .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .scroll-line { width: 1px; height: 40px; background: rgba(255,255,255,0.4); animation: scrollLine 2s ease-in-out infinite; }
+    @keyframes scrollLine { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(0.6)} }
+
+    /* SECCIÓN SERVICIOS */
+    .section { padding: 100px 24px; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado); margin-bottom: 16px; }
+    .section-titulo { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 56px); font-weight: 300; line-height: 1.1; }
+    .section-titulo em { font-style: italic; }
+    .section-linea { width: 40px; height: 1px; background: var(--dorado); margin: 20px auto 0; }
+
+    /* CATEGORÍAS */
+    .cat-tabs { display: flex; justify-content: center; gap: 0; margin-bottom: 48px; border-bottom: 1px solid #e8e0d8; }
+    .cat-tab { font-size: 12px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; padding: 14px 28px; cursor: pointer; color: var(--gris); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+    .cat-tab.active { color: var(--negro); border-bottom-color: var(--rosa); }
+    .cat-tab:hover { color: var(--negro); }
+    .cat-panel { display: none; }
+    .cat-panel.active { display: block; }
+
+    .servicios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: #e8e0d8; max-width: 1000px; margin: 0 auto; }
+    .srv-item { background: var(--crema); padding: 32px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .srv-item:hover { background: var(--rosa-suave); }
+    .srv-item.selected { background: var(--rosa-suave); }
+    .srv-nombre { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; margin-bottom: 4px; }
+    .srv-dur { font-size: 12px; color: var(--gris); letter-spacing: 0.05em; }
+    .srv-precio { font-size: 18px; font-weight: 300; color: var(--rosa); white-space: nowrap; }
+    .srv-check { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--rosa); display: flex; align-items: center; justify-content: center; color: var(--rosa); font-size: 13px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
+    .srv-item.selected .srv-check { opacity: 1; background: var(--rosa); color: white; }
+
+    /* FOTO STRIP */
+    .foto-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 400px; overflow: hidden; }
+    .foto-strip-item { overflow: hidden; position: relative; }
+    .foto-strip-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .foto-strip-item:hover img { transform: scale(1.05); }
+    .foto-strip-item .foto-label { position: absolute; bottom: 24px; left: 24px; color: white; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; font-style: italic; text-shadow: 0 1px 8px rgba(0,0,0,0.4); }
+
+    /* SECCIÓN CANCELAR */
+    .cancel-section { background: white; padding: 80px 24px; }
+    .cancel-inner { max-width: 520px; margin: 0 auto; text-align: center; }
+    .cancel-inner h2 { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; margin-bottom: 12px; }
+    .cancel-inner p { font-size: 14px; color: var(--gris); margin-bottom: 32px; line-height: 1.7; }
+    .search-box { display: flex; gap: 0; border: 1px solid #e8e0d8; }
+    .search-box input { flex: 1; border: none; padding: 14px 20px; font-size: 14px; font-family: 'Jost', sans-serif; background: none; outline: none; color: var(--negro); }
+    .search-box button { background: var(--negro); color: white; border: none; padding: 14px 28px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: 'Jost', sans-serif; transition: background 0.2s; white-space: nowrap; }
+    .search-box button:hover { background: var(--rosa); }
+
+    /* RESULTADO CITA */
+    .cita-result-card { background: var(--crema); border: 1px solid #e8e0d8; padding: 24px; margin-top: 20px; text-align: left; }
+    .cita-result-nombre { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin-bottom: 12px; }
+    .cita-result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #e8e0d8; font-size: 14px; }
+    .cita-result-row:last-of-type { border-bottom: none; }
+    .cita-result-row span:first-child { color: var(--gris); }
+    .btn-cancelar { width: 100%; background: #1a1a1a; color: white; border: none; padding: 14px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: 'Jost', sans-serif; margin-top: 16px; transition: background 0.2s; }
+    .btn-cancelar:hover { background: #A32D2D; }
+
+    /* FOOTER */
+    .footer { background: var(--negro); color: white; padding: 60px 48px 40px; }
+    .footer-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; letter-spacing: 0.1em; margin-bottom: 12px; }
+    .footer-sub { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+    .footer-title { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dorado); margin-bottom: 20px; }
+    .footer-link { display: block; font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 10px; cursor: pointer; transition: color 0.2s; }
+    .footer-link:hover { color: white; }
+    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 24px; font-size: 12px; color: rgba(255,255,255,0.3); text-align: center; }
+
+    /* STICKY RESERVAR */
+    .sticky-reservar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e8e0d8; padding: 16px 24px; display: none; z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+    .sticky-reservar.visible { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .sticky-info { font-size: 14px; }
+    .sticky-info strong { font-family: 'Cormorant Garamond', serif; font-size: 18px; display: block; }
+    .sticky-btn-reservar { background: var(--rosa); color: white; border: none; padding: 14px 32px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: 'Jost', sans-serif; white-space: nowrap; transition: background 0.2s; }
+    .sticky-btn-reservar:hover { background: #b8416a; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--negro); color: white; padding: 12px 24px; font-size: 13px; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: #A32D2D; }
+
+    .spinner { width: 32px; height: 32px; border: 2px solid #e8e0d8; border-top-color: var(--rosa); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 40px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .nav { padding: 16px 20px; }
+      .nav.scrolled { padding: 12px 20px; }
+      .foto-strip { grid-template-columns: 1fr 1fr; height: 280px; }
+      .foto-strip-item:last-child { display: none; }
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .footer { padding: 48px 24px 32px; }
+      .cat-tab { padding: 12px 16px; font-size: 11px; }
+      .sticky-reservar.visible { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
 
-<div class="hero">
-  <h1 id="negocio-nombre">Salón de Belleza</h1>
-  <p id="negocio-slogan">Tu belleza, nuestra pasión</p>
-</div>
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-logo" id="nav-logo">Salón</div>
+  <button class="nav-cta" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Reservar cita</button>
+</nav>
 
-<div class="container">
-  <p class="section-title">Elegí tu servicio</p>
-  <div id="lista-servicios">
-    <div class="spinner"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow" id="hero-eyebrow">Belleza & Estilo</p>
+    <h1 class="hero-titulo" id="hero-titulo">Tu mejor <em>versión</em></h1>
+    <p class="hero-sub" id="hero-sub">Uñas · Pestañas · Cejas</p>
+    <button class="hero-btn" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Ver servicios</button>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- FOTO STRIP -->
+<div class="foto-strip">
+  <div class="foto-strip-item">
+    <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80" alt="Uñas" loading="lazy">
+    <div class="foto-label">Uñas</div>
+  </div>
+  <div class="foto-strip-item">
+    <img src="https://images.unsplash.com/photo-1560869713-da86bd87e6f0?w=600&q=80" alt="Pestañas" loading="lazy">
+    <div class="foto-label">Pestañas</div>
+  </div>
+  <div class="foto-strip-item">
+    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80" alt="Cejas" loading="lazy">
+    <div class="foto-label">Cejas</div>
   </div>
 </div>
 
-<div class="sticky-bottom" id="sticky-btn">
-  <button class="btn btn-primary" style="width:100%" onclick="irAReserva()">
-    Continuar con la reserva →
-  </button>
-</div>
+<!-- SERVICIOS -->
+<section class="section" id="servicios">
+  <div class="section-header">
+    <p class="section-eyebrow">Nuestros servicios</p>
+    <h2 class="section-titulo">Elegí tu <em>servicio</em></h2>
+    <div class="section-linea"></div>
+  </div>
+  <div class="cat-tabs" id="cat-tabs"></div>
+  <div id="cat-panels"><div class="spinner"></div></div>
+</section>
 
-<div class="container" style="margin-top:0;padding-top:0">
-  <hr style="border:none;border-top:0.5px solid var(--borde);margin:8px 0 28px">
-  <p class="section-title">¿Tenés una cita agendada?</p>
-  <div class="card" style="margin-bottom:12px">
-    <p style="font-size:14px;color:var(--texto-suave);margin-bottom:16px">Ingresá tu correo o teléfono para ver y cancelar tu cita.</p>
-    <div class="form-group">
-      <label>Correo o teléfono</label>
+<!-- SECCIÓN CANCELAR -->
+<div class="cancel-section" id="cancelar">
+  <div class="cancel-inner">
+    <h2>¿Tenés una cita?</h2>
+    <p>Ingresá tu correo o teléfono para ver y cancelar tu cita agendada.</p>
+    <div class="search-box">
       <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8888-8888">
+      <button onclick="buscarCita()">Buscar</button>
     </div>
-    <button class="btn btn-outline" style="width:100%" onclick="buscarCita()">Buscar mi cita</button>
+    <div id="resultado-cita"></div>
   </div>
-  <div id="resultado-cita"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo" id="footer-logo">Salón</div>
+      <p class="footer-sub" id="footer-slogan">Tu belleza, nuestra pasión</p>
+    </div>
+    <div>
+      <p class="footer-title">Servicios</p>
+      <span class="footer-link">💅 Uñas</span>
+      <span class="footer-link">👁️ Pestañas</span>
+      <span class="footer-link">✏️ Cejas</span>
+    </div>
+    <div>
+      <p class="footer-title">Contacto</p>
+      <span class="footer-link" id="footer-ubicacion">Ubicación</span>
+      <span class="footer-link" id="footer-whatsapp">WhatsApp</span>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footer-copy">© 2025 Salón de Belleza — Todos los derechos reservados</span>
+  </div>
+</footer>
+
+<!-- STICKY RESERVAR -->
+<div class="sticky-reservar" id="sticky-reservar">
+  <div class="sticky-info">
+    <span style="font-size:12px;color:var(--gris);letter-spacing:0.05em">Servicio seleccionado</span>
+    <strong id="sticky-nombre">—</strong>
+  </div>
+  <button class="sticky-btn-reservar" onclick="irAReserva()">Continuar →</button>
 </div>
 
 <div id="toast"></div>
@@ -86,86 +258,106 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="config.js"></script>
 <script>emailjs.init(CONFIG.emailjs.publicKey);</script>
+
 <script type="module">
 import { db } from './js/firebase.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, getDocs, doc, updateDoc, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const nombre = document.getElementById('negocio-nombre');
-const slogan = document.getElementById('negocio-slogan');
-nombre.textContent = CONFIG.negocio;
-slogan.textContent = CONFIG.slogan;
+// Aplicar config
+document.getElementById('nav-logo').textContent    = CONFIG.negocio;
+document.getElementById('hero-titulo').innerHTML   = CONFIG.negocio.includes(' ')
+  ? CONFIG.negocio.split(' ').map((w,i) => i === 0 ? w : `<em>${w}</em>`).join(' ')
+  : `<em>${CONFIG.negocio}</em>`;
+document.getElementById('hero-sub').textContent    = 'Uñas · Pestañas · Cejas';
+document.getElementById('footer-logo').textContent = CONFIG.negocio;
+document.getElementById('footer-slogan').textContent = CONFIG.slogan;
+document.getElementById('footer-copy').textContent = `© 2025 ${CONFIG.negocio} — Todos los derechos reservados`;
 document.title = CONFIG.negocio;
+if (CONFIG.contacto.ubicacion) document.getElementById('footer-ubicacion').textContent = CONFIG.contacto.ubicacion;
+if (CONFIG.contacto.whatsapp)  document.getElementById('footer-whatsapp').textContent  = 'WhatsApp: ' + CONFIG.contacto.whatsapp;
 
+// Efecto hero
+const heroBg = document.getElementById('hero-bg');
+heroBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1800&q=80')";
+setTimeout(() => heroBg.classList.add('loaded'), 100);
+
+// Scroll nav
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Servicios
 let servicioSeleccionado = null;
+const catConfig = [
+  { key: 'unas',     label: '💅 Uñas' },
+  { key: 'pestanas', label: '👁️ Pestañas' },
+  { key: 'cejas',    label: '✏️ Cejas' },
+  { key: 'otro',     label: '✨ Otros' }
+];
 
 async function cargarServicios() {
-  const lista = document.getElementById('lista-servicios');
   try {
     const snap = await getDocs(collection(db, 'servicios'));
-    let servicios = [];
-    snap.forEach(doc => {
-      const d = doc.data();
-      if (d.activo !== false) servicios.push({ id: doc.id, ...d });
-    });
-    if (servicios.length === 0) servicios = CONFIG.servicios.filter(s => s.activo);
+    let todos = [];
+    snap.forEach(d => { const s = d.data(); if (s.activo !== false) todos.push({ id: d.id, ...s }); });
+    if (todos.length === 0) todos = CONFIG.servicios.filter(s => s.activo);
 
-    if (servicios.length === 0) {
-      lista.innerHTML = '<div class="empty-state">No hay servicios disponibles por el momento.</div>';
-      return;
-    }
+    const tabs  = document.getElementById('cat-tabs');
+    const panels = document.getElementById('cat-panels');
+    tabs.innerHTML = '';
+    panels.innerHTML = '';
 
-    const categorias = [
-      { key: 'unas',     label: '💅 Uñas' },
-      { key: 'pestanas', label: '👁️ Pestañas' },
-      { key: 'cejas',    label: '✏️ Cejas' },
-      { key: 'otro',     label: '✨ Otros' }
-    ];
-
-    const servicioCard = s => `
-      <div class="service-card" id="srv-${s.id}" onclick="seleccionar('${s.id}', '${s.nombre}', ${s.duracion}, ${s.precio})">
-        <div>
-          <div class="service-name">${s.nombre}</div>
-          <div class="service-meta">⏱ ${s.duracion} min</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          ${s.precio > 0 ? `<span class="service-price">₡${s.precio.toLocaleString()}</span>` : ''}
-          <div class="check-icon">✓</div>
-        </div>
-      </div>`;
-
-    let html = '';
-    let alguno = false;
-    categorias.forEach(cat => {
-      const grupo = servicios.filter(s => (s.categoria || 'otro') === cat.key);
+    let primera = true;
+    catConfig.forEach(cat => {
+      const grupo = todos.filter(s => (s.categoria || 'otro') === cat.key);
       if (grupo.length === 0) return;
-      alguno = true;
-      html += `<p class="section-title" style="margin-top:20px">${cat.label}</p>`;
-      html += grupo.map(servicioCard).join('');
+
+      const tab = document.createElement('button');
+      tab.className = 'cat-tab' + (primera ? ' active' : '');
+      tab.textContent = cat.label;
+      tab.onclick = () => {
+        document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + cat.key).classList.add('active');
+      };
+      tabs.appendChild(tab);
+
+      const panel = document.createElement('div');
+      panel.className = 'cat-panel' + (primera ? ' active' : '');
+      panel.id = 'panel-' + cat.key;
+      panel.innerHTML = `<div class="servicios-grid">${grupo.map(s => `
+        <div class="srv-item" id="srv-${s.id}" onclick="seleccionar('${s.id}','${s.nombre}',${s.duracion},${s.precio})">
+          <div>
+            <div class="srv-nombre">${s.nombre}</div>
+            <div class="srv-dur">${s.duracion} min</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            ${s.precio > 0 ? `<span class="srv-precio">₡${s.precio.toLocaleString()}</span>` : ''}
+            <div class="srv-check">✓</div>
+          </div>
+        </div>`).join('')}</div>`;
+      panels.appendChild(panel);
+      primera = false;
     });
 
-    lista.innerHTML = alguno ? html : servicios.map(servicioCard).join('');
+    if (!tabs.children.length) {
+      panels.innerHTML = '<p style="text-align:center;color:var(--gris);padding:40px">No hay servicios disponibles por el momento.</p>';
+    }
   } catch(e) {
-    const servicios = CONFIG.servicios.filter(s => s.activo);
-    lista.innerHTML = servicios.map(s => `
-      <div class="service-card" id="srv-${s.id}" onclick="seleccionar('${s.id}', '${s.nombre}', ${s.duracion}, ${s.precio})">
-        <div>
-          <div class="service-name">${s.nombre}</div>
-          <div class="service-meta">⏱ ${s.duracion} min</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          ${s.precio > 0 ? `<span class="service-price">₡${s.precio.toLocaleString()}</span>` : ''}
-          <div class="check-icon">✓</div>
-        </div>
-      </div>`).join('');
+    document.getElementById('cat-panels').innerHTML = '<p style="text-align:center;color:var(--gris);padding:40px">Error al cargar servicios.</p>';
   }
 }
 
 window.seleccionar = function(id, nombre, duracion, precio) {
-  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.srv-item').forEach(c => c.classList.remove('selected'));
   document.getElementById('srv-' + id).classList.add('selected');
   servicioSeleccionado = { id, nombre, duracion, precio };
-  document.getElementById('sticky-btn').classList.add('visible');
   sessionStorage.setItem('servicio', JSON.stringify(servicioSeleccionado));
+  const sticky = document.getElementById('sticky-reservar');
+  sticky.classList.add('visible');
+  document.getElementById('sticky-nombre').textContent = nombre;
 };
 
 window.irAReserva = function() {
@@ -173,122 +365,70 @@ window.irAReserva = function() {
   window.location.href = 'pages/booking.html';
 };
 
-cargarServicios();
-
+// Cancelar cita
 const mesesNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-
-function horaLabel(h) {
-  const hs = Math.floor(h), ms = Math.round((h - hs) * 60);
-  return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
-}
-function fechaLabel(f) {
-  const [anio, mes, dia] = f.split('-');
-  return `${parseInt(dia)} de ${mesesNom[parseInt(mes)-1]} de ${anio}`;
-}
+function horaLabel(h) { const hs=Math.floor(h),ms=Math.round((h-hs)*60); return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`; }
+function fechaLabel(f) { const [a,m,d]=f.split('-'); return `${parseInt(d)} de ${mesesNom[parseInt(m)-1]} de ${a}`; }
 
 window.buscarCita = async function() {
   const buscar = document.getElementById('inp-buscar').value.trim();
   if (!buscar) { mostrarToast('Ingresá tu correo o teléfono', 'error'); return; }
-
   const resultado = document.getElementById('resultado-cita');
   resultado.innerHTML = '<div class="spinner"></div>';
-
   try {
     const hoy = new Date().toISOString().split('T')[0];
+    const campo = buscar.includes('@') ? 'cliente.correo' : 'cliente.telefono';
+    const snap = await getDocs(query(collection(db,'citas'), where(campo,'==',buscar), where('fecha','>=',hoy)));
     let citas = [];
-
-    const esCorrEo = buscar.includes('@');
-    const campo = esCorrEo ? 'cliente.correo' : 'cliente.telefono';
-
-    const { getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const { collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-
-    const snap = await getDocs(query(
-      collection(db, 'citas'),
-      where(campo, '==', buscar),
-      where('fecha', '>=', hoy)
-    ));
-
-    snap.forEach(d => {
-      const data = d.data();
-      if (data.estado !== 'cancelada' && data.estado !== 'finalizada') {
-        citas.push({ id: d.id, ...data });
-      }
-    });
-
-    if (citas.length === 0) {
-      resultado.innerHTML = `<div class="empty-state" style="padding:20px 0">No encontramos citas activas con ese dato.</div>`;
-      return;
-    }
-
-    citas.sort((a, b) => a.fecha.localeCompare(b.fecha));
-
+    snap.forEach(d => { const data=d.data(); if(data.estado!=='cancelada'&&data.estado!=='finalizada') citas.push({id:d.id,...data}); });
+    if (citas.length === 0) { resultado.innerHTML = '<p style="text-align:center;color:var(--gris);padding:20px 0">No encontramos citas activas con ese dato.</p>'; return; }
+    citas.sort((a,b) => a.fecha.localeCompare(b.fecha));
     resultado.innerHTML = citas.map(c => `
-      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--primario)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <span style="font-weight:600;font-size:16px">${c.servicio}</span>
-          <span class="badge badge-${c.estado}">${c.estado}</span>
-        </div>
-        <div style="font-size:14px;color:var(--texto-suave);margin-bottom:4px">📅 ${fechaLabel(c.fecha)}</div>
-        <div style="font-size:14px;color:var(--texto-suave);margin-bottom:14px">🕐 ${horaLabel(c.hora)}</div>
-        <button class="btn btn-danger btn-sm" style="width:100%"
-          onclick="cancelarCita('${c.id}','${c.servicio}','${c.fecha}',${c.hora},'${c.cliente?.nombre}','${c.cliente?.correo}')">
-          Cancelar esta cita
-        </button>
-      </div>
-    `).join('');
-  } catch(e) {
-    resultado.innerHTML = '<p class="text-muted">Error al buscar. Intentá de nuevo.</p>';
-  }
+      <div class="cita-result-card">
+        <div class="cita-result-nombre">${c.cliente?.nombre || '—'}</div>
+        <div class="cita-result-row"><span>Servicio</span><span>${c.servicio}</span></div>
+        <div class="cita-result-row"><span>Fecha</span><span>${fechaLabel(c.fecha)}</span></div>
+        <div class="cita-result-row"><span>Hora</span><span>${horaLabel(c.hora)}</span></div>
+        <div class="cita-result-row"><span>Estado</span><span>${c.estado}</span></div>
+        <button class="btn-cancelar" onclick="cancelarCita('${c.id}','${c.servicio}','${c.fecha}',${c.hora},'${c.cliente?.nombre}','${c.cliente?.correo}')">Cancelar esta cita</button>
+      </div>`).join('');
+  } catch(e) { resultado.innerHTML = '<p style="text-align:center;color:var(--gris);padding:20px">Error al buscar. Intentá de nuevo.</p>'; }
 };
 
 window.cancelarCita = async function(id, servicio, fecha, hora, clienteNombre, clienteCorreo) {
   if (!confirm('¿Estás seguro que querés cancelar esta cita?')) return;
   try {
-    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await updateDoc(doc(db, 'citas', id), { estado: 'cancelada' });
-
-    const fechaStr = fechaLabel(fecha);
-    const horaStr  = horaLabel(hora);
-
+    await updateDoc(doc(db,'citas',id), { estado: 'cancelada' });
+    const fechaStr = fechaLabel(fecha), horaStr = horaLabel(hora);
     await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
-      negocio: CONFIG.negocio,
-      destinatario_nombre: clienteNombre,
-      correo_destinatario: clienteCorreo,
-      cliente_nombre: clienteNombre,
-      servicio, fecha: fechaStr, hora: horaStr,
+      negocio: CONFIG.negocio, destinatario_nombre: clienteNombre, correo_destinatario: clienteCorreo,
+      cliente_nombre: clienteNombre, servicio, fecha: fechaStr, hora: horaStr,
       mensaje_extra: 'Si necesitás reagendar, podés hacerlo desde nuestra página.'
     });
-
     if (CONFIG.contacto.correoAdmin) {
       await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
-        negocio: CONFIG.negocio,
-        destinatario_nombre: 'Administrador',
-        correo_destinatario: CONFIG.contacto.correoAdmin,
-        cliente_nombre: clienteNombre,
-        servicio, fecha: fechaStr, hora: horaStr,
+        negocio: CONFIG.negocio, destinatario_nombre: 'Administrador', correo_destinatario: CONFIG.contacto.correoAdmin,
+        cliente_nombre: clienteNombre, servicio, fecha: fechaStr, hora: horaStr,
         mensaje_extra: 'El cliente canceló su cita desde la página web.'
       });
     }
-
     document.getElementById('resultado-cita').innerHTML = `
-      <div class="card" style="text-align:center;padding:24px">
-        <div style="font-size:36px;margin-bottom:12px">✕</div>
-        <p style="font-weight:600;margin-bottom:6px">Cita cancelada</p>
-        <p class="text-muted">Tu cita de ${servicio} del ${fechaStr} fue cancelada. Te enviamos un correo de confirmación.</p>
-      </div>
-    `;
+      <div class="cita-result-card" style="text-align:center;padding:32px">
+        <div style="font-size:40px;margin-bottom:16px">✕</div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:8px">Cita cancelada</p>
+        <p style="font-size:14px;color:var(--gris)">Tu cita de ${servicio} del ${fechaStr} fue cancelada. Te enviamos un correo de confirmación.</p>
+      </div>`;
     mostrarToast('Cita cancelada correctamente');
-  } catch(e) {
-    mostrarToast('Error al cancelar. Intentá de nuevo.', 'error');
-  }
+  } catch(e) { mostrarToast('Error al cancelar. Intentá de nuevo.', 'error'); }
 };
 
-function mostrarToast(msg, tipo = '') {
+function mostrarToast(msg, tipo='') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'show ' + tipo;
   setTimeout(() => t.className = '', 3000);
 }
+
+cargarServicios();
 </script>
 </body>
 </html>
