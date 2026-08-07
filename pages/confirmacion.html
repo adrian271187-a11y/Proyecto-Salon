@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cita registrada</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .container { max-width: 480px; margin: 60px auto; padding: 24px 16px; text-align: center; }
+    .check-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #EAF3DE; margin: 0 auto 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+    }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .info-card { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 20px; margin: 24px 0; text-align: left; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--borde); font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: var(--texto-suave); }
+    .info-row span:last-child  { font-weight: 500; }
+    .notice { background: #FAEEDA; border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: #854F0B; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="check-circle">✓</div>
+  <h1>¡Cita registrada!</h1>
+  <p class="text-muted">Tu solicitud fue enviada. El salón la confirmará pronto.</p>
+
+  <div class="info-card" id="info-cita"></div>
+
+  <div class="notice">
+    📬 Recibirás una confirmación por correo cuando el salón apruebe tu cita.
+  </div>
+
+  <a href="../index.html" class="btn btn-outline" style="width:100%">Volver al inicio</a>
+</div>
+
+<script src="../config.js"></script>
+<script>
+const cita = JSON.parse(sessionStorage.getItem('cita_confirmada') || 'null');
+if (!cita) { window.location.href = '../index.html'; }
+else {
+  document.title = 'Cita registrada - ' + CONFIG.negocio;
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const [anio, mes, dia] = cita.fecha.split('-');
+  const fechaStr = `${dia} de ${meses[parseInt(mes)-1]} de ${anio}`;
+  const horas = Math.floor(cita.hora);
+  const mins  = Math.round((cita.hora - horas) * 60);
+  const horaStr = `${String(horas).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
+  document.getElementById('info-cita').innerHTML = `
+    <div class="info-row"><span>Servicio</span><span>${cita.servicio}</span></div>
+    <div class="info-row"><span>Fecha</span><span>${fechaStr}</span></div>
+    <div class="info-row"><span>Hora</span><span>${horaStr}</span></div>
+    <div class="info-row"><span>Nombre</span><span>${cita.nombre}</span></div>
+    <div class="info-row"><span>Estado</span><span><span class="badge badge-pendiente">Pendiente de confirmación</span></span></div>
+  `;
+}
+</script>
+</body>
+</html>

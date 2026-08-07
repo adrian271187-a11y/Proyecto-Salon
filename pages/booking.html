@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar cita</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .container { max-width: 600px; margin: 0 auto; padding: 24px 16px 80px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--texto-suave); font-size: 14px; margin-bottom: 20px; cursor: pointer; }
+    .back-btn:hover { color: var(--primario); }
+    .step-header { margin-bottom: 24px; }
+    .step-header h2 { font-size: 22px; font-weight: 700; }
+    .step-header p  { color: var(--texto-suave); font-size: 14px; margin-top: 4px; }
+    .servicio-seleccionado {
+      background: #FFF0F5;
+      border: 1px solid var(--borde);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .servicio-seleccionado span { font-weight: 500; color: var(--primario); }
+
+    /* Calendario */
+    .calendario { margin-bottom: 24px; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-header h3 { font-size: 16px; font-weight: 600; }
+    .cal-nav { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; color: var(--texto); font-size: 14px; }
+    .cal-nav:hover { background: var(--superficie-2); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day-name { text-align: center; font-size: 11px; font-weight: 600; color: var(--texto-suave); padding: 4px 0; text-transform: uppercase; }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 0.5px solid transparent;
+      transition: all 0.15s;
+    }
+    .cal-day:hover:not(.disabled):not(.empty) { background: var(--superficie-2); border-color: var(--borde); }
+    .cal-day.selected { background: var(--primario); color: white; }
+    .cal-day.today { border-color: var(--primario); font-weight: 600; }
+    .cal-day.disabled { color: #D3D1C7; cursor: not-allowed; }
+    .cal-day.empty { cursor: default; }
+    .cal-day.bloqueado { background: #F1EFE8; color: #B4B2A9; cursor: not-allowed; text-decoration: line-through; }
+
+    /* Horarios */
+    .horarios { margin-bottom: 24px; }
+    .horarios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .hora-btn {
+      padding: 10px 4px;
+      text-align: center;
+      border: 0.5px solid var(--borde);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      cursor: pointer;
+      background: var(--superficie);
+      transition: all 0.15s;
+    }
+    .hora-btn:hover:not(.disabled) { border-color: var(--primario); color: var(--primario); }
+    .hora-btn.selected { background: var(--primario); color: white; border-color: var(--primario); }
+    .hora-btn.disabled { background: #F1EFE8; color: #B4B2A9; cursor: not-allowed; }
+
+    .sticky-bottom {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--superficie);
+      border-top: 0.5px solid var(--borde);
+      padding: 16px 24px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span id="header-nombre" class="header-logo">Salón</span>
+  <a href="../index.html" style="font-size:13px;color:var(--texto-suave)">← Volver</a>
+</div>
+
+<div class="container">
+  <div class="step-header">
+    <h2>Reservar cita</h2>
+    <p>Elegí la fecha y hora que más te convenga</p>
+  </div>
+
+  <div class="servicio-seleccionado">
+    <div>
+      <div style="font-size:13px;color:var(--texto-suave)">Servicio seleccionado</div>
+      <span id="srv-nombre">—</span>
+    </div>
+    <div style="font-size:13px;color:var(--texto-suave)" id="srv-duracion"></div>
+  </div>
+
+  <div class="calendario">
+    <div class="cal-header">
+      <button class="cal-nav" id="btn-prev">←</button>
+      <h3 id="cal-titulo"></h3>
+      <button class="cal-nav" id="btn-next">→</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div class="horarios" id="horarios-section" style="display:none">
+    <div class="section-title" style="font-size:13px;font-weight:600;color:var(--texto-suave);text-transform:uppercase;letter-spacing:0.06em">Horarios disponibles</div>
+    <div class="horarios-grid" id="horarios-grid"></div>
+  </div>
+
+  <div class="card mt-2" id="form-section" style="display:none">
+    <p style="font-weight:600;margin-bottom:16px">Tus datos</p>
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" id="inp-nombre" placeholder="Tu nombre">
+    </div>
+    <div class="form-group">
+      <label>Teléfono</label>
+      <input type="tel" id="inp-telefono" placeholder="Ej: 8888-8888">
+    </div>
+    <div class="form-group">
+      <label>Correo electrónico</label>
+      <input type="email" id="inp-correo" placeholder="tu@correo.com">
+    </div>
+    <div class="form-group">
+      <label>Nota (opcional)</label>
+      <textarea id="inp-nota" rows="2" placeholder="Alguna indicación especial..."></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="sticky-bottom" id="sticky-bottom" style="display:none">
+  <button class="btn btn-primary" style="width:100%" id="btn-confirmar" onclick="confirmarCita()">
+    Confirmar cita
+  </button>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { db } from '../js/firebase.js';
+import { collection, addDoc, getDocs, query, where, Timestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+document.getElementById('header-nombre').textContent = CONFIG.negocio;
+document.title = 'Reservar - ' + CONFIG.negocio;
+
+const servicio = JSON.parse(sessionStorage.getItem('servicio') || 'null');
+if (!servicio) { window.location.href = '../index.html'; }
+else {
+  document.getElementById('srv-nombre').textContent = servicio.nombre;
+  document.getElementById('srv-duracion').textContent = servicio.duracion + ' min';
+}
+
+let fechaSeleccionada = null;
+let horaSeleccionada = null;
+let mesActual = new Date();
+mesActual.setDate(1);
+
+const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+async function obtenerDiasBloqueados(anio, mes) {
+  try {
+    const snap = await getDocs(collection(db, 'dias_bloqueados'));
+    const bloqueados = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.fecha) bloqueados.push(d.fecha);
+    });
+    return bloqueados;
+  } catch(e) { return []; }
+}
+
+async function renderCalendario() {
+  const anio = mesActual.getFullYear();
+  const mes  = mesActual.getMonth();
+  document.getElementById('cal-titulo').textContent = meses[mes] + ' ' + anio;
+  const bloqueados = await obtenerDiasBloqueados(anio, mes);
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const primerDia = new Date(anio, mes, 1).getDay();
+  const ultimoDia = new Date(anio, mes + 1, 0).getDate();
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = dias.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  for (let i = 0; i < primerDia; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
+
+  for (let d = 1; d <= ultimoDia; d++) {
+    const fecha = new Date(anio, mes, d);
+    const fechaStr = `${anio}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const esPasado = fecha < hoy;
+    const esBloqueado = bloqueados.includes(fechaStr);
+    const diaSemana = fecha.getDay();
+    const noHabilitado = !CONFIG.horario.diasHabiles.includes(diaSemana);
+    const esHoy = fecha.getTime() === hoy.getTime();
+    const esSeleccionado = fechaStr === fechaSeleccionada;
+    let cls = 'cal-day';
+    if (esPasado || noHabilitado) cls += ' disabled';
+    else if (esBloqueado) cls += ' bloqueado';
+    else if (esSeleccionado) cls += ' selected';
+    if (esHoy) cls += ' today';
+    const clickable = !esPasado && !noHabilitado && !esBloqueado;
+    grid.innerHTML += `<div class="${cls}" ${clickable ? `onclick="elegirFecha('${fechaStr}')"` : ''}>${d}</div>`;
+  }
+}
+
+window.elegirFecha = async function(fecha) {
+  fechaSeleccionada = fecha;
+  horaSeleccionada = null;
+  renderCalendario();
+  document.getElementById('form-section').style.display = 'none';
+  document.getElementById('sticky-bottom').style.display = 'none';
+  await renderHorarios(fecha);
+};
+
+async function renderHorarios(fecha) {
+  const section = document.getElementById('horarios-section');
+  const grid = document.getElementById('horarios-grid');
+  section.style.display = 'block';
+  grid.innerHTML = '<div class="spinner"></div>';
+
+  const ahora = new Date();
+  const esHoy = fecha === ahora.toISOString().split('T')[0];
+  const horaActual = esHoy ? ahora.getHours() + ahora.getMinutes() / 60 : 0;
+
+  let horasBloqueadas = [];
+  try {
+    const snap = await getDocs(query(collection(db, 'horas_bloqueadas'), where('fecha', '==', fecha)));
+    snap.forEach(doc => { const d = doc.data(); if (d.hora !== undefined) horasBloqueadas.push(d.hora); });
+  } catch(e) {}
+
+  let citasOcupadas = [];
+  try {
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '==', fecha), where('estado', '!=', 'cancelada')));
+    snap.forEach(doc => { const d = doc.data(); if (d.hora !== undefined) citasOcupadas.push(d.hora); });
+  } catch(e) {}
+
+  const inicio = CONFIG.horario.inicio;
+  const fin    = CONFIG.horario.fin;
+  let html = '';
+  for (let h = inicio; h < fin; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const horaNum = h + m / 60;
+      const label = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      const pasada   = esHoy && horaNum <= horaActual;
+      const bloqueada = horasBloqueadas.includes(horaNum) || citasOcupadas.includes(horaNum);
+      const sel = horaNum === horaSeleccionada;
+      let cls = 'hora-btn';
+      if (pasada || bloqueada) cls += ' disabled';
+      else if (sel) cls += ' selected';
+      html += `<div class="${cls}" ${(!pasada && !bloqueada) ? `onclick="elegirHora(${horaNum}, '${label}')"` : ''}>${label}</div>`;
+    }
+  }
+  grid.innerHTML = html || '<p class="text-muted">No hay horarios disponibles.</p>';
+}
+
+window.elegirHora = function(horaNum, label) {
+  horaSeleccionada = horaNum;
+  document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+  document.getElementById('form-section').style.display = 'block';
+  document.getElementById('sticky-bottom').style.display = 'block';
+  setTimeout(() => document.getElementById('form-section').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+};
+
+window.confirmarCita = async function() {
+  const nombre   = document.getElementById('inp-nombre').value.trim();
+  const telefono = document.getElementById('inp-telefono').value.trim();
+  const correo   = document.getElementById('inp-correo').value.trim();
+  const nota     = document.getElementById('inp-nota').value.trim();
+
+  if (!nombre || !telefono || !correo) { mostrarToast('Completá todos los campos requeridos', 'error'); return; }
+  if (!fechaSeleccionada || horaSeleccionada === null) { mostrarToast('Elegí fecha y hora', 'error'); return; }
+
+  const btn = document.getElementById('btn-confirmar');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+
+  try {
+    await addDoc(collection(db, 'citas'), {
+      servicio: servicio.nombre,
+      servicioId: servicio.id,
+      duracion: servicio.duracion,
+      precio: servicio.precio,
+      fecha: fechaSeleccionada,
+      hora: horaSeleccionada,
+      cliente: { nombre, telefono, correo },
+      nota,
+      estado: 'pendiente',
+      creadoEn: Timestamp.now()
+    });
+    sessionStorage.setItem('cita_confirmada', JSON.stringify({ servicio: servicio.nombre, fecha: fechaSeleccionada, hora: horaSeleccionada, nombre }));
+    window.location.href = 'confirmacion.html';
+  } catch(e) {
+    mostrarToast('Error al guardar. Intentá de nuevo.', 'error');
+    btn.disabled = false; btn.textContent = 'Confirmar cita';
+  }
+};
+
+function mostrarToast(msg, tipo = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+
+document.getElementById('btn-prev').onclick = () => { mesActual.setMonth(mesActual.getMonth() - 1); renderCalendario(); };
+document.getElementById('btn-next').onclick = () => { mesActual.setMonth(mesActual.getMonth() + 1); renderCalendario(); };
+
+renderCalendario();
+</script>
+<script src="../config.js"></script>
+</body>
+</html>

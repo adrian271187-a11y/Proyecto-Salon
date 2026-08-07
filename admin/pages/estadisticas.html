@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadísticas</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    body { background: #F8F8F6; }
+    .page { padding: 24px; max-width: 800px; }
+    .page h1 { font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 20px; }
+    .stat-label { font-size: 12px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .stat-num   { font-size: 32px; font-weight: 700; color: var(--primario); }
+    .stat-sub   { font-size: 13px; color: var(--texto-suave); margin-top: 4px; }
+    .mes-nav    { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .mes-nav button { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    #mes-label  { font-weight: 600; min-width: 140px; text-align: center; }
+    .ranking    { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 20px; }
+    .ranking h2 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+    .rank-item  { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--borde); }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-num   { width: 24px; text-align: center; font-weight: 700; color: var(--primario); font-size: 14px; }
+    .rank-nombre { flex: 1; font-size: 14px; }
+    .rank-count  { font-size: 13px; font-weight: 600; color: var(--texto-suave); }
+    .bar-wrap   { flex: 1; height: 6px; background: var(--borde); border-radius: 3px; }
+    .bar-fill   { height: 100%; background: var(--primario); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>Estadísticas</h1>
+
+  <div class="mes-nav">
+    <button onclick="cambiarMes(-1)">←</button>
+    <span id="mes-label"></span>
+    <button onclick="cambiarMes(1)">→</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Citas del mes</div>
+      <div class="stat-num" id="stat-total">—</div>
+      <div class="stat-sub">en total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Confirmadas</div>
+      <div class="stat-num" id="stat-confirmadas">—</div>
+      <div class="stat-sub" id="stat-pct">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Canceladas</div>
+      <div class="stat-num" id="stat-canceladas">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pendientes</div>
+      <div class="stat-num" id="stat-pendientes">—</div>
+    </div>
+  </div>
+
+  <div class="ranking">
+    <h2>Servicios más solicitados</h2>
+    <div id="ranking-lista"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<script type="module">
+import { db } from '../../js/firebase.js';
+import { collection, getDocs, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const mesesNom = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let mesActual = new Date();
+
+window.cambiarMes = function(delta) {
+  mesActual.setMonth(mesActual.getMonth() + delta);
+  cargar();
+};
+
+function mesStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+async function cargar() {
+  document.getElementById('mes-label').textContent = mesesNom[mesActual.getMonth()] + ' ' + mesActual.getFullYear();
+  try {
+    const anio = mesActual.getFullYear();
+    const mes  = mesActual.getMonth() + 1;
+    const primerDia = `${anio}-${String(mes).padStart(2,'0')}-01`;
+    const ultimoDia = `${anio}-${String(mes).padStart(2,'0')}-${new Date(anio, mes, 0).getDate()}`;
+    const snap = await getDocs(query(
+      collection(db, 'citas'),
+      where('fecha', '>=', primerDia),
+      where('fecha', '<=', ultimoDia)
+    ));
+    let citas = [];
+    snap.forEach(d => citas.push(d.data()));
+
+    const total       = citas.length;
+    const confirmadas = citas.filter(c => c.estado === 'confirmada' || c.estado === 'finalizada').length;
+    const canceladas  = citas.filter(c => c.estado === 'cancelada').length;
+    const pendientes  = citas.filter(c => c.estado === 'pendiente').length;
+    const pct = total > 0 ? Math.round(confirmadas / total * 100) : 0;
+
+    document.getElementById('stat-total').textContent       = total;
+    document.getElementById('stat-confirmadas').textContent = confirmadas;
+    document.getElementById('stat-canceladas').textContent  = canceladas;
+    document.getElementById('stat-pendientes').textContent  = pendientes;
+    document.getElementById('stat-pct').textContent         = `${pct}% del total`;
+
+    const conteo = {};
+    citas.forEach(c => { if (c.servicio) conteo[c.servicio] = (conteo[c.servicio] || 0) + 1; });
+    const ranking = Object.entries(conteo).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const max = ranking[0]?.[1] || 1;
+
+    document.getElementById('ranking-lista').innerHTML = ranking.length === 0
+      ? '<p class="text-muted">Sin datos para este mes.</p>'
+      : ranking.map(([nombre, count], i) => `
+          <div class="rank-item">
+            <div class="rank-num">${i + 1}</div>
+            <div class="rank-nombre">${nombre}</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
+            <div class="rank-count">${count} cita${count !== 1 ? 's' : ''}</div>
+          </div>
+        `).join('');
+  } catch(e) {
+    document.getElementById('ranking-lista').innerHTML = '<p class="text-muted">Error al cargar datos.</p>';
+  }
+}
+
+cargar();
+</script>
+<script src="../../config.js"></script>
+</body>
+</html>

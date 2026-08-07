@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disponibilidad</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    body { background: #F8F8F6; }
+    .page { padding: 24px; max-width: 800px; }
+    .page h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .page p  { color: var(--texto-suave); font-size: 14px; margin-bottom: 24px; }
+    .tabs { display: flex; gap: 0; border-bottom: 0.5px solid var(--borde); margin-bottom: 24px; }
+    .tab { padding: 10px 20px; font-size: 14px; cursor: pointer; color: var(--texto-suave); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab.active { color: var(--primario); border-bottom-color: var(--primario); font-weight: 500; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-header h3 { font-size: 16px; font-weight: 600; }
+    .cal-nav { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 20px; }
+    .cal-day-name { text-align: center; font-size: 11px; color: var(--texto-suave); font-weight: 600; padding: 4px; text-transform: uppercase; }
+    .cal-day {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-size: 14px; cursor: pointer; border: 0.5px solid var(--borde);
+      background: var(--superficie); transition: all 0.15s;
+    }
+    .cal-day:hover:not(.disabled):not(.empty) { border-color: var(--primario); }
+    .cal-day.bloqueado { background: #FCEBEB; border-color: #F7C1C1; color: #A32D2D; }
+    .cal-day.disabled  { color: #D3D1C7; cursor: not-allowed; background: #F8F8F6; border-color: transparent; }
+    .cal-day.empty     { cursor: default; border-color: transparent; background: transparent; }
+    .cal-day.hoy       { border-color: var(--primario); font-weight: 700; }
+
+    .horarios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .hora-item {
+      padding: 10px; text-align: center; font-size: 13px;
+      border: 0.5px solid var(--borde); border-radius: var(--radius-sm);
+      background: var(--superficie); cursor: pointer; transition: all 0.15s;
+    }
+    .hora-item:hover  { border-color: var(--primario); }
+    .hora-item.bloqueada { background: #FCEBEB; border-color: #F7C1C1; color: #A32D2D; }
+    .fecha-seleccionada-label { font-size: 14px; font-weight: 500; margin-bottom: 16px; color: var(--texto-suave); }
+    .legend { display: flex; gap: 16px; margin-bottom: 16px; font-size: 12px; color: var(--texto-suave); align-items: center; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>Disponibilidad</h1>
+  <p>Bloqueá días completos o rangos de horas según tu agenda</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="cambiarTab('dias', this)">Días bloqueados</div>
+    <div class="tab" onclick="cambiarTab('horas', this)">Horas bloqueadas</div>
+  </div>
+
+  <div class="section active" id="sec-dias">
+    <div class="cal-header">
+      <button class="cal-nav" id="btn-prev">←</button>
+      <h3 id="cal-titulo"></h3>
+      <button class="cal-nav" id="btn-next">→</button>
+    </div>
+    <div class="legend">
+      <div class="legend-dot" style="background:#FCEBEB;border:1px solid #F7C1C1"></div> Bloqueado
+      <div class="legend-dot" style="background:var(--superficie);border:0.5px solid var(--borde)"></div> Disponible
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <p class="text-muted" style="font-size:13px">Tocá un día para bloquearlo o desbloquearlo.</p>
+  </div>
+
+  <div class="section" id="sec-horas">
+    <div class="cal-header">
+      <button class="cal-nav" id="btn-prev2">←</button>
+      <h3 id="cal-titulo2"></h3>
+      <button class="cal-nav" id="btn-next2">→</button>
+    </div>
+    <div class="cal-grid" id="cal-grid2" style="margin-bottom:20px"></div>
+    <div id="horas-panel">
+      <p class="fecha-seleccionada-label">Seleccioná un día para ver sus horas</p>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { db } from '../../js/firebase.js';
+import { collection, getDocs, addDoc, deleteDoc, doc, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const diasNom = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+let mesActual = new Date(); mesActual.setDate(1);
+let mes2 = new Date(); mes2.setDate(1);
+let diasBloqueados = [];
+let horasBloqueadas = {};
+let fechaHorasSeleccionada = null;
+
+window.cambiarTab = function(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sec-' + tab).classList.add('active');
+};
+
+async function cargarDiasBloqueados() {
+  diasBloqueados = [];
+  const snap = await getDocs(collection(db, 'dias_bloqueados'));
+  snap.forEach(d => diasBloqueados.push({ id: d.id, ...d.data() }));
+}
+
+async function cargarHorasBloqueadas(fecha) {
+  horasBloqueadas[fecha] = [];
+  const snap = await getDocs(query(collection(db, 'horas_bloqueadas'), where('fecha', '==', fecha)));
+  snap.forEach(d => horasBloqueadas[fecha].push({ id: d.id, ...d.data() }));
+}
+
+function fechaStr(anio, mes, dia) {
+  return `${anio}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+}
+
+function renderCal(contenedor, mes, clicFn, bloqueados = []) {
+  const anio = mes.getFullYear();
+  const m    = mes.getMonth();
+  const hoy  = new Date(); hoy.setHours(0,0,0,0);
+  const primerDia = new Date(anio, m, 1).getDay();
+  const ultimoDia = new Date(anio, m + 1, 0).getDate();
+  let html = diasNom.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+  for (let i = 0; i < primerDia; i++) html += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= ultimoDia; d++) {
+    const fecha = new Date(anio, m, d);
+    const fs = fechaStr(anio, m, d);
+    const esPasado  = fecha < hoy;
+    const esBloq    = bloqueados.some(b => b.fecha === fs);
+    const esHoy     = fecha.getTime() === hoy.getTime();
+    let cls = 'cal-day';
+    if (esPasado) cls += ' disabled';
+    else if (esBloq) cls += ' bloqueado';
+    if (esHoy) cls += ' hoy';
+    html += `<div class="${cls}" ${!esPasado ? `onclick="${clicFn}('${fs}')"` : ''}>${d}</div>`;
+  }
+  document.getElementById(contenedor).innerHTML = html;
+}
+
+function actualizarTitulo(id, mes) {
+  document.getElementById(id).textContent = meses[mes.getMonth()] + ' ' + mes.getFullYear();
+}
+
+async function renderCalDias() {
+  await cargarDiasBloqueados();
+  actualizarTitulo('cal-titulo', mesActual);
+  renderCal('cal-grid', mesActual, 'toggleDia', diasBloqueados);
+}
+
+async function renderCalHoras() {
+  await cargarDiasBloqueados();
+  actualizarTitulo('cal-titulo2', mes2);
+  renderCal('cal-grid2', mes2, 'seleccionarFechaHoras', diasBloqueados);
+}
+
+window.toggleDia = async function(fecha) {
+  const existente = diasBloqueados.find(b => b.fecha === fecha);
+  try {
+    if (existente) {
+      await deleteDoc(doc(db, 'dias_bloqueados', existente.id));
+      mostrarToast('Día desbloqueado');
+    } else {
+      await addDoc(collection(db, 'dias_bloqueados'), { fecha });
+      mostrarToast('Día bloqueado');
+    }
+    renderCalDias();
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+window.seleccionarFechaHoras = async function(fecha) {
+  fechaHorasSeleccionada = fecha;
+  await cargarHorasBloqueadas(fecha);
+  renderHorasBloqueadas(fecha);
+};
+
+function renderHorasBloqueadas(fecha) {
+  const panel = document.getElementById('horas-panel');
+  const mesesNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const [anio, mes, dia] = fecha.split('-');
+  const fechaLabel = `${parseInt(dia)} de ${mesesNames[parseInt(mes)-1]} de ${anio}`;
+  const bloqs = horasBloqueadas[fecha] || [];
+  let html = `<p class="fecha-seleccionada-label">Horas del ${fechaLabel} — tocá para bloquear/desbloquear</p>`;
+  html += '<div class="horarios-grid">';
+  for (let h = CONFIG.horario.inicio; h < CONFIG.horario.fin; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const horaNum = h + m / 60;
+      const label = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      const bloq  = bloqs.find(b => b.hora === horaNum);
+      html += `<div class="hora-item ${bloq ? 'bloqueada' : ''}" onclick="toggleHora('${fecha}', ${horaNum}, '${label}')">${label}</div>`;
+    }
+  }
+  html += '</div>';
+  panel.innerHTML = html;
+}
+
+window.toggleHora = async function(fecha, horaNum, label) {
+  const bloqs = horasBloqueadas[fecha] || [];
+  const existente = bloqs.find(b => b.hora === horaNum);
+  try {
+    if (existente) {
+      await deleteDoc(doc(db, 'horas_bloqueadas', existente.id));
+      mostrarToast(`${label} desbloqueada`);
+    } else {
+      await addDoc(collection(db, 'horas_bloqueadas'), { fecha, hora: horaNum });
+      mostrarToast(`${label} bloqueada`);
+    }
+    await cargarHorasBloqueadas(fecha);
+    renderHorasBloqueadas(fecha);
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+function mostrarToast(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+
+document.getElementById('btn-prev').onclick  = () => { mesActual.setMonth(mesActual.getMonth()-1); renderCalDias(); };
+document.getElementById('btn-next').onclick  = () => { mesActual.setMonth(mesActual.getMonth()+1); renderCalDias(); };
+document.getElementById('btn-prev2').onclick = () => { mes2.setMonth(mes2.getMonth()-1); renderCalHoras(); };
+document.getElementById('btn-next2').onclick = () => { mes2.setMonth(mes2.getMonth()+1); renderCalHoras(); };
+
+renderCalDias();
+renderCalHoras();
+</script>
+<script src="../../config.js"></script>
+</body>
+</html>

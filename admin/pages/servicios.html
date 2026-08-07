@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servicios</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    body { background: #F8F8F6; }
+    .page { padding: 24px; max-width: 700px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .page-header h1 { font-size: 20px; font-weight: 700; }
+    .servicio-row {
+      background: var(--superficie);
+      border: 0.5px solid var(--borde);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .servicio-row.inactivo { opacity: 0.5; }
+    .srv-nombre { font-weight: 500; flex: 1; }
+    .srv-meta   { font-size: 13px; color: var(--texto-suave); min-width: 120px; }
+    .srv-precio { font-weight: 600; color: var(--primario); min-width: 80px; text-align: right; }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--superficie); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 440px; margin: 16px; }
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .modal-footer { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+    .toggle-switch { position: relative; width: 42px; height: 24px; display: inline-block; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0; background: var(--borde);
+      border-radius: 12px; cursor: pointer; transition: 0.2s;
+    }
+    .toggle-track::before {
+      content: ''; position: absolute; width: 18px; height: 18px;
+      left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s;
+    }
+    input:checked + .toggle-track { background: var(--primario); }
+    input:checked + .toggle-track::before { transform: translateX(18px); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <h1>Servicios</h1>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Agregar</button>
+  </div>
+  <div id="lista-servicios"><div class="spinner"></div></div>
+</div>
+
+<div class="modal-overlay" id="modal" onclick="cerrarSiOverlay(event)">
+  <div class="modal">
+    <h2 id="modal-titulo">Agregar servicio</h2>
+    <div class="form-group">
+      <label>Nombre del servicio</label>
+      <input type="text" id="inp-nombre" placeholder="Ej: Manicure gel">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Duración (min)</label>
+        <input type="number" id="inp-duracion" placeholder="60" min="15" step="15">
+      </div>
+      <div class="form-group">
+        <label>Precio</label>
+        <input type="number" id="inp-precio" placeholder="0" min="0">
+      </div>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:12px">
+      <label style="margin:0">Servicio activo</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="inp-activo" checked>
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="guardarServicio()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { db } from '../../js/firebase.js';
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+let servicios = [];
+let editandoId = null;
+
+async function cargar() {
+  const lista = document.getElementById('lista-servicios');
+  try {
+    const snap = await getDocs(collection(db, 'servicios'));
+    servicios = [];
+    snap.forEach(d => servicios.push({ id: d.id, ...d.data() }));
+    if (servicios.length === 0) {
+      for (const s of CONFIG.servicios) {
+        const ref = await addDoc(collection(db, 'servicios'), s);
+        servicios.push({ id: ref.id, ...s });
+      }
+    }
+    renderServicios();
+  } catch(e) {
+    servicios = CONFIG.servicios.map((s, i) => ({ ...s, id: 's' + i }));
+    renderServicios();
+  }
+}
+
+function renderServicios() {
+  const lista = document.getElementById('lista-servicios');
+  if (servicios.length === 0) {
+    lista.innerHTML = '<p class="text-muted">No hay servicios. Agregá el primero.</p>';
+    return;
+  }
+  lista.innerHTML = servicios.map(s => `
+    <div class="servicio-row ${s.activo === false ? 'inactivo' : ''}">
+      <div class="srv-nombre">${s.nombre}</div>
+      <div class="srv-meta">⏱ ${s.duracion} min</div>
+      <div class="srv-precio">${s.precio > 0 ? '₡' + s.precio.toLocaleString() : 'Sin precio'}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="editar('${s.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminar('${s.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.abrirModal = function(id = null) {
+  editandoId = id;
+  document.getElementById('modal-titulo').textContent = id ? 'Editar servicio' : 'Agregar servicio';
+  if (id) {
+    const s = servicios.find(x => x.id === id);
+    document.getElementById('inp-nombre').value    = s.nombre;
+    document.getElementById('inp-duracion').value  = s.duracion;
+    document.getElementById('inp-precio').value    = s.precio;
+    document.getElementById('inp-activo').checked  = s.activo !== false;
+  } else {
+    document.getElementById('inp-nombre').value   = '';
+    document.getElementById('inp-duracion').value = '';
+    document.getElementById('inp-precio').value   = '';
+    document.getElementById('inp-activo').checked = true;
+  }
+  document.getElementById('modal').classList.add('open');
+};
+
+window.editar  = (id) => window.abrirModal(id);
+window.cerrarModal = () => document.getElementById('modal').classList.remove('open');
+window.cerrarSiOverlay = (e) => { if (e.target.id === 'modal') window.cerrarModal(); };
+
+window.guardarServicio = async function() {
+  const nombre   = document.getElementById('inp-nombre').value.trim();
+  const duracion = parseInt(document.getElementById('inp-duracion').value) || 0;
+  const precio   = parseInt(document.getElementById('inp-precio').value) || 0;
+  const activo   = document.getElementById('inp-activo').checked;
+  if (!nombre || !duracion) { mostrarToast('Completá nombre y duración', 'error'); return; }
+  const data = { nombre, duracion, precio, activo };
+  try {
+    if (editandoId) {
+      await updateDoc(doc(db, 'servicios', editandoId), data);
+      mostrarToast('Servicio actualizado');
+    } else {
+      await addDoc(collection(db, 'servicios'), data);
+      mostrarToast('Servicio agregado');
+    }
+    window.cerrarModal();
+    cargar();
+  } catch(e) { mostrarToast('Error al guardar', 'error'); }
+};
+
+window.eliminar = async function(id) {
+  if (!confirm('¿Eliminar este servicio?')) return;
+  try {
+    await deleteDoc(doc(db, 'servicios', id));
+    mostrarToast('Servicio eliminado');
+    cargar();
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+function mostrarToast(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+
+cargar();
+</script>
+<script src="../../config.js"></script>
+</body>
+</html>

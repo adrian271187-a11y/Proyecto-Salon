@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sala de espera</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    body { background: #F8F8F6; }
+    .page { padding: 24px; max-width: 800px; }
+    .page h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .page p { color: var(--texto-suave); font-size: 14px; margin-bottom: 24px; }
+    .atendiendo-card {
+      background: linear-gradient(135deg, #FFF0F5, #FFF8FA);
+      border: 1.5px solid var(--primario);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .atendiendo-label { font-size: 12px; font-weight: 600; color: var(--primario); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .atendiendo-nombre { font-size: 28px; font-weight: 700; color: var(--texto); }
+    .atendiendo-srv    { font-size: 15px; color: var(--texto-suave); margin-top: 4px; }
+    .atendiendo-empty  { font-size: 18px; color: var(--texto-suave); padding: 12px; }
+
+    .cola-title { font-size: 13px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .cola-item {
+      background: var(--superficie);
+      border: 0.5px solid var(--borde);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cola-num  { width: 28px; height: 28px; background: var(--superficie-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--primario); margin-right: 14px; }
+    .cola-info { flex: 1; }
+    .cola-nombre  { font-weight: 500; }
+    .cola-detalle { font-size: 13px; color: var(--texto-suave); }
+    .cola-hora    { font-size: 13px; font-weight: 600; color: var(--primario); }
+    .acciones-atendiendo { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+    .refresh-label { font-size: 12px; color: var(--texto-suave); margin-top: 16px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>Sala de espera</h1>
+  <p>Gestioná el turno actual y la cola de clientes de hoy</p>
+
+  <div class="atendiendo-card">
+    <div class="atendiendo-label">Atendiendo ahora</div>
+    <div id="atendiendo-content"><div class="spinner"></div></div>
+    <div class="acciones-atendiendo" id="acciones-atendiendo" style="display:none">
+      <button class="btn btn-success btn-sm" onclick="finalizarTurno()">✓ Finalizar turno</button>
+      <button class="btn btn-danger btn-sm" onclick="cancelarTurno()">✗ Cancelar</button>
+    </div>
+  </div>
+
+  <div class="cola-title">Cola de espera</div>
+  <div id="cola-espera"><div class="spinner"></div></div>
+  <p class="refresh-label">🔄 Se actualiza cada 15 segundos</p>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { db } from '../../js/firebase.js';
+import { collection, getDocs, doc, updateDoc, query, where, orderBy }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+let citasHoy = [];
+let intervalo = null;
+
+function hoy() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function horaLabel(h) {
+  const hs = Math.floor(h), ms = Math.round((h - hs) * 60);
+  return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+}
+
+async function cargar() {
+  try {
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '==', hoy())));
+    citasHoy = [];
+    snap.forEach(d => { if (d.data().estado !== 'cancelada') citasHoy.push({ id: d.id, ...d.data() }); });
+    citasHoy.sort((a, b) => a.hora - b.hora);
+    renderSala();
+  } catch(e) {}
+}
+
+function renderSala() {
+  const atendiendo = citasHoy.find(c => c.estado === 'en_atencion');
+  const cola = citasHoy.filter(c => c.estado === 'confirmada');
+
+  const contenido = document.getElementById('atendiendo-content');
+  const acciones  = document.getElementById('acciones-atendiendo');
+
+  if (atendiendo) {
+    contenido.innerHTML = `
+      <div class="atendiendo-nombre">${atendiendo.cliente?.nombre || '—'}</div>
+      <div class="atendiendo-srv">${atendiendo.servicio} · ${atendiendo.duracion} min · ${horaLabel(atendiendo.hora)}</div>
+    `;
+    acciones.style.display = 'flex';
+    acciones.dataset.id = atendiendo.id;
+  } else {
+    contenido.innerHTML = '<div class="atendiendo-empty">Ningún cliente siendo atendido</div>';
+    acciones.style.display = 'none';
+    if (cola.length > 0) {
+      contenido.innerHTML += `
+        <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="llamarSiguiente('${cola[0].id}')">
+          Llamar siguiente →
+        </button>
+      `;
+    }
+  }
+
+  const colaEl = document.getElementById('cola-espera');
+  if (cola.length === 0) {
+    colaEl.innerHTML = '<p class="text-muted" style="padding:12px">No hay clientes en espera.</p>';
+  } else {
+    colaEl.innerHTML = cola.map((c, i) => `
+      <div class="cola-item">
+        <div class="cola-num">${i + 1}</div>
+        <div class="cola-info">
+          <div class="cola-nombre">${c.cliente?.nombre || '—'}</div>
+          <div class="cola-detalle">${c.servicio} · ${c.duracion} min</div>
+        </div>
+        <div class="cola-hora">${horaLabel(c.hora)}</div>
+      </div>
+    `).join('');
+  }
+}
+
+window.llamarSiguiente = async function(id) {
+  try {
+    await updateDoc(doc(db, 'citas', id), { estado: 'en_atencion' });
+    mostrarToast('Cliente llamado');
+    cargar();
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+window.finalizarTurno = async function() {
+  const id = document.getElementById('acciones-atendiendo').dataset.id;
+  try {
+    await updateDoc(doc(db, 'citas', id), { estado: 'finalizada' });
+    mostrarToast('Turno finalizado');
+    cargar();
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+window.cancelarTurno = async function() {
+  const id = document.getElementById('acciones-atendiendo').dataset.id;
+  try {
+    await updateDoc(doc(db, 'citas', id), { estado: 'cancelada' });
+    mostrarToast('Turno cancelado');
+    cargar();
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+function mostrarToast(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+
+cargar();
+intervalo = setInterval(cargar, 15000);
+</script>
+<script src="../../config.js"></script>
+</body>
+</html>

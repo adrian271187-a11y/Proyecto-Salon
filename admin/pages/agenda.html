@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    body { background: #F8F8F6; }
+    .page { padding: 24px; max-width: 900px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 20px; font-weight: 700; }
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filtro-btn { padding: 6px 14px; border: 0.5px solid var(--borde); border-radius: 20px; font-size: 13px; cursor: pointer; background: var(--superficie); transition: all 0.15s; }
+    .filtro-btn.active { background: var(--primario); color: white; border-color: var(--primario); }
+    .cita-card {
+      background: var(--superficie);
+      border: 0.5px solid var(--borde);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--borde);
+    }
+    .cita-card.pendiente  { border-left-color: #BA7517; }
+    .cita-card.confirmada { border-left-color: #3B6D11; }
+    .cita-card.cancelada  { border-left-color: #A32D2D; opacity: 0.7; }
+    .cita-card.finalizada { border-left-color: #185FA5; }
+    .cita-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cita-hora  { font-size: 18px; font-weight: 700; color: var(--primario); }
+    .cita-info  { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .cita-field { font-size: 13px; }
+    .cita-field span { color: var(--texto-suave); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cita-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+    .empty-state { text-align: center; padding: 60px 16px; color: var(--texto-suave); }
+    .date-nav { display: flex; align-items: center; gap: 12px; }
+    .date-nav button { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 14px; }
+    .date-nav button:hover { background: var(--superficie-2); }
+    #fecha-label { font-weight: 600; font-size: 15px; min-width: 160px; text-align: center; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <h1>Agenda</h1>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div class="date-nav">
+        <button onclick="cambiarFecha(-1)">←</button>
+        <span id="fecha-label"></span>
+        <button onclick="cambiarFecha(1)">→</button>
+      </div>
+      <button class="filtro-btn" onclick="irHoy()">Hoy</button>
+    </div>
+  </div>
+
+  <div class="filtros" style="margin-bottom:20px">
+    <button class="filtro-btn active" onclick="filtrar('todas', this)">Todas</button>
+    <button class="filtro-btn" onclick="filtrar('pendiente', this)">Pendientes</button>
+    <button class="filtro-btn" onclick="filtrar('confirmada', this)">Confirmadas</button>
+    <button class="filtro-btn" onclick="filtrar('finalizada', this)">Finalizadas</button>
+    <button class="filtro-btn" onclick="filtrar('cancelada', this)">Canceladas</button>
+  </div>
+
+  <div id="lista-citas"><div class="spinner"></div></div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { db } from '../../js/firebase.js';
+import { collection, getDocs, doc, updateDoc, query, where, orderBy, Timestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+let fechaActual = new Date();
+fechaActual.setHours(0,0,0,0);
+let filtroActual = 'todas';
+let todasLasCitas = [];
+
+function fechaStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function actualizarLabel() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const esHoy = fechaActual.getTime() === hoy.getTime();
+  document.getElementById('fecha-label').textContent =
+    esHoy ? 'Hoy, ' + fechaActual.getDate() + ' de ' + meses[fechaActual.getMonth()]
+          : fechaActual.getDate() + ' de ' + meses[fechaActual.getMonth()] + ' ' + fechaActual.getFullYear();
+}
+
+window.cambiarFecha = function(delta) {
+  fechaActual.setDate(fechaActual.getDate() + delta);
+  actualizarLabel();
+  cargarCitas();
+};
+
+window.irHoy = function() {
+  fechaActual = new Date(); fechaActual.setHours(0,0,0,0);
+  actualizarLabel(); cargarCitas();
+};
+
+window.filtrar = function(estado, btn) {
+  filtroActual = estado;
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCitas();
+};
+
+function horaLabel(h) {
+  const horas = Math.floor(h);
+  const mins  = Math.round((h - horas) * 60);
+  return `${String(horas).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
+}
+
+async function cargarCitas() {
+  document.getElementById('lista-citas').innerHTML = '<div class="spinner"></div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '==', fechaStr(fechaActual))));
+    todasLasCitas = [];
+    snap.forEach(doc => todasLasCitas.push({ id: doc.id, ...doc.data() }));
+    todasLasCitas.sort((a, b) => a.hora - b.hora);
+    renderCitas();
+  } catch(e) {
+    document.getElementById('lista-citas').innerHTML = '<p class="text-muted" style="padding:20px">Error al cargar citas.</p>';
+  }
+}
+
+function renderCitas() {
+  const lista = document.getElementById('lista-citas');
+  const citas = filtroActual === 'todas' ? todasLasCitas : todasLasCitas.filter(c => c.estado === filtroActual);
+  if (citas.length === 0) {
+    lista.innerHTML = '<div class="empty-state">No hay citas para este día.</div>';
+    return;
+  }
+  lista.innerHTML = citas.map(c => `
+    <div class="cita-card ${c.estado}">
+      <div class="cita-header">
+        <span class="cita-hora">${horaLabel(c.hora)}</span>
+        <span class="badge badge-${c.estado}">${c.estado.charAt(0).toUpperCase() + c.estado.slice(1)}</span>
+      </div>
+      <div class="cita-info">
+        <div class="cita-field"><span>Servicio</span>${c.servicio}</div>
+        <div class="cita-field"><span>Duración</span>${c.duracion} min</div>
+        <div class="cita-field"><span>Cliente</span>${c.cliente?.nombre || '—'}</div>
+        <div class="cita-field"><span>Teléfono</span>${c.cliente?.telefono || '—'}</div>
+        ${c.nota ? `<div class="cita-field" style="grid-column:span 2"><span>Nota</span>${c.nota}</div>` : ''}
+      </div>
+      <div class="cita-acciones">
+        ${c.estado === 'pendiente' ? `
+          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}', 'confirmada')">✓ Confirmar</button>
+          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}', 'cancelada')">✗ Cancelar</button>
+        ` : ''}
+        ${c.estado === 'confirmada' ? `
+          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}', 'finalizada')">Finalizar</button>
+          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}', 'cancelada')">✗ Cancelar</button>
+        ` : ''}
+        ${c.cliente?.whatsapp || c.cliente?.telefono ? `
+          <a href="https://wa.me/506${(c.cliente.telefono||'').replace(/\D/g,'')}" target="_blank" class="btn btn-outline btn-sm">WhatsApp</a>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+window.cambiarEstado = async function(id, estado) {
+  try {
+    await updateDoc(doc(db, 'citas', id), { estado });
+    const idx = todasLasCitas.findIndex(c => c.id === id);
+    if (idx >= 0) todasLasCitas[idx].estado = estado;
+    renderCitas();
+    mostrarToast('Estado actualizado');
+  } catch(e) { mostrarToast('Error al actualizar', 'error'); }
+};
+
+function mostrarToast(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+
+actualizarLabel();
+cargarCitas();
+</script>
+<script src="../../config.js"></script>
+</body>
+</html>
