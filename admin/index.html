@@ -776,12 +776,16 @@ async function inicializarServicios() {
     snap.forEach(d => servicios.push({ id: d.id, ...d.data() }));
     if (servicios.length === 0) {
       for (const s of CONFIG.servicios) {
-        const ref = await addDoc(collection(db, 'servicios'), s);
-        servicios.push({ id: ref.id, ...s });
+        const { id: _id, ...datos } = s;
+        const ref = await addDoc(collection(db, 'servicios'), datos);
+        servicios.push({ id: ref.id, ...datos });
       }
     }
     renderServicios();
-  } catch(e) { servicios = CONFIG.servicios.map((s,i)=>({...s,id:'s'+i})); renderServicios(); }
+  } catch(e) {
+    mostrarToast('Error al cargar servicios', 'error');
+    console.error(e);
+  }
 }
 
 function renderServicios() {
