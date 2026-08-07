@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citas</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .hero {
+      background: linear-gradient(135deg, #FFF0F5 0%, #FFF8FA 100%);
+      padding: 60px 24px 40px;
+      text-align: center;
+      border-bottom: 0.5px solid var(--borde);
+    }
+    .hero h1 { font-size: 32px; font-weight: 700; color: var(--primario); margin-bottom: 8px; }
+    .hero p  { font-size: 17px; color: var(--texto-suave); }
+    .container { max-width: 640px; margin: 0 auto; padding: 32px 16px; }
+    .section-title { font-size: 13px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+    .service-card {
+      background: var(--superficie);
+      border: 0.5px solid var(--borde);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .service-card:hover { border-color: var(--primario); box-shadow: var(--sombra); }
+    .service-card.selected { border-color: var(--primario); background: #FFF0F5; }
+    .service-name { font-weight: 500; font-size: 16px; }
+    .service-meta { font-size: 13px; color: var(--texto-suave); margin-top: 2px; }
+    .service-price { font-size: 17px; font-weight: 600; color: var(--primario); }
+    .check-icon { width: 22px; height: 22px; border-radius: 50%; background: var(--primario); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; opacity: 0; transition: opacity 0.2s; }
+    .service-card.selected .check-icon { opacity: 1; }
+    .sticky-bottom {
+      position: sticky;
+      bottom: 0;
+      background: var(--superficie);
+      border-top: 0.5px solid var(--borde);
+      padding: 16px 24px;
+      display: none;
+    }
+    .sticky-bottom.visible { display: block; }
+    .empty-state { text-align: center; padding: 48px 16px; color: var(--texto-suave); }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1 id="negocio-nombre">Salón de Belleza</h1>
+  <p id="negocio-slogan">Tu belleza, nuestra pasión</p>
+</div>
+
+<div class="container">
+  <p class="section-title">Elegí tu servicio</p>
+  <div id="lista-servicios">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<div class="sticky-bottom" id="sticky-btn">
+  <button class="btn btn-primary" style="width:100%" onclick="irAReserva()">
+    Continuar con la reserva →
+  </button>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { db } from './js/firebase.js';
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const nombre = document.getElementById('negocio-nombre');
+const slogan = document.getElementById('negocio-slogan');
+nombre.textContent = CONFIG.negocio;
+slogan.textContent = CONFIG.slogan;
+document.title = CONFIG.negocio;
+
+let servicioSeleccionado = null;
+
+async function cargarServicios() {
+  const lista = document.getElementById('lista-servicios');
+  try {
+    const snap = await getDocs(collection(db, 'servicios'));
+    let servicios = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.activo !== false) servicios.push({ id: doc.id, ...d });
+    });
+    if (servicios.length === 0) servicios = CONFIG.servicios.filter(s => s.activo);
+
+    if (servicios.length === 0) {
+      lista.innerHTML = '<div class="empty-state">No hay servicios disponibles por el momento.</div>';
+      return;
+    }
+
+    lista.innerHTML = servicios.map(s => `
+      <div class="service-card" id="srv-${s.id}" onclick="seleccionar('${s.id}', '${s.nombre}', ${s.duracion}, ${s.precio})">
+        <div>
+          <div class="service-name">${s.nombre}</div>
+          <div class="service-meta">⏱ ${s.duracion} min</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${s.precio > 0 ? `<span class="service-price">₡${s.precio.toLocaleString()}</span>` : ''}
+          <div class="check-icon">✓</div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    const servicios = CONFIG.servicios.filter(s => s.activo);
+    lista.innerHTML = servicios.map(s => `
+      <div class="service-card" id="srv-${s.id}" onclick="seleccionar('${s.id}', '${s.nombre}', ${s.duracion}, ${s.precio})">
+        <div>
+          <div class="service-name">${s.nombre}</div>
+          <div class="service-meta">⏱ ${s.duracion} min</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${s.precio > 0 ? `<span class="service-price">₡${s.precio.toLocaleString()}</span>` : ''}
+          <div class="check-icon">✓</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+window.seleccionar = function(id, nombre, duracion, precio) {
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('srv-' + id).classList.add('selected');
+  servicioSeleccionado = { id, nombre, duracion, precio };
+  document.getElementById('sticky-btn').classList.add('visible');
+  sessionStorage.setItem('servicio', JSON.stringify(servicioSeleccionado));
+};
+
+window.irAReserva = function() {
+  if (!servicioSeleccionado) return;
+  window.location.href = 'pages/booking.html';
+};
+
+cargarServicios();
+</script>
+<script src="config.js"></script>
+</body>
+</html>
