@@ -98,6 +98,7 @@
   </div>
 </div>
 
+<script src="../config.js"></script>
 <script type="module">
 import { auth } from '../js/firebase.js';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged }
@@ -157,6 +158,5 @@ document.getElementById('inp-pass').addEventListener('keydown', e => {
   if (e.key === 'Enter') window.iniciarSesion();
 });
 </script>
-<script src="../config.js"></script>
 </body>
 </html>

@@ -137,6 +137,7 @@
 
 <div id="toast"></div>
 
+<script src="../config.js"></script>
 <script type="module">
 import { db } from '../js/firebase.js';
 import { collection, addDoc, getDocs, query, where, Timestamp }
@@ -307,6 +308,5 @@ document.getElementById('btn-next').onclick = () => { mesActual.setMonth(mesActu
 
 renderCalendario();
 </script>
-<script src="../config.js"></script>
 </body>
 </html>

@@ -29,9 +29,9 @@ const CONFIG = {
     waze: ""
   },
   emailjs: {
-    serviceId: "",
-    templateId: "",
-    publicKey: ""
+    serviceId: "service_mlmct2l",
+    templateId: "template_8ns7id3",
+    publicKey: "wbu7jftXOgmyV__Vc"
   },
   admin: {
     timeoutMinutos: 10

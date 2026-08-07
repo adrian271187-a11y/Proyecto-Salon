@@ -65,10 +65,28 @@
 
 <div id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="../../config.js"></script>
+<script>emailjs.init(CONFIG.emailjs.publicKey);</script>
 <script type="module">
 import { db } from '../../js/firebase.js';
 import { collection, getDocs, doc, updateDoc, query, where, orderBy, Timestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+async function enviarCorreo(cita, estado) {
+  if (!CONFIG.emailjs.serviceId || !cita.cliente?.correo) return;
+  try {
+    await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+      negocio: CONFIG.negocio,
+      cliente_nombre: cita.cliente.nombre,
+      servicio: cita.servicio,
+      fecha: cita.fecha,
+      hora: horaLabel(cita.hora),
+      estado: estado === 'confirmada' ? 'confirmada ✓' : 'cancelada',
+      correo_cliente: cita.cliente.correo
+    });
+  } catch(e) { console.error('Error EmailJS:', e); }
+}
 
 const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 let fechaActual = new Date();
@@ -166,9 +184,14 @@ window.cambiarEstado = async function(id, estado) {
   try {
     await updateDoc(doc(db, 'citas', id), { estado });
     const idx = todasLasCitas.findIndex(c => c.id === id);
-    if (idx >= 0) todasLasCitas[idx].estado = estado;
+    if (idx >= 0) {
+      todasLasCitas[idx].estado = estado;
+      if (estado === 'confirmada' || estado === 'cancelada') {
+        await enviarCorreo(todasLasCitas[idx], estado);
+      }
+    }
     renderCitas();
-    mostrarToast('Estado actualizado');
+    mostrarToast(estado === 'confirmada' ? 'Cita confirmada — correo enviado' : 'Estado actualizado');
   } catch(e) { mostrarToast('Error al actualizar', 'error'); }
 };
 
@@ -181,6 +204,5 @@ function mostrarToast(msg, tipo = 'success') {
 actualizarLabel();
 cargarCitas();
 </script>
-<script src="../../config.js"></script>
 </body>
 </html>
