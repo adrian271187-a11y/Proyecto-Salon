@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="../config.js"></script>
   <style>
     body { background: #F8F8F6; }
     .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -12,37 +14,116 @@
     .login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
     .login-card p  { color: var(--texto-suave); font-size: 14px; margin-bottom: 24px; }
     .error-msg { background: #FCEBEB; color: #A32D2D; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; margin-bottom: 16px; display: none; }
-
-    /* Sidebar layout */
     .admin-layout { display: flex; min-height: 100vh; }
-    .sidebar {
-      width: 220px; min-width: 220px;
-      background: var(--superficie);
-      border-right: 0.5px solid var(--borde);
-      padding: 24px 0;
-      display: flex; flex-direction: column;
-    }
+    .sidebar { width: 220px; min-width: 220px; background: var(--superficie); border-right: 0.5px solid var(--borde); padding: 24px 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
     .sidebar-logo { padding: 0 20px 24px; font-size: 16px; font-weight: 700; color: var(--primario); border-bottom: 0.5px solid var(--borde); margin-bottom: 12px; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 20px; font-size: 14px; cursor: pointer;
-      color: var(--texto-suave); transition: all 0.15s;
-      border-left: 3px solid transparent;
-    }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; cursor: pointer; color: var(--texto-suave); transition: all 0.15s; border-left: 3px solid transparent; }
     .nav-item:hover { background: var(--superficie-2); color: var(--texto); }
     .nav-item.active { background: #FFF0F5; color: var(--primario); border-left-color: var(--primario); font-weight: 500; }
-    .nav-item span { font-size: 16px; }
     .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 0.5px solid var(--borde); }
-    .main-content { flex: 1; overflow-y: auto; }
-    .page-frame { width: 100%; height: 100vh; border: none; }
-
+    .main-content { flex: 1; overflow-y: auto; padding: 24px; max-width: 900px; }
+    .seccion { display: none; }
+    .seccion.active { display: block; }
     #login-section { display: flex; }
     #admin-section  { display: none; }
+
+    /* Agenda */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 20px; font-weight: 700; }
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .filtro-btn { padding: 6px 14px; border: 0.5px solid var(--borde); border-radius: 20px; font-size: 13px; cursor: pointer; background: var(--superficie); transition: all 0.15s; }
+    .filtro-btn.active { background: var(--primario); color: white; border-color: var(--primario); }
+    .cita-card { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 12px; border-left: 3px solid var(--borde); }
+    .cita-card.pendiente  { border-left-color: #BA7517; }
+    .cita-card.confirmada { border-left-color: #3B6D11; }
+    .cita-card.cancelada  { border-left-color: #A32D2D; opacity: 0.7; }
+    .cita-card.finalizada { border-left-color: #185FA5; }
+    .cita-card.en_atencion { border-left-color: var(--primario); }
+    .cita-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cita-hora  { font-size: 18px; font-weight: 700; color: var(--primario); }
+    .cita-info  { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .cita-field { font-size: 13px; }
+    .cita-field span { color: var(--texto-suave); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cita-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+    .date-nav { display: flex; align-items: center; gap: 12px; }
+    .date-nav button { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 14px; }
+    #fecha-label { font-weight: 600; font-size: 15px; min-width: 160px; text-align: center; }
+
+    /* Disponibilidad */
+    .tabs { display: flex; border-bottom: 0.5px solid var(--borde); margin-bottom: 24px; }
+    .tab { padding: 10px 20px; font-size: 14px; cursor: pointer; color: var(--texto-suave); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab.active { color: var(--primario); border-bottom-color: var(--primario); font-weight: 500; }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-header h3 { font-size: 16px; font-weight: 600; }
+    .cal-nav { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 20px; }
+    .cal-day-name { text-align: center; font-size: 11px; color: var(--texto-suave); font-weight: 600; padding: 4px; text-transform: uppercase; }
+    .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 14px; cursor: pointer; border: 0.5px solid var(--borde); background: var(--superficie); transition: all 0.15s; }
+    .cal-day:hover:not(.disabled):not(.empty) { border-color: var(--primario); }
+    .cal-day.bloqueado { background: #FCEBEB; border-color: #F7C1C1; color: #A32D2D; }
+    .cal-day.disabled  { color: #D3D1C7; cursor: not-allowed; background: #F8F8F6; border-color: transparent; }
+    .cal-day.empty     { cursor: default; border-color: transparent; background: transparent; }
+    .cal-day.hoy       { border-color: var(--primario); font-weight: 700; }
+    .horarios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .hora-item { padding: 10px; text-align: center; font-size: 13px; border: 0.5px solid var(--borde); border-radius: var(--radius-sm); background: var(--superficie); cursor: pointer; transition: all 0.15s; }
+    .hora-item:hover  { border-color: var(--primario); }
+    .hora-item.bloqueada { background: #FCEBEB; border-color: #F7C1C1; color: #A32D2D; }
+
+    /* Sala de espera */
+    .atendiendo-card { background: linear-gradient(135deg, #FFF0F5, #FFF8FA); border: 1.5px solid var(--primario); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; text-align: center; }
+    .atendiendo-label { font-size: 12px; font-weight: 600; color: var(--primario); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .atendiendo-nombre { font-size: 28px; font-weight: 700; }
+    .atendiendo-srv    { font-size: 15px; color: var(--texto-suave); margin-top: 4px; }
+    .cola-item { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 14px 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .cola-num  { width: 28px; height: 28px; background: var(--superficie-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--primario); margin-right: 14px; }
+    .cola-info { flex: 1; }
+    .cola-nombre  { font-weight: 500; }
+    .cola-detalle { font-size: 13px; color: var(--texto-suave); }
+    .acciones-atendiendo { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+
+    /* Servicios */
+    .servicio-row { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; }
+    .servicio-row.inactivo { opacity: 0.5; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--superficie); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 440px; margin: 16px; }
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .modal-footer { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+    .toggle-switch { position: relative; width: 42px; height: 24px; display: inline-block; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: var(--borde); border-radius: 12px; cursor: pointer; transition: 0.2s; }
+    .toggle-track::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+    input:checked + .toggle-track { background: var(--primario); }
+    input:checked + .toggle-track::before { transform: translateX(18px); }
+
+    /* Estadísticas */
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 20px; }
+    .stat-label { font-size: 12px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .stat-num   { font-size: 32px; font-weight: 700; color: var(--primario); }
+    .mes-nav    { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .mes-nav button { background: none; border: 0.5px solid var(--borde); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    #mes-label  { font-weight: 600; min-width: 140px; text-align: center; }
+    .ranking    { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 20px; }
+    .ranking h2 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+    .rank-item  { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--borde); }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-num   { width: 24px; text-align: center; font-weight: 700; color: var(--primario); font-size: 14px; }
+    .bar-wrap   { flex: 1; height: 6px; background: var(--borde); border-radius: 3px; }
+    .bar-fill   { height: 100%; background: var(--primario); border-radius: 3px; }
+
+    .empty-state { text-align: center; padding: 48px 16px; color: var(--texto-suave); }
+    .legend { display: flex; gap: 16px; margin-bottom: 16px; font-size: 12px; color: var(--texto-suave); align-items: center; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
 
     @media (max-width: 640px) {
       .sidebar { width: 56px; min-width: 56px; }
       .sidebar-logo, .nav-label, .sidebar-footer { display: none; }
       .nav-item { padding: 14px; justify-content: center; }
+      .main-content { padding: 16px; }
+      .stat-grid, .cita-info { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -52,7 +133,7 @@
   <div class="login-wrap">
     <div class="card login-card">
       <h1 id="login-titulo">Panel de administración</h1>
-      <p id="login-subtitulo">Acceso exclusivo para administradores</p>
+      <p>Acceso exclusivo para administradores</p>
       <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos</div>
       <div class="form-group">
         <label>Usuario</label>
@@ -62,9 +143,7 @@
         <label>Contraseña</label>
         <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" id="btn-login" onclick="iniciarSesion()">
-        Entrar
-      </button>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" id="btn-login" onclick="iniciarSesion()">Entrar</button>
     </div>
   </div>
 </div>
@@ -73,48 +152,174 @@
   <div class="admin-layout">
     <div class="sidebar">
       <div class="sidebar-logo" id="sidebar-logo">Panel</div>
-      <div class="nav-item active" onclick="cargarPagina('agenda')">
-        <span>📅</span><span class="nav-label">Agenda</span>
-      </div>
-      <div class="nav-item" onclick="cargarPagina('disponibilidad')">
-        <span>🔒</span><span class="nav-label">Disponibilidad</span>
-      </div>
-      <div class="nav-item" onclick="cargarPagina('espera')">
-        <span>⏳</span><span class="nav-label">Sala de espera</span>
-      </div>
-      <div class="nav-item" onclick="cargarPagina('servicios')">
-        <span>✂️</span><span class="nav-label">Servicios</span>
-      </div>
-      <div class="nav-item" onclick="cargarPagina('estadisticas')">
-        <span>📊</span><span class="nav-label">Estadísticas</span>
-      </div>
+      <div class="nav-item active" onclick="mostrarSeccion('agenda', this)"><span>📅</span><span class="nav-label">Agenda</span></div>
+      <div class="nav-item" onclick="mostrarSeccion('disponibilidad', this)"><span>🔒</span><span class="nav-label">Disponibilidad</span></div>
+      <div class="nav-item" onclick="mostrarSeccion('espera', this)"><span>⏳</span><span class="nav-label">Sala de espera</span></div>
+      <div class="nav-item" onclick="mostrarSeccion('servicios', this)"><span>✂️</span><span class="nav-label">Servicios</span></div>
+      <div class="nav-item" onclick="mostrarSeccion('estadisticas', this)"><span>📊</span><span class="nav-label">Estadísticas</span></div>
       <div class="sidebar-footer">
         <button class="btn btn-outline btn-sm" style="width:100%" onclick="cerrarSesion()">Salir</button>
       </div>
     </div>
     <div class="main-content">
-      <iframe class="page-frame" id="page-frame" src="pages/agenda.html"></iframe>
+
+      <!-- AGENDA -->
+      <div class="seccion active" id="sec-agenda">
+        <div class="page-header">
+          <h1>Agenda</h1>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <div class="date-nav">
+              <button onclick="cambiarFecha(-1)">←</button>
+              <span id="fecha-label"></span>
+              <button onclick="cambiarFecha(1)">→</button>
+            </div>
+            <button class="filtro-btn" onclick="irHoy()">Hoy</button>
+          </div>
+        </div>
+        <div class="filtros">
+          <button class="filtro-btn active" onclick="filtrar('todas', this)">Todas</button>
+          <button class="filtro-btn" onclick="filtrar('pendiente', this)">Pendientes</button>
+          <button class="filtro-btn" onclick="filtrar('confirmada', this)">Confirmadas</button>
+          <button class="filtro-btn" onclick="filtrar('finalizada', this)">Finalizadas</button>
+          <button class="filtro-btn" onclick="filtrar('cancelada', this)">Canceladas</button>
+        </div>
+        <div id="lista-citas"><div class="spinner"></div></div>
+      </div>
+
+      <!-- DISPONIBILIDAD -->
+      <div class="seccion" id="sec-disponibilidad">
+        <h1 style="font-size:20px;font-weight:700;margin-bottom:6px">Disponibilidad</h1>
+        <p style="color:var(--texto-suave);font-size:14px;margin-bottom:24px">Bloqueá días completos o rangos de horas</p>
+        <div class="tabs">
+          <div class="tab active" onclick="cambiarTab('dias', this)">Días bloqueados</div>
+          <div class="tab" onclick="cambiarTab('horas', this)">Horas bloqueadas</div>
+        </div>
+        <div class="tab-section active" id="tab-dias">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="navDisp(-1,'dias')">←</button>
+            <h3 id="disp-titulo-dias"></h3>
+            <button class="cal-nav" onclick="navDisp(1,'dias')">→</button>
+          </div>
+          <div class="legend">
+            <div class="legend-dot" style="background:#FCEBEB;border:1px solid #F7C1C1"></div> Bloqueado
+            <div class="legend-dot" style="background:var(--superficie);border:0.5px solid var(--borde)"></div> Disponible
+          </div>
+          <div class="cal-grid" id="cal-dias"></div>
+          <p class="text-muted" style="font-size:13px">Tocá un día para bloquearlo o desbloquearlo.</p>
+        </div>
+        <div class="tab-section" id="tab-horas">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="navDisp(-1,'horas')">←</button>
+            <h3 id="disp-titulo-horas"></h3>
+            <button class="cal-nav" onclick="navDisp(1,'horas')">→</button>
+          </div>
+          <div class="cal-grid" id="cal-horas" style="margin-bottom:20px"></div>
+          <div id="panel-horas"><p class="text-muted">Seleccioná un día para ver sus horas.</p></div>
+        </div>
+      </div>
+
+      <!-- SALA DE ESPERA -->
+      <div class="seccion" id="sec-espera">
+        <h1 style="font-size:20px;font-weight:700;margin-bottom:4px">Sala de espera</h1>
+        <p style="color:var(--texto-suave);font-size:14px;margin-bottom:24px">Gestioná el turno actual y la cola de hoy</p>
+        <div class="atendiendo-card">
+          <div class="atendiendo-label">Atendiendo ahora</div>
+          <div id="atendiendo-content"><div class="spinner"></div></div>
+          <div class="acciones-atendiendo" id="acciones-atendiendo" style="display:none">
+            <button class="btn btn-success btn-sm" onclick="finalizarTurno()">✓ Finalizar</button>
+            <button class="btn btn-danger btn-sm" onclick="cancelarTurno()">✗ Cancelar</button>
+          </div>
+        </div>
+        <p style="font-size:13px;font-weight:600;color:var(--texto-suave);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Cola de espera</p>
+        <div id="cola-espera"><div class="spinner"></div></div>
+        <p class="text-muted" style="margin-top:12px;font-size:12px">🔄 Se actualiza cada 15 segundos</p>
+      </div>
+
+      <!-- SERVICIOS -->
+      <div class="seccion" id="sec-servicios">
+        <div class="page-header">
+          <h1>Servicios</h1>
+          <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Agregar</button>
+        </div>
+        <div id="lista-servicios"><div class="spinner"></div></div>
+      </div>
+
+      <!-- ESTADÍSTICAS -->
+      <div class="seccion" id="sec-estadisticas">
+        <h1 style="font-size:20px;font-weight:700;margin-bottom:24px">Estadísticas</h1>
+        <div class="mes-nav">
+          <button onclick="cambiarMes(-1)">←</button>
+          <span id="mes-label"></span>
+          <button onclick="cambiarMes(1)">→</button>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">Citas del mes</div><div class="stat-num" id="stat-total">—</div></div>
+          <div class="stat-card"><div class="stat-label">Confirmadas</div><div class="stat-num" id="stat-confirmadas">—</div><div style="font-size:13px;color:var(--texto-suave)" id="stat-pct">—</div></div>
+          <div class="stat-card"><div class="stat-label">Canceladas</div><div class="stat-num" id="stat-canceladas">—</div></div>
+          <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-num" id="stat-pendientes">—</div></div>
+        </div>
+        <div class="ranking">
+          <h2>Servicios más solicitados</h2>
+          <div id="ranking-lista"><div class="spinner"></div></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<script src="../config.js"></script>
+<!-- Modal servicios -->
+<div class="modal-overlay" id="modal-srv" onclick="cerrarSiOverlay(event)">
+  <div class="modal">
+    <h2 id="modal-titulo">Agregar servicio</h2>
+    <div class="form-group"><label>Nombre</label><input type="text" id="inp-srv-nombre" placeholder="Ej: Manicure gel"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Duración (min)</label><input type="number" id="inp-srv-duracion" placeholder="60" min="15" step="15"></div>
+      <div class="form-group"><label>Precio</label><input type="number" id="inp-srv-precio" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:12px">
+      <label style="margin:0">Activo</label>
+      <label class="toggle-switch"><input type="checkbox" id="inp-srv-activo" checked><span class="toggle-track"></span></label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="guardarServicio()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
 <script type="module">
-import { auth } from '../js/firebase.js';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where, Timestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBEOIQ9wsjHY5GxTG7PIOqLDZzKUrUv-fI",
+  authDomain: "salon-citas-piloto.firebaseapp.com",
+  projectId: "salon-citas-piloto",
+  storageBucket: "salon-citas-piloto.firebasestorage.app",
+  messagingSenderId: "322452978480",
+  appId: "1:322452978480:web:59cb4121a52166d70526f5"
+};
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+emailjs.init(CONFIG.emailjs.publicKey);
 
 document.getElementById('login-titulo').textContent = 'Panel - ' + CONFIG.negocio;
 document.getElementById('sidebar-logo').textContent = CONFIG.negocio;
 document.title = 'Admin - ' + CONFIG.negocio;
 
 let timeoutTimer = null;
-
 function resetTimeout() {
   clearTimeout(timeoutTimer);
-  timeoutTimer = setTimeout(() => { signOut(auth); }, CONFIG.admin.timeoutMinutos * 60 * 1000);
+  timeoutTimer = setTimeout(() => signOut(auth), CONFIG.admin.timeoutMinutos * 60 * 1000);
 }
-
 document.addEventListener('mousemove', resetTimeout);
 document.addEventListener('keydown', resetTimeout);
 document.addEventListener('click', resetTimeout);
@@ -124,10 +329,11 @@ onAuthStateChanged(auth, user => {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-section').style.display = 'flex';
     resetTimeout();
-    const frame = document.getElementById('page-frame');
-    const src = frame.src;
-    frame.src = '';
-    setTimeout(() => { frame.src = src; }, 100);
+    inicializarAgenda();
+    inicializarEspera();
+    inicializarServicios();
+    inicializarEstadisticas();
+    inicializarDisponibilidad();
   } else {
     document.getElementById('login-section').style.display = 'flex';
     document.getElementById('admin-section').style.display = 'none';
@@ -137,8 +343,8 @@ onAuthStateChanged(auth, user => {
 window.iniciarSesion = async function() {
   const usuario = document.getElementById('inp-usuario').value.trim();
   const pass    = document.getElementById('inp-pass').value;
-  const btn     = document.getElementById('btn-login');
-  const err     = document.getElementById('error-msg');
+  const btn = document.getElementById('btn-login');
+  const err = document.getElementById('error-msg');
   err.style.display = 'none';
   btn.disabled = true; btn.textContent = 'Ingresando...';
   const correo = usuario.includes('@') ? usuario : usuario + '@salon.com';
@@ -149,18 +355,397 @@ window.iniciarSesion = async function() {
     btn.disabled = false; btn.textContent = 'Entrar';
   }
 };
+window.cerrarSesion = () => signOut(auth);
 
-window.cerrarSesion = function() { signOut(auth); };
-
-window.cargarPagina = function(pagina) {
+window.mostrarSeccion = function(id, btn) {
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  document.getElementById('page-frame').src = `pages/${pagina}.html`;
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'espera') cargarEspera();
+  if (id === 'estadisticas') cargarEstadisticas();
 };
 
-document.getElementById('inp-pass').addEventListener('keydown', e => {
-  if (e.key === 'Enter') window.iniciarSesion();
-});
+document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') window.iniciarSesion(); });
+
+function mostrarToast(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const mesesC = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const diasNom = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function horaLabel(h) {
+  const hs = Math.floor(h), ms = Math.round((h - hs) * 60);
+  return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+}
+
+// ============ AGENDA ============
+let fechaActual = new Date(); fechaActual.setHours(0,0,0,0);
+let filtroActual = 'todas';
+let todasLasCitas = [];
+
+function inicializarAgenda() { actualizarLabelFecha(); cargarCitas(); }
+
+function fechaStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function actualizarLabelFecha() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const esHoy = fechaActual.getTime() === hoy.getTime();
+  document.getElementById('fecha-label').textContent = esHoy
+    ? 'Hoy, ' + fechaActual.getDate() + ' de ' + meses[fechaActual.getMonth()]
+    : fechaActual.getDate() + ' de ' + meses[fechaActual.getMonth()] + ' ' + fechaActual.getFullYear();
+}
+window.cambiarFecha = function(delta) { fechaActual.setDate(fechaActual.getDate() + delta); actualizarLabelFecha(); cargarCitas(); };
+window.irHoy = function() { fechaActual = new Date(); fechaActual.setHours(0,0,0,0); actualizarLabelFecha(); cargarCitas(); };
+window.filtrar = function(estado, btn) {
+  filtroActual = estado;
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCitas();
+};
+
+async function cargarCitas() {
+  document.getElementById('lista-citas').innerHTML = '<div class="spinner"></div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '==', fechaStr(fechaActual))));
+    todasLasCitas = [];
+    snap.forEach(d => todasLasCitas.push({ id: d.id, ...d.data() }));
+    todasLasCitas.sort((a, b) => a.hora - b.hora);
+    renderCitas();
+  } catch(e) {
+    document.getElementById('lista-citas').innerHTML = '<p class="text-muted" style="padding:20px">Error al cargar citas.</p>';
+  }
+}
+
+function renderCitas() {
+  const lista = document.getElementById('lista-citas');
+  const citas = filtroActual === 'todas' ? todasLasCitas : todasLasCitas.filter(c => c.estado === filtroActual);
+  if (citas.length === 0) { lista.innerHTML = '<div class="empty-state">No hay citas para este día.</div>'; return; }
+  lista.innerHTML = citas.map(c => `
+    <div class="cita-card ${c.estado}">
+      <div class="cita-header">
+        <span class="cita-hora">${horaLabel(c.hora)}</span>
+        <span class="badge badge-${c.estado}">${c.estado.charAt(0).toUpperCase() + c.estado.slice(1)}</span>
+      </div>
+      <div class="cita-info">
+        <div class="cita-field"><span>Servicio</span>${c.servicio}</div>
+        <div class="cita-field"><span>Duración</span>${c.duracion} min</div>
+        <div class="cita-field"><span>Cliente</span>${c.cliente?.nombre || '—'}</div>
+        <div class="cita-field"><span>Teléfono</span>${c.cliente?.telefono || '—'}</div>
+        ${c.nota ? `<div class="cita-field" style="grid-column:span 2"><span>Nota</span>${c.nota}</div>` : ''}
+      </div>
+      <div class="cita-acciones">
+        ${c.estado === 'pendiente' ? `
+          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','confirmada')">✓ Confirmar</button>
+          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada')">✗ Cancelar</button>
+        ` : ''}
+        ${c.estado === 'confirmada' ? `
+          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada')">Finalizar</button>
+          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada')">✗ Cancelar</button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+window.cambiarEstado = async function(id, estado) {
+  try {
+    await updateDoc(doc(db, 'citas', id), { estado });
+    const idx = todasLasCitas.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      todasLasCitas[idx].estado = estado;
+      const c = todasLasCitas[idx];
+      if ((estado === 'confirmada' || estado === 'cancelada') && c.cliente?.correo) {
+        const template = estado === 'confirmada' ? CONFIG.emailjs.templateId : CONFIG.emailjs.templateCancelacion;
+        const fechaStr2 = `${c.fecha.split('-')[2]} de ${meses[parseInt(c.fecha.split('-')[1])-1]} de ${c.fecha.split('-')[0]}`;
+        await emailjs.send(CONFIG.emailjs.serviceId, template, {
+          negocio: CONFIG.negocio,
+          cliente_nombre: c.cliente.nombre,
+          correo_cliente: c.cliente.correo,
+          destinatario_nombre: c.cliente.nombre,
+          correo_destinatario: c.cliente.correo,
+          servicio: c.servicio,
+          fecha: fechaStr2,
+          hora: horaLabel(c.hora),
+          estado: estado === 'confirmada' ? 'confirmada ✓' : 'cancelada',
+          mensaje_extra: estado === 'confirmada' ? 'Te esperamos.' : 'Lamentamos los inconvenientes.'
+        });
+      }
+    }
+    renderCitas();
+    mostrarToast(estado === 'confirmada' ? 'Cita confirmada — correo enviado' : 'Estado actualizado');
+  } catch(e) { mostrarToast('Error al actualizar', 'error'); }
+};
+
+// ============ DISPONIBILIDAD ============
+let mesDisp = { dias: new Date(), horas: new Date() };
+let diasBloqueados = [];
+let horasBloqueadasMap = {};
+let fechaHorasSel = null;
+
+function inicializarDisponibilidad() { renderCalDisp('dias'); renderCalDisp('horas'); }
+
+window.cambiarTab = function(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+};
+
+window.navDisp = function(delta, tipo) {
+  mesDisp[tipo].setMonth(mesDisp[tipo].getMonth() + delta);
+  renderCalDisp(tipo);
+};
+
+async function renderCalDisp(tipo) {
+  const mes = mesDisp[tipo];
+  const anio = mes.getFullYear(), m = mes.getMonth();
+  document.getElementById('disp-titulo-' + tipo).textContent = mesesC[m] + ' ' + anio;
+  const snap = await getDocs(collection(db, 'dias_bloqueados'));
+  diasBloqueados = [];
+  snap.forEach(d => diasBloqueados.push({ id: d.id, ...d.data() }));
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const primerDia = new Date(anio, m, 1).getDay();
+  const ultimoDia = new Date(anio, m + 1, 0).getDate();
+  let html = diasNom.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+  for (let i = 0; i < primerDia; i++) html += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= ultimoDia; d++) {
+    const fecha = new Date(anio, m, d);
+    const fs = `${anio}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const esPasado = fecha < hoy;
+    const esBloq = diasBloqueados.some(b => b.fecha === fs);
+    const esHoy  = fecha.getTime() === hoy.getTime();
+    let cls = 'cal-day' + (esPasado ? ' disabled' : esBloq ? ' bloqueado' : '') + (esHoy ? ' hoy' : '');
+    const fn = tipo === 'dias' ? `toggleDia('${fs}')` : `selFechaHoras('${fs}')`;
+    html += `<div class="${cls}" ${!esPasado ? `onclick="${fn}"` : ''}>${d}</div>`;
+  }
+  document.getElementById('cal-' + tipo).innerHTML = html;
+}
+
+window.toggleDia = async function(fecha) {
+  const ex = diasBloqueados.find(b => b.fecha === fecha);
+  try {
+    if (ex) { await deleteDoc(doc(db, 'dias_bloqueados', ex.id)); mostrarToast('Día desbloqueado'); }
+    else { await addDoc(collection(db, 'dias_bloqueados'), { fecha }); mostrarToast('Día bloqueado'); }
+    renderCalDisp('dias');
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+window.selFechaHoras = async function(fecha) {
+  fechaHorasSel = fecha;
+  const snap = await getDocs(query(collection(db, 'horas_bloqueadas'), where('fecha', '==', fecha)));
+  horasBloqueadasMap[fecha] = [];
+  snap.forEach(d => horasBloqueadasMap[fecha].push({ id: d.id, ...d.data() }));
+  const [anio, mes, dia] = fecha.split('-');
+  const panel = document.getElementById('panel-horas');
+  const bloqs = horasBloqueadasMap[fecha];
+  let html = `<p style="font-size:14px;font-weight:500;margin-bottom:16px;color:var(--texto-suave)">${parseInt(dia)} de ${meses[parseInt(mes)-1]} de ${anio} — tocá para bloquear/desbloquear</p><div class="horarios-grid">`;
+  for (let h = CONFIG.horario.inicio; h < CONFIG.horario.fin; h++) {
+    for (let mn = 0; mn < 60; mn += 30) {
+      const hn = h + mn / 60;
+      const label = `${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}`;
+      const bloq = bloqs.find(b => b.hora === hn);
+      html += `<div class="hora-item ${bloq ? 'bloqueada' : ''}" onclick="toggleHora('${fecha}',${hn},'${label}')">${label}</div>`;
+    }
+  }
+  html += '</div>';
+  panel.innerHTML = html;
+};
+
+window.toggleHora = async function(fecha, horaNum, label) {
+  const bloqs = horasBloqueadasMap[fecha] || [];
+  const ex = bloqs.find(b => b.hora === horaNum);
+  try {
+    if (ex) { await deleteDoc(doc(db, 'horas_bloqueadas', ex.id)); mostrarToast(`${label} desbloqueada`); }
+    else { await addDoc(collection(db, 'horas_bloqueadas'), { fecha, hora: horaNum }); mostrarToast(`${label} bloqueada`); }
+    await selFechaHoras(fecha);
+  } catch(e) { mostrarToast('Error', 'error'); }
+};
+
+// ============ SALA DE ESPERA ============
+let esperaTimer = null;
+let citasHoy = [];
+
+function inicializarEspera() {}
+
+async function cargarEspera() {
+  clearInterval(esperaTimer);
+  await _cargarEspera();
+  esperaTimer = setInterval(_cargarEspera, 15000);
+}
+
+function hoyStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+async function _cargarEspera() {
+  try {
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '==', hoyStr())));
+    citasHoy = [];
+    snap.forEach(d => { const data = d.data(); if (data.estado !== 'cancelada') citasHoy.push({ id: d.id, ...data }); });
+    citasHoy.sort((a, b) => a.hora - b.hora);
+    renderEspera();
+  } catch(e) {}
+}
+
+function renderEspera() {
+  const atendiendo = citasHoy.find(c => c.estado === 'en_atencion');
+  const cola = citasHoy.filter(c => c.estado === 'confirmada');
+  const contenido = document.getElementById('atendiendo-content');
+  const acciones  = document.getElementById('acciones-atendiendo');
+  if (atendiendo) {
+    contenido.innerHTML = `<div class="atendiendo-nombre">${atendiendo.cliente?.nombre || '—'}</div><div class="atendiendo-srv">${atendiendo.servicio} · ${atendiendo.duracion} min · ${horaLabel(atendiendo.hora)}</div>`;
+    acciones.style.display = 'flex';
+    acciones.dataset.id = atendiendo.id;
+  } else {
+    contenido.innerHTML = '<div style="font-size:18px;color:var(--texto-suave);padding:12px">Ningún cliente siendo atendido</div>';
+    acciones.style.display = 'none';
+    if (cola.length > 0) contenido.innerHTML += `<button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="llamarSiguiente('${cola[0].id}')">Llamar siguiente →</button>`;
+  }
+  const colaEl = document.getElementById('cola-espera');
+  colaEl.innerHTML = cola.length === 0
+    ? '<p class="text-muted" style="padding:12px">No hay clientes en espera.</p>'
+    : cola.map((c, i) => `<div class="cola-item"><div class="cola-num">${i+1}</div><div class="cola-info"><div class="cola-nombre">${c.cliente?.nombre||'—'}</div><div class="cola-detalle">${c.servicio} · ${c.duracion} min</div></div><div style="font-size:13px;font-weight:600;color:var(--primario)">${horaLabel(c.hora)}</div></div>`).join('');
+}
+
+window.llamarSiguiente = async function(id) {
+  try { await updateDoc(doc(db, 'citas', id), { estado: 'en_atencion' }); mostrarToast('Cliente llamado'); _cargarEspera(); } catch(e) { mostrarToast('Error','error'); }
+};
+window.finalizarTurno = async function() {
+  const id = document.getElementById('acciones-atendiendo').dataset.id;
+  try { await updateDoc(doc(db, 'citas', id), { estado: 'finalizada' }); mostrarToast('Turno finalizado'); _cargarEspera(); } catch(e) { mostrarToast('Error','error'); }
+};
+window.cancelarTurno = async function() {
+  const id = document.getElementById('acciones-atendiendo').dataset.id;
+  try { await updateDoc(doc(db, 'citas', id), { estado: 'cancelada' }); mostrarToast('Turno cancelado'); _cargarEspera(); } catch(e) { mostrarToast('Error','error'); }
+};
+
+// ============ SERVICIOS ============
+let servicios = [];
+let editandoId = null;
+
+async function inicializarServicios() {
+  try {
+    const snap = await getDocs(collection(db, 'servicios'));
+    servicios = [];
+    snap.forEach(d => servicios.push({ id: d.id, ...d.data() }));
+    if (servicios.length === 0) {
+      for (const s of CONFIG.servicios) {
+        const ref = await addDoc(collection(db, 'servicios'), s);
+        servicios.push({ id: ref.id, ...s });
+      }
+    }
+    renderServicios();
+  } catch(e) { servicios = CONFIG.servicios.map((s,i)=>({...s,id:'s'+i})); renderServicios(); }
+}
+
+function renderServicios() {
+  const lista = document.getElementById('lista-servicios');
+  lista.innerHTML = servicios.length === 0
+    ? '<p class="text-muted">No hay servicios. Agregá el primero.</p>'
+    : servicios.map(s => `
+        <div class="servicio-row ${s.activo===false?'inactivo':''}">
+          <div style="flex:1;font-weight:500">${s.nombre}</div>
+          <div style="font-size:13px;color:var(--texto-suave);min-width:100px">⏱ ${s.duracion} min</div>
+          <div style="font-weight:600;color:var(--primario);min-width:80px;text-align:right">${s.precio>0?'₡'+s.precio.toLocaleString():'Sin precio'}</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-outline btn-sm" onclick="editarSrv('${s.id}')">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarSrv('${s.id}')">✕</button>
+          </div>
+        </div>`).join('');
+}
+
+window.abrirModal = function(id=null) {
+  editandoId = id;
+  document.getElementById('modal-titulo').textContent = id ? 'Editar servicio' : 'Agregar servicio';
+  if (id) {
+    const s = servicios.find(x => x.id === id);
+    document.getElementById('inp-srv-nombre').value   = s.nombre;
+    document.getElementById('inp-srv-duracion').value = s.duracion;
+    document.getElementById('inp-srv-precio').value   = s.precio;
+    document.getElementById('inp-srv-activo').checked = s.activo !== false;
+  } else {
+    document.getElementById('inp-srv-nombre').value = '';
+    document.getElementById('inp-srv-duracion').value = '';
+    document.getElementById('inp-srv-precio').value = '';
+    document.getElementById('inp-srv-activo').checked = true;
+  }
+  document.getElementById('modal-srv').classList.add('open');
+};
+window.editarSrv  = id => window.abrirModal(id);
+window.cerrarModal = () => document.getElementById('modal-srv').classList.remove('open');
+window.cerrarSiOverlay = e => { if (e.target.id === 'modal-srv') window.cerrarModal(); };
+
+window.guardarServicio = async function() {
+  const nombre   = document.getElementById('inp-srv-nombre').value.trim();
+  const duracion = parseInt(document.getElementById('inp-srv-duracion').value) || 0;
+  const precio   = parseInt(document.getElementById('inp-srv-precio').value) || 0;
+  const activo   = document.getElementById('inp-srv-activo').checked;
+  if (!nombre || !duracion) { mostrarToast('Completá nombre y duración', 'error'); return; }
+  const data = { nombre, duracion, precio, activo };
+  try {
+    if (editandoId) { await updateDoc(doc(db, 'servicios', editandoId), data); mostrarToast('Servicio actualizado'); }
+    else { const ref = await addDoc(collection(db, 'servicios'), data); servicios.push({ id: ref.id, ...data }); mostrarToast('Servicio agregado'); }
+    window.cerrarModal();
+    await inicializarServicios();
+  } catch(e) { mostrarToast('Error al guardar', 'error'); }
+};
+
+window.eliminarSrv = async function(id) {
+  if (!confirm('¿Eliminar este servicio?')) return;
+  try { await deleteDoc(doc(db, 'servicios', id)); mostrarToast('Servicio eliminado'); await inicializarServicios(); }
+  catch(e) { mostrarToast('Error', 'error'); }
+};
+
+// ============ ESTADÍSTICAS ============
+let mesStats = new Date();
+
+function inicializarEstadisticas() { cargarEstadisticas(); }
+
+window.cambiarMes = function(delta) { mesStats.setMonth(mesStats.getMonth() + delta); cargarEstadisticas(); };
+
+async function cargarEstadisticas() {
+  document.getElementById('mes-label').textContent = mesesC[mesStats.getMonth()] + ' ' + mesStats.getFullYear();
+  try {
+    const anio = mesStats.getFullYear(), mes = mesStats.getMonth() + 1;
+    const primerDia = `${anio}-${String(mes).padStart(2,'0')}-01`;
+    const ultimoDia = `${anio}-${String(mes).padStart(2,'0')}-${new Date(anio, mes, 0).getDate()}`;
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '>=', primerDia), where('fecha', '<=', ultimoDia)));
+    let citas = [];
+    snap.forEach(d => citas.push(d.data()));
+    const total       = citas.length;
+    const confirmadas = citas.filter(c => c.estado === 'confirmada' || c.estado === 'finalizada').length;
+    const canceladas  = citas.filter(c => c.estado === 'cancelada').length;
+    const pendientes  = citas.filter(c => c.estado === 'pendiente').length;
+    const pct = total > 0 ? Math.round(confirmadas / total * 100) : 0;
+    document.getElementById('stat-total').textContent       = total;
+    document.getElementById('stat-confirmadas').textContent = confirmadas;
+    document.getElementById('stat-canceladas').textContent  = canceladas;
+    document.getElementById('stat-pendientes').textContent  = pendientes;
+    document.getElementById('stat-pct').textContent         = `${pct}% del total`;
+    const conteo = {};
+    citas.forEach(c => { if (c.servicio) conteo[c.servicio] = (conteo[c.servicio]||0) + 1; });
+    const ranking = Object.entries(conteo).sort((a,b) => b[1]-a[1]).slice(0,6);
+    const max = ranking[0]?.[1] || 1;
+    document.getElementById('ranking-lista').innerHTML = ranking.length === 0
+      ? '<p class="text-muted">Sin datos para este mes.</p>'
+      : ranking.map(([nombre, count], i) => `
+          <div class="rank-item">
+            <div class="rank-num">${i+1}</div>
+            <div style="flex:1;font-size:14px">${nombre}</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
+            <div style="font-size:13px;font-weight:600;color:var(--texto-suave)">${count}</div>
+          </div>`).join('');
+  } catch(e) {
+    document.getElementById('ranking-lista').innerHTML = '<p class="text-muted">Error al cargar datos.</p>';
+  }
+}
 </script>
 </body>
 </html>
