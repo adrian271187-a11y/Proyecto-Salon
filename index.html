@@ -67,9 +67,25 @@
   </button>
 </div>
 
+<div class="container" style="margin-top:0;padding-top:0">
+  <hr style="border:none;border-top:0.5px solid var(--borde);margin:8px 0 28px">
+  <p class="section-title">¿Tenés una cita agendada?</p>
+  <div class="card" style="margin-bottom:12px">
+    <p style="font-size:14px;color:var(--texto-suave);margin-bottom:16px">Ingresá tu correo o teléfono para ver y cancelar tu cita.</p>
+    <div class="form-group">
+      <label>Correo o teléfono</label>
+      <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8888-8888">
+    </div>
+    <button class="btn btn-outline" style="width:100%" onclick="buscarCita()">Buscar mi cita</button>
+  </div>
+  <div id="resultado-cita"></div>
+</div>
+
 <div id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="config.js"></script>
+<script>emailjs.init(CONFIG.emailjs.publicKey);</script>
 <script type="module">
 import { db } from './js/firebase.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -141,6 +157,121 @@ window.irAReserva = function() {
 };
 
 cargarServicios();
+
+const mesesNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function horaLabel(h) {
+  const hs = Math.floor(h), ms = Math.round((h - hs) * 60);
+  return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+}
+function fechaLabel(f) {
+  const [anio, mes, dia] = f.split('-');
+  return `${parseInt(dia)} de ${mesesNom[parseInt(mes)-1]} de ${anio}`;
+}
+
+window.buscarCita = async function() {
+  const buscar = document.getElementById('inp-buscar').value.trim();
+  if (!buscar) { mostrarToast('Ingresá tu correo o teléfono', 'error'); return; }
+
+  const resultado = document.getElementById('resultado-cita');
+  resultado.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const hoy = new Date().toISOString().split('T')[0];
+    let citas = [];
+
+    const esCorrEo = buscar.includes('@');
+    const campo = esCorrEo ? 'cliente.correo' : 'cliente.telefono';
+
+    const { getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    const snap = await getDocs(query(
+      collection(db, 'citas'),
+      where(campo, '==', buscar),
+      where('fecha', '>=', hoy)
+    ));
+
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.estado !== 'cancelada' && data.estado !== 'finalizada') {
+        citas.push({ id: d.id, ...data });
+      }
+    });
+
+    if (citas.length === 0) {
+      resultado.innerHTML = `<div class="empty-state" style="padding:20px 0">No encontramos citas activas con ese dato.</div>`;
+      return;
+    }
+
+    citas.sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+    resultado.innerHTML = citas.map(c => `
+      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--primario)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-weight:600;font-size:16px">${c.servicio}</span>
+          <span class="badge badge-${c.estado}">${c.estado}</span>
+        </div>
+        <div style="font-size:14px;color:var(--texto-suave);margin-bottom:4px">📅 ${fechaLabel(c.fecha)}</div>
+        <div style="font-size:14px;color:var(--texto-suave);margin-bottom:14px">🕐 ${horaLabel(c.hora)}</div>
+        <button class="btn btn-danger btn-sm" style="width:100%"
+          onclick="cancelarCita('${c.id}','${c.servicio}','${c.fecha}',${c.hora},'${c.cliente?.nombre}','${c.cliente?.correo}')">
+          Cancelar esta cita
+        </button>
+      </div>
+    `).join('');
+  } catch(e) {
+    resultado.innerHTML = '<p class="text-muted">Error al buscar. Intentá de nuevo.</p>';
+  }
+};
+
+window.cancelarCita = async function(id, servicio, fecha, hora, clienteNombre, clienteCorreo) {
+  if (!confirm('¿Estás seguro que querés cancelar esta cita?')) return;
+  try {
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'citas', id), { estado: 'cancelada' });
+
+    const fechaStr = fechaLabel(fecha);
+    const horaStr  = horaLabel(hora);
+
+    await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
+      negocio: CONFIG.negocio,
+      destinatario_nombre: clienteNombre,
+      correo_destinatario: clienteCorreo,
+      cliente_nombre: clienteNombre,
+      servicio, fecha: fechaStr, hora: horaStr,
+      mensaje_extra: 'Si necesitás reagendar, podés hacerlo desde nuestra página.'
+    });
+
+    if (CONFIG.contacto.correoAdmin) {
+      await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
+        negocio: CONFIG.negocio,
+        destinatario_nombre: 'Administrador',
+        correo_destinatario: CONFIG.contacto.correoAdmin,
+        cliente_nombre: clienteNombre,
+        servicio, fecha: fechaStr, hora: horaStr,
+        mensaje_extra: 'El cliente canceló su cita desde la página web.'
+      });
+    }
+
+    document.getElementById('resultado-cita').innerHTML = `
+      <div class="card" style="text-align:center;padding:24px">
+        <div style="font-size:36px;margin-bottom:12px">✕</div>
+        <p style="font-weight:600;margin-bottom:6px">Cita cancelada</p>
+        <p class="text-muted">Tu cita de ${servicio} del ${fechaStr} fue cancelada. Te enviamos un correo de confirmación.</p>
+      </div>
+    `;
+    mostrarToast('Cita cancelada correctamente');
+  } catch(e) {
+    mostrarToast('Error al cancelar. Intentá de nuevo.', 'error');
+  }
+};
+
+function mostrarToast(msg, tipo = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
 </script>
 </body>
 </html>
