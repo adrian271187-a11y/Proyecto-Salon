@@ -114,7 +114,27 @@
     .bar-wrap   { flex: 1; height: 6px; background: var(--borde); border-radius: 3px; }
     .bar-fill   { height: 100%; background: var(--primario); border-radius: 3px; }
 
-    .empty-state { text-align: center; padding: 48px 16px; color: var(--texto-suave); }
+    /* Calendario mensual estilo Outlook */
+    .vista-tabs { display:flex; gap:0; border-bottom: 0.5px solid var(--borde); margin-bottom:20px; }
+    .vista-tab  { padding:8px 18px; font-size:13px; cursor:pointer; color:var(--texto-suave); border-bottom:2px solid transparent; margin-bottom:-1px; }
+    .vista-tab.active { color:var(--primario); border-bottom-color:var(--primario); font-weight:500; }
+    .outlook-cal { width:100%; border-collapse:collapse; }
+    .outlook-cal th { font-size:11px; font-weight:600; color:var(--texto-suave); text-transform:uppercase; letter-spacing:0.05em; padding:8px 4px; text-align:center; border-bottom:0.5px solid var(--borde); }
+    .outlook-cal td { width:calc(100%/7); vertical-align:top; border:0.5px solid var(--borde); padding:4px; min-height:80px; height:80px; }
+    .outlook-cal td.otro-mes { background:#F8F8F6; }
+    .outlook-cal td.hoy-col  { background:#FFF0F5; }
+    .dia-num { font-size:12px; font-weight:600; color:var(--texto-suave); margin-bottom:4px; display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; }
+    .dia-num.hoy { background:var(--primario); color:white; }
+    .cita-pill { font-size:10px; padding:2px 5px; border-radius:3px; margin-bottom:2px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+    .cita-pill.pendiente  { background:#FAEEDA; color:#854F0B; }
+    .cita-pill.confirmada { background:#EAF3DE; color:#3B6D11; }
+    .cita-pill.cancelada  { background:#FCEBEB; color:#A32D2D; }
+    .cita-pill.finalizada { background:#E6F1FB; color:#185FA5; }
+    .cita-pill.en_atencion{ background:#FBEAF0; color:#993556; }
+    .mas-citas { font-size:10px; color:var(--primario); cursor:pointer; padding:1px 4px; }
+    .cal-mes-nav { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .cal-mes-nav button { background:none; border:0.5px solid var(--borde); border-radius:6px; padding:5px 12px; cursor:pointer; font-size:13px; }
+    #cal-mes-label { font-weight:600; font-size:15px; min-width:160px; text-align:center; }
     .legend { display: flex; gap: 16px; margin-bottom: 16px; font-size: 12px; color: var(--texto-suave); align-items: center; }
     .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
 
@@ -168,22 +188,46 @@
         <div class="page-header">
           <h1>Agenda</h1>
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-            <div class="date-nav">
+            <div class="date-nav" id="nav-dia">
               <button onclick="cambiarFecha(-1)">←</button>
               <span id="fecha-label"></span>
               <button onclick="cambiarFecha(1)">→</button>
             </div>
+            <div class="cal-mes-nav" id="nav-mes" style="display:none">
+              <button onclick="cambiarMesCal(-1)">←</button>
+              <span id="cal-mes-label"></span>
+              <button onclick="cambiarMesCal(1)">→</button>
+            </div>
             <button class="filtro-btn" onclick="irHoy()">Hoy</button>
           </div>
         </div>
-        <div class="filtros">
-          <button class="filtro-btn active" onclick="filtrar('todas', this)">Todas</button>
-          <button class="filtro-btn" onclick="filtrar('pendiente', this)">Pendientes</button>
-          <button class="filtro-btn" onclick="filtrar('confirmada', this)">Confirmadas</button>
-          <button class="filtro-btn" onclick="filtrar('finalizada', this)">Finalizadas</button>
-          <button class="filtro-btn" onclick="filtrar('cancelada', this)">Canceladas</button>
+
+        <div class="vista-tabs">
+          <div class="vista-tab active" onclick="cambiarVista('dia', this)">Día</div>
+          <div class="vista-tab" onclick="cambiarVista('mes', this)">Mes</div>
         </div>
-        <div id="lista-citas"><div class="spinner"></div></div>
+
+        <div id="vista-dia-content">
+          <div class="filtros">
+            <button class="filtro-btn active" onclick="filtrar('todas', this)">Todas</button>
+            <button class="filtro-btn" onclick="filtrar('pendiente', this)">Pendientes</button>
+            <button class="filtro-btn" onclick="filtrar('confirmada', this)">Confirmadas</button>
+            <button class="filtro-btn" onclick="filtrar('finalizada', this)">Finalizadas</button>
+            <button class="filtro-btn" onclick="filtrar('cancelada', this)">Canceladas</button>
+          </div>
+          <div id="lista-citas"><div class="spinner"></div></div>
+        </div>
+
+        <div id="vista-mes-content" style="display:none">
+          <table class="outlook-cal">
+            <thead>
+              <tr>
+                <th>Dom</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th>
+              </tr>
+            </thead>
+            <tbody id="cal-mes-body"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- DISPONIBILIDAD -->
@@ -254,6 +298,7 @@
         </div>
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-label">Citas del mes</div><div class="stat-num" id="stat-total">—</div></div>
+          <div class="stat-card"><div class="stat-label">Monto del mes</div><div class="stat-num" id="stat-monto" style="font-size:22px">—</div><div style="font-size:13px;color:var(--texto-suave)" id="stat-monto-sub">servicios con precio</div></div>
           <div class="stat-card"><div class="stat-label">Confirmadas</div><div class="stat-num" id="stat-confirmadas">—</div><div style="font-size:13px;color:var(--texto-suave)" id="stat-pct">—</div></div>
           <div class="stat-card"><div class="stat-label">Canceladas</div><div class="stat-num" id="stat-canceladas">—</div></div>
           <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-num" id="stat-pendientes">—</div></div>
@@ -387,8 +432,10 @@ function horaLabel(h) {
 let fechaActual = new Date(); fechaActual.setHours(0,0,0,0);
 let filtroActual = 'todas';
 let todasLasCitas = [];
+let vistaActual = 'dia';
+let mesCal = new Date();
 
-function inicializarAgenda() { actualizarLabelFecha(); cargarCitas(); }
+function inicializarAgenda() { actualizarLabelFecha(); cargarCitas(); actualizarLabelMes(); }
 
 function fechaStr(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -400,8 +447,30 @@ function actualizarLabelFecha() {
     ? 'Hoy, ' + fechaActual.getDate() + ' de ' + meses[fechaActual.getMonth()]
     : fechaActual.getDate() + ' de ' + meses[fechaActual.getMonth()] + ' ' + fechaActual.getFullYear();
 }
+function actualizarLabelMes() {
+  document.getElementById('cal-mes-label').textContent = mesesC[mesCal.getMonth()] + ' ' + mesCal.getFullYear();
+}
+
+window.cambiarVista = function(vista, btn) {
+  vistaActual = vista;
+  document.querySelectorAll('.vista-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('vista-dia-content').style.display = vista === 'dia' ? 'block' : 'none';
+  document.getElementById('vista-mes-content').style.display = vista === 'mes' ? 'block' : 'none';
+  document.getElementById('nav-dia').style.display = vista === 'dia' ? 'flex' : 'none';
+  document.getElementById('nav-mes').style.display = vista === 'mes' ? 'flex' : 'none';
+  if (vista === 'mes') cargarCalendarioMes();
+};
+
 window.cambiarFecha = function(delta) { fechaActual.setDate(fechaActual.getDate() + delta); actualizarLabelFecha(); cargarCitas(); };
-window.irHoy = function() { fechaActual = new Date(); fechaActual.setHours(0,0,0,0); actualizarLabelFecha(); cargarCitas(); };
+window.irHoy = function() {
+  fechaActual = new Date(); fechaActual.setHours(0,0,0,0);
+  mesCal = new Date();
+  actualizarLabelFecha(); actualizarLabelMes();
+  if (vistaActual === 'dia') cargarCitas(); else cargarCalendarioMes();
+};
+window.cambiarMesCal = function(delta) { mesCal.setMonth(mesCal.getMonth() + delta); actualizarLabelMes(); cargarCalendarioMes(); };
+
 window.filtrar = function(estado, btn) {
   filtroActual = estado;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
@@ -421,6 +490,76 @@ async function cargarCitas() {
     document.getElementById('lista-citas').innerHTML = '<p class="text-muted" style="padding:20px">Error al cargar citas.</p>';
   }
 }
+
+async function cargarCalendarioMes() {
+  const body = document.getElementById('cal-mes-body');
+  body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px"><div class="spinner"></div></td></tr>';
+  const anio = mesCal.getFullYear(), mes = mesCal.getMonth();
+  const primerDia = `${anio}-${String(mes+1).padStart(2,'0')}-01`;
+  const ultimoDia = `${anio}-${String(mes+1).padStart(2,'0')}-${new Date(anio, mes+1, 0).getDate()}`;
+  try {
+    const snap = await getDocs(query(collection(db, 'citas'), where('fecha', '>=', primerDia), where('fecha', '<=', ultimoDia)));
+    const citasPorDia = {};
+    snap.forEach(d => {
+      const data = d.data();
+      if (!citasPorDia[data.fecha]) citasPorDia[data.fecha] = [];
+      citasPorDia[data.fecha].push({ id: d.id, ...data });
+    });
+    Object.values(citasPorDia).forEach(arr => arr.sort((a,b) => a.hora - b.hora));
+    renderCalendarioMes(anio, mes, citasPorDia);
+  } catch(e) {
+    body.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--texto-suave)">Error al cargar.</td></tr>';
+  }
+}
+
+function renderCalendarioMes(anio, mes, citasPorDia) {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const primerDiaSemana = new Date(anio, mes, 1).getDay();
+  const ultimoDia = new Date(anio, mes+1, 0).getDate();
+  const diasAnteriores = primerDiaSemana;
+  const totalCeldas = Math.ceil((diasAnteriores + ultimoDia) / 7) * 7;
+  let html = '';
+  let row = '<tr>';
+  for (let i = 0; i < totalCeldas; i++) {
+    const dia = i - diasAnteriores + 1;
+    const esEsteMes = dia >= 1 && dia <= ultimoDia;
+    const fecha = new Date(anio, mes, dia);
+    const fs = fechaStr(fecha);
+    const esHoy = fecha.getTime() === hoy.getTime();
+    const citas = citasPorDia[fs] || [];
+    const maxVisible = 3;
+
+    let tdClass = '';
+    if (!esEsteMes) tdClass = 'otro-mes';
+    else if (esHoy) tdClass = 'hoy-col';
+
+    row += `<td class="${tdClass}" onclick="irADia('${fs}')" style="cursor:pointer">`;
+    if (esEsteMes || !esEsteMes) {
+      const diaNum = esEsteMes ? dia : new Date(anio, mes, dia).getDate();
+      row += `<div class="dia-num${esHoy ? ' hoy' : ''}">${diaNum}</div>`;
+    }
+    if (esEsteMes) {
+      citas.slice(0, maxVisible).forEach(c => {
+        row += `<div class="cita-pill ${c.estado}" title="${horaLabel(c.hora)} ${c.cliente?.nombre||''} — ${c.servicio}">${horaLabel(c.hora)} ${c.cliente?.nombre?.split(' ')[0]||c.servicio}</div>`;
+      });
+      if (citas.length > maxVisible) {
+        row += `<div class="mas-citas">+${citas.length - maxVisible} más</div>`;
+      }
+    }
+    row += '</td>';
+    if ((i + 1) % 7 === 0) { row += '</tr>'; html += row; row = '<tr>'; }
+  }
+  document.getElementById('cal-mes-body').innerHTML = html;
+}
+
+window.irADia = function(fs) {
+  const [anio, mes, dia] = fs.split('-');
+  fechaActual = new Date(parseInt(anio), parseInt(mes)-1, parseInt(dia));
+  fechaActual.setHours(0,0,0,0);
+  actualizarLabelFecha();
+  window.cambiarVista('dia', document.querySelector('.vista-tab'));
+  cargarCitas();
+};
 
 function renderCitas() {
   const lista = document.getElementById('lista-citas');
@@ -679,7 +818,7 @@ window.abrirModal = function(id=null) {
   document.getElementById('modal-srv').classList.add('open');
 };
 window.editarSrv  = id => window.abrirModal(id);
-window.cerrarModal = () => document.getElementById('modal-srv').classList.remove('open');
+window.cerrarModal = () => { editandoId = null; document.getElementById('modal-srv').classList.remove('open'); };
 window.cerrarSiOverlay = e => { if (e.target.id === 'modal-srv') window.cerrarModal(); };
 
 window.guardarServicio = async function() {
@@ -690,11 +829,19 @@ window.guardarServicio = async function() {
   if (!nombre || !duracion) { mostrarToast('Completá nombre y duración', 'error'); return; }
   const data = { nombre, duracion, precio, activo };
   try {
-    if (editandoId) { await updateDoc(doc(db, 'servicios', editandoId), data); mostrarToast('Servicio actualizado'); }
-    else { const ref = await addDoc(collection(db, 'servicios'), data); servicios.push({ id: ref.id, ...data }); mostrarToast('Servicio agregado'); }
+    if (editandoId) {
+      await updateDoc(doc(db, 'servicios', editandoId), data);
+      const idx = servicios.findIndex(s => s.id === editandoId);
+      if (idx >= 0) servicios[idx] = { id: editandoId, ...data };
+      mostrarToast('Servicio actualizado');
+    } else {
+      const ref = await addDoc(collection(db, 'servicios'), data);
+      servicios.push({ id: ref.id, ...data });
+      mostrarToast('Servicio agregado');
+    }
     window.cerrarModal();
-    await inicializarServicios();
-  } catch(e) { mostrarToast('Error al guardar', 'error'); }
+    renderServicios();
+  } catch(e) { mostrarToast('Error al guardar', 'error'); console.error(e); }
 };
 
 window.eliminarSrv = async function(id) {
@@ -724,11 +871,13 @@ async function cargarEstadisticas() {
     const canceladas  = citas.filter(c => c.estado === 'cancelada').length;
     const pendientes  = citas.filter(c => c.estado === 'pendiente').length;
     const pct = total > 0 ? Math.round(confirmadas / total * 100) : 0;
+    const monto = citas.filter(c => c.estado !== 'cancelada').reduce((sum, c) => sum + (c.precio || 0), 0);
     document.getElementById('stat-total').textContent       = total;
     document.getElementById('stat-confirmadas').textContent = confirmadas;
     document.getElementById('stat-canceladas').textContent  = canceladas;
     document.getElementById('stat-pendientes').textContent  = pendientes;
     document.getElementById('stat-pct').textContent         = `${pct}% del total`;
+    document.getElementById('stat-monto').textContent       = monto > 0 ? '₡' + monto.toLocaleString() : '₡0';
     const conteo = {};
     citas.forEach(c => { if (c.servicio) conteo[c.servicio] = (conteo[c.servicio]||0) + 1; });
     const ranking = Object.entries(conteo).sort((a,b) => b[1]-a[1]).slice(0,6);
