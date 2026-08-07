@@ -70,23 +70,6 @@
 <script>emailjs.init(CONFIG.emailjs.publicKey);</script>
 <script type="module">
 import { db } from '../../js/firebase.js';
-import { collection, getDocs, doc, updateDoc, query, where, orderBy, Timestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-async function enviarCorreo(cita, estado) {
-  if (!CONFIG.emailjs.serviceId || !cita.cliente?.correo) return;
-  try {
-    await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
-      negocio: CONFIG.negocio,
-      cliente_nombre: cita.cliente.nombre,
-      servicio: cita.servicio,
-      fecha: cita.fecha,
-      hora: horaLabel(cita.hora),
-      estado: estado === 'confirmada' ? 'confirmada ✓' : 'cancelada',
-      correo_cliente: cita.cliente.correo
-    });
-  } catch(e) { console.error('Error EmailJS:', e); }
-}
 
 const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 let fechaActual = new Date();

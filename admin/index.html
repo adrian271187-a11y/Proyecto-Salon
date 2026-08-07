@@ -124,6 +124,10 @@ onAuthStateChanged(auth, user => {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-section').style.display = 'flex';
     resetTimeout();
+    const frame = document.getElementById('page-frame');
+    const src = frame.src;
+    frame.src = '';
+    setTimeout(() => { frame.src = src; }, 100);
   } else {
     document.getElementById('login-section').style.display = 'flex';
     document.getElementById('admin-section').style.display = 'none';

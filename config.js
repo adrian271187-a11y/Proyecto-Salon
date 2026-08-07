@@ -27,7 +27,7 @@ const CONFIG = {
     ubicacion: "",
     googleMaps: "",
     waze: "",
-    correoAdmin: "enviossaloncr@gmail.com"
+    correoAdmin: "admin@salon.com"
   },
   emailjs: {
     serviceId: "service_mlmct2l",
