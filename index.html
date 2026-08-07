@@ -6,153 +6,243 @@
   <title>Salón de Belleza</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --negro: #1a1a1a;
-      --crema: #FAF7F4;
-      --rosa: #D4537E;
-      --rosa-suave: #F7E8EF;
-      --dorado: #C9A96E;
-      --gris: #8a8a8a;
+    :root{
+      --negro:#0d0d0d;
+      --negro2:#161616;
+      --dorado:#C9A96E;
+      --dorado2:#e8c98a;
+      --blanco:#fafaf8;
+      --gris:#9a9a9a;
+      --rosa:#c45b7a;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Jost', sans-serif; background: var(--crema); color: var(--negro); overflow-x: hidden; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Jost',sans-serif;background:var(--negro);color:var(--blanco);overflow-x:hidden;}
 
     /* NAV */
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 20px 48px;
-      display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.4s, padding 0.4s;
+    .nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:28px 60px;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:all 0.5s;
     }
-    .nav.scrolled { background: rgba(250,247,244,0.96); backdrop-filter: blur(8px); padding: 14px 48px; border-bottom: 0.5px solid #e8e0d8; }
-    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; letter-spacing: 0.12em; color: white; transition: color 0.4s; }
-    .nav.scrolled .nav-logo { color: var(--negro); }
-    .nav-cta { font-size: 12px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: white; background: transparent; border: 1px solid rgba(255,255,255,0.6); padding: 10px 24px; cursor: pointer; transition: all 0.3s; }
-    .nav.scrolled .nav-cta { color: var(--negro); border-color: var(--negro); }
-    .nav-cta:hover { background: var(--rosa); border-color: var(--rosa); color: white !important; }
+    .nav.scrolled{background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);padding:18px 60px;border-bottom:0.5px solid rgba(201,169,110,0.2);}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:var(--blanco);}
+    .nav-links{display:flex;align-items:center;gap:40px;}
+    .nav-link{font-size:11px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.6);cursor:pointer;transition:color 0.3s;}
+    .nav-link:hover{color:var(--dorado);}
+    .nav-cta{font-size:11px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--negro);background:var(--dorado);border:none;padding:12px 28px;cursor:pointer;transition:all 0.3s;}
+    .nav-cta:hover{background:var(--dorado2);}
 
     /* HERO */
-    .hero {
-      height: 100vh; min-height: 600px;
-      position: relative;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
+    .hero{
+      height:100vh;min-height:700px;
+      position:relative;display:flex;align-items:center;justify-content:center;
+      overflow:hidden;
     }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1800&q=80');
-      background-size: cover; background-position: center;
-      transform: scale(1.05);
-      transition: transform 8s ease;
+    .hero-bg{
+      position:absolute;inset:0;
+      background:url('https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg?auto=compress&cs=tinysrgb&w=1800') center/cover no-repeat;
+      filter:brightness(0.35);
+      transform:scale(1.08);
+      transition:transform 10s ease;
     }
-    .hero-bg.loaded { transform: scale(1); }
-    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.55) 100%); }
-    .hero-content { position: relative; text-align: center; color: white; padding: 0 24px; }
-    .hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado); margin-bottom: 20px; }
-    .hero-titulo { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 8vw, 96px); font-weight: 300; line-height: 1; letter-spacing: 0.04em; margin-bottom: 24px; }
-    .hero-titulo em { font-style: italic; color: #f0d5a0; }
-    .hero-sub { font-size: 15px; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); margin-bottom: 48px; }
-    .hero-btn {
-      display: inline-block; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
-      background: var(--rosa); color: white; border: none;
-      padding: 18px 48px; cursor: pointer; transition: all 0.3s;
+    .hero-bg.loaded{transform:scale(1);}
+    .hero-content{position:relative;text-align:center;padding:0 24px;max-width:900px;}
+    .hero-eyebrow{
+      font-size:11px;font-weight:300;letter-spacing:0.5em;text-transform:uppercase;
+      color:var(--dorado);margin-bottom:32px;
+      display:flex;align-items:center;justify-content:center;gap:20px;
     }
-    .hero-btn:hover { background: #b8416a; transform: translateY(-2px); }
-    .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .scroll-line { width: 1px; height: 40px; background: rgba(255,255,255,0.4); animation: scrollLine 2s ease-in-out infinite; }
-    @keyframes scrollLine { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(0.6)} }
+    .hero-eyebrow::before,.hero-eyebrow::after{content:'';width:40px;height:0.5px;background:var(--dorado);}
+    .hero-titulo{
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(64px,10vw,120px);
+      font-weight:300;line-height:0.9;
+      letter-spacing:-0.01em;
+      margin-bottom:16px;
+    }
+    .hero-titulo em{font-style:italic;color:var(--dorado);display:block;}
+    .hero-sub{
+      font-size:13px;font-weight:200;letter-spacing:0.4em;text-transform:uppercase;
+      color:rgba(255,255,255,0.5);margin-bottom:64px;
+    }
+    .hero-btns{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+    .btn-dorado{
+      font-size:11px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;
+      background:var(--dorado);color:var(--negro);border:none;
+      padding:18px 48px;cursor:pointer;transition:all 0.3s;
+    }
+    .btn-dorado:hover{background:var(--dorado2);transform:translateY(-2px);}
+    .btn-outline-w{
+      font-size:11px;font-weight:300;letter-spacing:0.25em;text-transform:uppercase;
+      background:transparent;color:rgba(255,255,255,0.7);
+      border:0.5px solid rgba(255,255,255,0.3);
+      padding:18px 48px;cursor:pointer;transition:all 0.3s;
+    }
+    .btn-outline-w:hover{border-color:var(--dorado);color:var(--dorado);}
+    .hero-scroll{
+      position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:10px;
+      color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
+    }
+    .scroll-dot{width:1px;height:50px;background:linear-gradient(to bottom,rgba(201,169,110,0.8),transparent);animation:scrollDot 2s ease-in-out infinite;}
+    @keyframes scrollDot{0%,100%{opacity:0.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(0.5)}}
 
-    /* SECCIÓN SERVICIOS */
-    .section { padding: 100px 24px; }
-    .section-header { text-align: center; margin-bottom: 64px; }
-    .section-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado); margin-bottom: 16px; }
-    .section-titulo { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 56px); font-weight: 300; line-height: 1.1; }
-    .section-titulo em { font-style: italic; }
-    .section-linea { width: 40px; height: 1px; background: var(--dorado); margin: 20px auto 0; }
-
-    /* CATEGORÍAS */
-    .cat-tabs { display: flex; justify-content: center; gap: 0; margin-bottom: 48px; border-bottom: 1px solid #e8e0d8; }
-    .cat-tab { font-size: 12px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; padding: 14px 28px; cursor: pointer; color: var(--gris); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
-    .cat-tab.active { color: var(--negro); border-bottom-color: var(--rosa); }
-    .cat-tab:hover { color: var(--negro); }
-    .cat-panel { display: none; }
-    .cat-panel.active { display: block; }
-
-    .servicios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: #e8e0d8; max-width: 1000px; margin: 0 auto; }
-    .srv-item { background: var(--crema); padding: 32px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .srv-item:hover { background: var(--rosa-suave); }
-    .srv-item.selected { background: var(--rosa-suave); }
-    .srv-nombre { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; margin-bottom: 4px; }
-    .srv-dur { font-size: 12px; color: var(--gris); letter-spacing: 0.05em; }
-    .srv-precio { font-size: 18px; font-weight: 300; color: var(--rosa); white-space: nowrap; }
-    .srv-check { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--rosa); display: flex; align-items: center; justify-content: center; color: var(--rosa); font-size: 13px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
-    .srv-item.selected .srv-check { opacity: 1; background: var(--rosa); color: white; }
+    /* STRIP DE STATS */
+    .stats-strip{
+      background:var(--negro2);border-top:0.5px solid rgba(201,169,110,0.2);border-bottom:0.5px solid rgba(201,169,110,0.2);
+      padding:32px 60px;
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:0;
+    }
+    .stat-item{text-align:center;padding:0 20px;position:relative;}
+    .stat-item+.stat-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:40px;width:0.5px;background:rgba(201,169,110,0.2);}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--dorado);line-height:1;}
+    .stat-label{font-size:10px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:var(--gris);margin-top:6px;}
 
     /* FOTO STRIP */
-    .foto-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 400px; overflow: hidden; }
-    .foto-strip-item { overflow: hidden; position: relative; }
-    .foto-strip-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-    .foto-strip-item:hover img { transform: scale(1.05); }
-    .foto-strip-item .foto-label { position: absolute; bottom: 24px; left: 24px; color: white; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; font-style: italic; text-shadow: 0 1px 8px rgba(0,0,0,0.4); }
+    .foto-strip{display:grid;grid-template-columns:1fr 1fr 1fr;height:480px;}
+    .foto-item{position:relative;overflow:hidden;cursor:pointer;}
+    .foto-item img{width:100%;height:100%;object-fit:cover;filter:brightness(0.65);transition:all 0.7s ease;}
+    .foto-item:hover img{filter:brightness(0.45);transform:scale(1.06);}
+    .foto-overlay{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;justify-content:flex-end;
+      padding:32px;
+    }
+    .foto-cat{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;}
+    .foto-label{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:white;line-height:1;}
+    .foto-linea{width:0;height:0.5px;background:var(--dorado);margin-top:12px;transition:width 0.4s ease;}
+    .foto-item:hover .foto-linea{width:40px;}
 
-    /* SECCIÓN CANCELAR */
-    .cancel-section { background: white; padding: 80px 24px; }
-    .cancel-inner { max-width: 520px; margin: 0 auto; text-align: center; }
-    .cancel-inner h2 { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; margin-bottom: 12px; }
-    .cancel-inner p { font-size: 14px; color: var(--gris); margin-bottom: 32px; line-height: 1.7; }
-    .search-box { display: flex; gap: 0; border: 1px solid #e8e0d8; }
-    .search-box input { flex: 1; border: none; padding: 14px 20px; font-size: 14px; font-family: 'Jost', sans-serif; background: none; outline: none; color: var(--negro); }
-    .search-box button { background: var(--negro); color: white; border: none; padding: 14px 28px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: 'Jost', sans-serif; transition: background 0.2s; white-space: nowrap; }
-    .search-box button:hover { background: var(--rosa); }
+    /* SERVICIOS */
+    .servicios-section{padding:120px 60px;background:var(--negro);}
+    .sec-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:80px;}
+    .sec-eyebrow{font-size:10px;letter-spacing:0.4em;text-transform:uppercase;color:var(--dorado);margin-bottom:20px;}
+    .sec-titulo{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5vw,64px);font-weight:300;line-height:1.05;}
+    .sec-titulo em{font-style:italic;color:var(--dorado);}
+    .sec-desc{font-size:14px;font-weight:300;color:var(--gris);line-height:1.9;align-self:end;}
 
-    /* RESULTADO CITA */
-    .cita-result-card { background: var(--crema); border: 1px solid #e8e0d8; padding: 24px; margin-top: 20px; text-align: left; }
-    .cita-result-nombre { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin-bottom: 12px; }
-    .cita-result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #e8e0d8; font-size: 14px; }
-    .cita-result-row:last-of-type { border-bottom: none; }
-    .cita-result-row span:first-child { color: var(--gris); }
-    .btn-cancelar { width: 100%; background: #1a1a1a; color: white; border: none; padding: 14px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: 'Jost', sans-serif; margin-top: 16px; transition: background 0.2s; }
-    .btn-cancelar:hover { background: #A32D2D; }
+    /* TABS CATEGORÍAS */
+    .cat-tabs{display:flex;gap:0;border-bottom:0.5px solid rgba(255,255,255,0.1);margin-bottom:48px;}
+    .cat-tab{
+      font-size:11px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;
+      padding:16px 32px;cursor:pointer;color:var(--gris);
+      border-bottom:1px solid transparent;margin-bottom:-0.5px;
+      background:none;border-top:none;border-left:none;border-right:none;
+      transition:all 0.2s;
+    }
+    .cat-tab.active{color:var(--dorado);border-bottom-color:var(--dorado);}
+    .cat-tab:hover{color:var(--blanco);}
+    .cat-panel{display:none;}
+    .cat-panel.active{display:block;}
+
+    /* SERVICIOS LISTA */
+    .srv-lista{border-top:0.5px solid rgba(255,255,255,0.08);}
+    .srv-item{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:28px 0;border-bottom:0.5px solid rgba(255,255,255,0.08);
+      cursor:pointer;transition:all 0.2s;gap:20px;
+    }
+    .srv-item:hover{padding-left:16px;}
+    .srv-item.selected{padding-left:16px;border-bottom-color:rgba(201,169,110,0.3);}
+    .srv-left{display:flex;align-items:center;gap:20px;flex:1;}
+    .srv-dot{width:6px;height:6px;border-radius:50%;background:var(--dorado);opacity:0;transition:opacity 0.2s;flex-shrink:0;}
+    .srv-item.selected .srv-dot,.srv-item:hover .srv-dot{opacity:1;}
+    .srv-nombre{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;}
+    .srv-dur{font-size:11px;letter-spacing:0.1em;color:var(--gris);margin-top:3px;}
+    .srv-right{display:flex;align-items:center;gap:24px;}
+    .srv-precio{font-size:18px;font-weight:300;color:var(--dorado);}
+    .srv-arrow{font-size:18px;color:var(--dorado);opacity:0;transition:opacity 0.2s;}
+    .srv-item.selected .srv-arrow,.srv-item:hover .srv-arrow{opacity:1;}
+
+    /* CANCELAR */
+    .cancel-section{padding:100px 60px;background:var(--negro2);border-top:0.5px solid rgba(201,169,110,0.15);}
+    .cancel-inner{max-width:600px;}
+    .cancel-inner h2{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;margin-bottom:16px;line-height:1.1;}
+    .cancel-inner h2 em{font-style:italic;color:var(--dorado);}
+    .cancel-inner p{font-size:14px;font-weight:300;color:var(--gris);line-height:1.8;margin-bottom:40px;}
+    .search-row{display:flex;gap:0;border:0.5px solid rgba(255,255,255,0.15);}
+    .search-row input{
+      flex:1;background:transparent;border:none;
+      padding:16px 24px;font-size:14px;font-family:'Jost',sans-serif;
+      color:var(--blanco);outline:none;
+    }
+    .search-row input::placeholder{color:rgba(255,255,255,0.25);}
+    .search-row button{
+      background:var(--dorado);color:var(--negro);border:none;
+      padding:16px 32px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+      cursor:pointer;font-family:'Jost',sans-serif;transition:background 0.2s;white-space:nowrap;
+    }
+    .search-row button:hover{background:var(--dorado2);}
+    .cita-card{background:rgba(255,255,255,0.04);border:0.5px solid rgba(201,169,110,0.2);padding:32px;margin-top:24px;}
+    .cita-card-nombre{font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:20px;}
+    .cita-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,0.06);font-size:13px;}
+    .cita-row:last-of-type{border-bottom:none;}
+    .cita-row span:first-child{color:var(--gris);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;}
+    .btn-cancelar-cita{
+      width:100%;background:transparent;color:#e05555;
+      border:0.5px solid rgba(224,85,85,0.4);
+      padding:14px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+      cursor:pointer;font-family:'Jost',sans-serif;margin-top:20px;transition:all 0.2s;
+    }
+    .btn-cancelar-cita:hover{background:rgba(224,85,85,0.1);}
 
     /* FOOTER */
-    .footer { background: var(--negro); color: white; padding: 60px 48px 40px; }
-    .footer-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
-    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; letter-spacing: 0.1em; margin-bottom: 12px; }
-    .footer-sub { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
-    .footer-title { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dorado); margin-bottom: 20px; }
-    .footer-link { display: block; font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 10px; cursor: pointer; transition: color 0.2s; }
-    .footer-link:hover { color: white; }
-    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 24px; font-size: 12px; color: rgba(255,255,255,0.3); text-align: center; }
+    .footer{background:#080808;padding:80px 60px 40px;border-top:0.5px solid rgba(201,169,110,0.15);}
+    .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:60px;}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;letter-spacing:0.15em;color:var(--dorado);margin-bottom:16px;}
+    .footer-tagline{font-size:13px;font-weight:200;color:rgba(255,255,255,0.35);line-height:1.8;}
+    .footer-col-title{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--dorado);margin-bottom:24px;}
+    .footer-link{display:block;font-size:13px;font-weight:300;color:rgba(255,255,255,0.4);margin-bottom:12px;cursor:pointer;transition:color 0.2s;}
+    .footer-link:hover{color:var(--blanco);}
+    .footer-bottom{border-top:0.5px solid rgba(255,255,255,0.06);padding-top:32px;display:flex;justify-content:space-between;align-items:center;}
+    .footer-copy{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.05em;}
+    .footer-made{font-size:11px;color:rgba(255,255,255,0.15);}
 
-    /* STICKY RESERVAR */
-    .sticky-reservar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e8e0d8; padding: 16px 24px; display: none; z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
-    .sticky-reservar.visible { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .sticky-info { font-size: 14px; }
-    .sticky-info strong { font-family: 'Cormorant Garamond', serif; font-size: 18px; display: block; }
-    .sticky-btn-reservar { background: var(--rosa); color: white; border: none; padding: 14px 32px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: 'Jost', sans-serif; white-space: nowrap; transition: background 0.2s; }
-    .sticky-btn-reservar:hover { background: #b8416a; }
+    /* STICKY */
+    .sticky-bar{
+      position:fixed;bottom:0;left:0;right:0;
+      background:rgba(13,13,13,0.97);backdrop-filter:blur(12px);
+      border-top:0.5px solid rgba(201,169,110,0.3);
+      padding:16px 60px;
+      display:none;align-items:center;justify-content:space-between;gap:20px;
+      z-index:90;
+    }
+    .sticky-bar.visible{display:flex;}
+    .sticky-info small{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gris);display:block;margin-bottom:4px;}
+    .sticky-nombre{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--blanco);}
+    .sticky-cta{
+      background:var(--dorado);color:var(--negro);border:none;
+      padding:16px 40px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+      cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;transition:all 0.2s;
+    }
+    .sticky-cta:hover{background:var(--dorado2);}
 
-    /* TOAST */
-    #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--negro); color: white; padding: 12px 24px; font-size: 13px; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
-    #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.error { background: #A32D2D; }
+    #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--negro2);border:0.5px solid rgba(201,169,110,0.3);color:var(--blanco);padding:14px 28px;font-size:13px;z-index:999;transition:transform 0.3s;white-space:nowrap;}
+    #toast.show{transform:translateX(-50%) translateY(0);}
+    #toast.error{border-color:rgba(224,85,85,0.5);color:#e05555;}
+    .spinner{width:32px;height:32px;border:1.5px solid rgba(201,169,110,0.2);border-top-color:var(--dorado);border-radius:50%;animation:spin 0.8s linear infinite;margin:40px auto;}
+    @keyframes spin{to{transform:rotate(360deg);}}
 
-    .spinner { width: 32px; height: 32px; border: 2px solid #e8e0d8; border-top-color: var(--rosa); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 40px auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 768px) {
-      .nav { padding: 16px 20px; }
-      .nav.scrolled { padding: 12px 20px; }
-      .foto-strip { grid-template-columns: 1fr 1fr; height: 280px; }
-      .foto-strip-item:last-child { display: none; }
-      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
-      .footer { padding: 48px 24px 32px; }
-      .cat-tab { padding: 12px 16px; font-size: 11px; }
-      .sticky-reservar.visible { flex-direction: column; }
+    @media(max-width:900px){
+      .nav{padding:20px 24px;}.nav.scrolled{padding:14px 24px;}
+      .nav-links .nav-link{display:none;}
+      .stats-strip{grid-template-columns:1fr;gap:24px;padding:40px 24px;}
+      .stat-item+.stat-item::before{display:none;}
+      .foto-strip{grid-template-columns:1fr 1fr;height:300px;}
+      .foto-item:last-child{display:none;}
+      .servicios-section{padding:80px 24px;}
+      .sec-header{grid-template-columns:1fr;gap:24px;}
+      .cat-tab{padding:12px 16px;}
+      .cancel-section{padding:80px 24px;}
+      .footer{padding:60px 24px 32px;}
+      .footer-top{grid-template-columns:1fr;gap:40px;}
+      .sticky-bar{padding:16px 24px;}
+      .hero-titulo{font-size:clamp(52px,14vw,80px);}
     }
   </style>
 </head>
@@ -161,96 +251,124 @@
 <!-- NAV -->
 <nav class="nav" id="nav">
   <div class="nav-logo" id="nav-logo">Salón</div>
-  <button class="nav-cta" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Reservar cita</button>
+  <div class="nav-links">
+    <span class="nav-link" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Servicios</span>
+    <span class="nav-link" onclick="document.getElementById('cancelar').scrollIntoView({behavior:'smooth'})">Mis citas</span>
+    <button class="nav-cta" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Reservar</button>
+  </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg" id="hero-bg"></div>
-  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <p class="hero-eyebrow" id="hero-eyebrow">Belleza & Estilo</p>
-    <h1 class="hero-titulo" id="hero-titulo">Tu mejor <em>versión</em></h1>
-    <p class="hero-sub" id="hero-sub">Uñas · Pestañas · Cejas</p>
-    <button class="hero-btn" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Ver servicios</button>
+    <div class="hero-eyebrow" id="hero-eyebrow">Belleza de Autor</div>
+    <h1 class="hero-titulo">
+      <span id="hero-line1">Realzamos</span>
+      <em id="hero-line2">tu belleza</em>
+    </h1>
+    <p class="hero-sub">Uñas &nbsp;·&nbsp; Pestañas &nbsp;·&nbsp; Cejas</p>
+    <div class="hero-btns">
+      <button class="btn-dorado" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Ver servicios</button>
+      <button class="btn-outline-w" onclick="document.getElementById('cancelar').scrollIntoView({behavior:'smooth'})">Mis citas</button>
+    </div>
   </div>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
-  </div>
+  <div class="hero-scroll"><div class="scroll-dot"></div><span>Scroll</span></div>
 </section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Especialidades</div></div>
+  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Atención personalizada</div></div>
+  <div class="stat-item"><div class="stat-num">24/7</div><div class="stat-label">Citas en línea</div></div>
+</div>
 
 <!-- FOTO STRIP -->
 <div class="foto-strip">
-  <div class="foto-strip-item">
-    <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80" alt="Uñas" loading="lazy">
-    <div class="foto-label">Uñas</div>
+  <div class="foto-item">
+    <img src="https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Uñas">
+    <div class="foto-overlay">
+      <div class="foto-cat">01</div>
+      <div class="foto-label">Uñas</div>
+      <div class="foto-linea"></div>
+    </div>
   </div>
-  <div class="foto-strip-item">
-    <img src="https://images.unsplash.com/photo-1560869713-da86bd87e6f0?w=600&q=80" alt="Pestañas" loading="lazy">
-    <div class="foto-label">Pestañas</div>
+  <div class="foto-item">
+    <img src="https://images.pexels.com/photos/3764013/pexels-photo-3764013.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Pestañas">
+    <div class="foto-overlay">
+      <div class="foto-cat">02</div>
+      <div class="foto-label">Pestañas</div>
+      <div class="foto-linea"></div>
+    </div>
   </div>
-  <div class="foto-strip-item">
-    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80" alt="Cejas" loading="lazy">
-    <div class="foto-label">Cejas</div>
+  <div class="foto-item">
+    <img src="https://images.pexels.com/photos/3985329/pexels-photo-3985329.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Cejas">
+    <div class="foto-overlay">
+      <div class="foto-cat">03</div>
+      <div class="foto-label">Cejas</div>
+      <div class="foto-linea"></div>
+    </div>
   </div>
 </div>
 
 <!-- SERVICIOS -->
-<section class="section" id="servicios">
-  <div class="section-header">
-    <p class="section-eyebrow">Nuestros servicios</p>
-    <h2 class="section-titulo">Elegí tu <em>servicio</em></h2>
-    <div class="section-linea"></div>
+<section class="servicios-section" id="servicios">
+  <div class="sec-header">
+    <div>
+      <p class="sec-eyebrow">Lo que ofrecemos</p>
+      <h2 class="sec-titulo">Nuestros <em>servicios</em></h2>
+    </div>
+    <p class="sec-desc">Cada servicio es una experiencia diseñada para realzar tu belleza natural con productos de primera calidad y técnicas de vanguardia.</p>
   </div>
   <div class="cat-tabs" id="cat-tabs"></div>
   <div id="cat-panels"><div class="spinner"></div></div>
 </section>
 
-<!-- SECCIÓN CANCELAR -->
-<div class="cancel-section" id="cancelar">
+<!-- CANCELAR -->
+<section class="cancel-section" id="cancelar">
   <div class="cancel-inner">
-    <h2>¿Tenés una cita?</h2>
-    <p>Ingresá tu correo o teléfono para ver y cancelar tu cita agendada.</p>
-    <div class="search-box">
+    <h2>¿Tenés una <em>cita</em>?</h2>
+    <p>Ingresá tu correo o número de teléfono para ver y gestionar tu reserva.</p>
+    <div class="search-row">
       <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8888-8888">
       <button onclick="buscarCita()">Buscar</button>
     </div>
     <div id="resultado-cita"></div>
   </div>
-</div>
+</section>
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-inner">
+  <div class="footer-top">
     <div>
       <div class="footer-logo" id="footer-logo">Salón</div>
-      <p class="footer-sub" id="footer-slogan">Tu belleza, nuestra pasión</p>
+      <p class="footer-tagline" id="footer-tagline">Tu belleza, nuestra pasión</p>
     </div>
     <div>
-      <p class="footer-title">Servicios</p>
+      <p class="footer-col-title">Servicios</p>
       <span class="footer-link">💅 Uñas</span>
       <span class="footer-link">👁️ Pestañas</span>
       <span class="footer-link">✏️ Cejas</span>
     </div>
     <div>
-      <p class="footer-title">Contacto</p>
+      <p class="footer-col-title">Contacto</p>
       <span class="footer-link" id="footer-ubicacion">Ubicación</span>
       <span class="footer-link" id="footer-whatsapp">WhatsApp</span>
     </div>
   </div>
   <div class="footer-bottom">
-    <span id="footer-copy">© 2025 Salón de Belleza — Todos los derechos reservados</span>
+    <span class="footer-copy" id="footer-copy">© 2025 Salón de Belleza</span>
+    <span class="footer-made">Reservas en línea 24/7</span>
   </div>
 </footer>
 
-<!-- STICKY RESERVAR -->
-<div class="sticky-reservar" id="sticky-reservar">
+<!-- STICKY -->
+<div class="sticky-bar" id="sticky-bar">
   <div class="sticky-info">
-    <span style="font-size:12px;color:var(--gris);letter-spacing:0.05em">Servicio seleccionado</span>
-    <strong id="sticky-nombre">—</strong>
+    <small>Servicio seleccionado</small>
+    <div class="sticky-nombre" id="sticky-nombre">—</div>
   </div>
-  <button class="sticky-btn-reservar" onclick="irAReserva()">Continuar →</button>
+  <button class="sticky-cta" onclick="irAReserva()">Continuar con la reserva →</button>
 </div>
 
 <div id="toast"></div>
@@ -258,7 +376,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="config.js"></script>
 <script>emailjs.init(CONFIG.emailjs.publicKey);</script>
-
 <script type="module">
 import { db } from './js/firebase.js';
 import { collection, getDocs, doc, updateDoc, query, where }
@@ -266,166 +383,163 @@ import { collection, getDocs, doc, updateDoc, query, where }
 
 // Aplicar config
 document.getElementById('nav-logo').textContent    = CONFIG.negocio;
-document.getElementById('hero-titulo').innerHTML   = CONFIG.negocio.includes(' ')
-  ? CONFIG.negocio.split(' ').map((w,i) => i === 0 ? w : `<em>${w}</em>`).join(' ')
-  : `<em>${CONFIG.negocio}</em>`;
-document.getElementById('hero-sub').textContent    = 'Uñas · Pestañas · Cejas';
 document.getElementById('footer-logo').textContent = CONFIG.negocio;
-document.getElementById('footer-slogan').textContent = CONFIG.slogan;
-document.getElementById('footer-copy').textContent = `© 2025 ${CONFIG.negocio} — Todos los derechos reservados`;
+document.getElementById('footer-tagline').textContent = CONFIG.slogan;
+document.getElementById('footer-copy').textContent = `© 2025 ${CONFIG.negocio}`;
 document.title = CONFIG.negocio;
-if (CONFIG.contacto.ubicacion) document.getElementById('footer-ubicacion').textContent = CONFIG.contacto.ubicacion;
-if (CONFIG.contacto.whatsapp)  document.getElementById('footer-whatsapp').textContent  = 'WhatsApp: ' + CONFIG.contacto.whatsapp;
+if(CONFIG.contacto.ubicacion) document.getElementById('footer-ubicacion').textContent = CONFIG.contacto.ubicacion;
+if(CONFIG.contacto.whatsapp)  document.getElementById('footer-whatsapp').textContent  = 'WhatsApp: ' + CONFIG.contacto.whatsapp;
 
-// Efecto hero
+// Hero
 const heroBg = document.getElementById('hero-bg');
-heroBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1800&q=80')";
-setTimeout(() => heroBg.classList.add('loaded'), 100);
+heroBg.style.backgroundImage = "url('https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg?auto=compress&cs=tinysrgb&w=1800')";
+setTimeout(()=>heroBg.classList.add('loaded'),100);
 
 // Scroll nav
-window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>80);
 });
 
 // Servicios
-let servicioSeleccionado = null;
+let servicioSel = null;
 const catConfig = [
-  { key: 'unas',     label: '💅 Uñas' },
-  { key: 'pestanas', label: '👁️ Pestañas' },
-  { key: 'cejas',    label: '✏️ Cejas' },
-  { key: 'otro',     label: '✨ Otros' }
+  {key:'unas',    label:'Uñas'},
+  {key:'pestanas',label:'Pestañas'},
+  {key:'cejas',   label:'Cejas'},
+  {key:'otro',    label:'Otros'},
 ];
 
-async function cargarServicios() {
-  try {
-    const snap = await getDocs(collection(db, 'servicios'));
+async function cargarServicios(){
+  try{
+    const snap = await getDocs(collection(db,'servicios'));
     let todos = [];
-    snap.forEach(d => { const s = d.data(); if (s.activo !== false) todos.push({ id: d.id, ...s }); });
-    if (todos.length === 0) todos = CONFIG.servicios.filter(s => s.activo);
+    snap.forEach(d=>{ const s=d.data(); if(s.activo!==false) todos.push({id:d.id,...s}); });
+    if(todos.length===0) todos=CONFIG.servicios.filter(s=>s.activo);
 
-    const tabs  = document.getElementById('cat-tabs');
-    const panels = document.getElementById('cat-panels');
-    tabs.innerHTML = '';
-    panels.innerHTML = '';
+    const tabs=document.getElementById('cat-tabs');
+    const panels=document.getElementById('cat-panels');
+    tabs.innerHTML=''; panels.innerHTML='';
+    let primera=true;
 
-    let primera = true;
-    catConfig.forEach(cat => {
-      const grupo = todos.filter(s => (s.categoria || 'otro') === cat.key);
-      if (grupo.length === 0) return;
+    catConfig.forEach(cat=>{
+      const grupo=todos.filter(s=>(s.categoria||'otro')===cat.key);
+      if(!grupo.length) return;
 
-      const tab = document.createElement('button');
-      tab.className = 'cat-tab' + (primera ? ' active' : '');
-      tab.textContent = cat.label;
-      tab.onclick = () => {
-        document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('active'));
+      const tab=document.createElement('button');
+      tab.className='cat-tab'+(primera?' active':'');
+      tab.textContent=cat.label;
+      tab.onclick=()=>{
+        document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.cat-panel').forEach(p=>p.classList.remove('active'));
         tab.classList.add('active');
-        document.getElementById('panel-' + cat.key).classList.add('active');
+        document.getElementById('panel-'+cat.key).classList.add('active');
       };
       tabs.appendChild(tab);
 
-      const panel = document.createElement('div');
-      panel.className = 'cat-panel' + (primera ? ' active' : '');
-      panel.id = 'panel-' + cat.key;
-      panel.innerHTML = `<div class="servicios-grid">${grupo.map(s => `
+      const panel=document.createElement('div');
+      panel.className='cat-panel'+(primera?' active':'');
+      panel.id='panel-'+cat.key;
+      panel.innerHTML=`<div class="srv-lista">${grupo.map(s=>`
         <div class="srv-item" id="srv-${s.id}" onclick="seleccionar('${s.id}','${s.nombre}',${s.duracion},${s.precio})">
-          <div>
-            <div class="srv-nombre">${s.nombre}</div>
-            <div class="srv-dur">${s.duracion} min</div>
+          <div class="srv-left">
+            <div class="srv-dot"></div>
+            <div>
+              <div class="srv-nombre">${s.nombre}</div>
+              <div class="srv-dur">${s.duracion} min</div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px">
-            ${s.precio > 0 ? `<span class="srv-precio">₡${s.precio.toLocaleString()}</span>` : ''}
-            <div class="srv-check">✓</div>
+          <div class="srv-right">
+            ${s.precio>0?`<span class="srv-precio">₡${s.precio.toLocaleString()}</span>`:''}
+            <span class="srv-arrow">→</span>
           </div>
         </div>`).join('')}</div>`;
       panels.appendChild(panel);
-      primera = false;
+      primera=false;
     });
 
-    if (!tabs.children.length) {
-      panels.innerHTML = '<p style="text-align:center;color:var(--gris);padding:40px">No hay servicios disponibles por el momento.</p>';
+    if(!tabs.children.length){
+      panels.innerHTML='<p style="color:var(--gris);padding:40px 0">No hay servicios disponibles.</p>';
     }
-  } catch(e) {
-    document.getElementById('cat-panels').innerHTML = '<p style="text-align:center;color:var(--gris);padding:40px">Error al cargar servicios.</p>';
+  }catch(e){
+    document.getElementById('cat-panels').innerHTML='<p style="color:var(--gris);padding:40px 0">Error al cargar servicios.</p>';
   }
 }
 
-window.seleccionar = function(id, nombre, duracion, precio) {
-  document.querySelectorAll('.srv-item').forEach(c => c.classList.remove('selected'));
-  document.getElementById('srv-' + id).classList.add('selected');
-  servicioSeleccionado = { id, nombre, duracion, precio };
-  sessionStorage.setItem('servicio', JSON.stringify(servicioSeleccionado));
-  const sticky = document.getElementById('sticky-reservar');
-  sticky.classList.add('visible');
-  document.getElementById('sticky-nombre').textContent = nombre;
+window.seleccionar=function(id,nombre,duracion,precio){
+  document.querySelectorAll('.srv-item').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('srv-'+id).classList.add('selected');
+  servicioSel={id,nombre,duracion,precio};
+  sessionStorage.setItem('servicio',JSON.stringify(servicioSel));
+  document.getElementById('sticky-bar').classList.add('visible');
+  document.getElementById('sticky-nombre').textContent=nombre;
 };
 
-window.irAReserva = function() {
-  if (!servicioSeleccionado) return;
-  window.location.href = 'pages/booking.html';
+window.irAReserva=function(){
+  if(!servicioSel) return;
+  window.location.href='pages/booking.html';
 };
 
-// Cancelar cita
-const mesesNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-function horaLabel(h) { const hs=Math.floor(h),ms=Math.round((h-hs)*60); return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`; }
-function fechaLabel(f) { const [a,m,d]=f.split('-'); return `${parseInt(d)} de ${mesesNom[parseInt(m)-1]} de ${a}`; }
+// Cancelar
+const mesesN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function horaLabel(h){const hs=Math.floor(h),ms=Math.round((h-hs)*60);return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;}
+function fechaLabel(f){const[a,m,d]=f.split('-');return `${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${a}`;}
 
-window.buscarCita = async function() {
-  const buscar = document.getElementById('inp-buscar').value.trim();
-  if (!buscar) { mostrarToast('Ingresá tu correo o teléfono', 'error'); return; }
-  const resultado = document.getElementById('resultado-cita');
-  resultado.innerHTML = '<div class="spinner"></div>';
-  try {
-    const hoy = new Date().toISOString().split('T')[0];
-    const campo = buscar.includes('@') ? 'cliente.correo' : 'cliente.telefono';
-    const snap = await getDocs(query(collection(db,'citas'), where(campo,'==',buscar), where('fecha','>=',hoy)));
-    let citas = [];
-    snap.forEach(d => { const data=d.data(); if(data.estado!=='cancelada'&&data.estado!=='finalizada') citas.push({id:d.id,...data}); });
-    if (citas.length === 0) { resultado.innerHTML = '<p style="text-align:center;color:var(--gris);padding:20px 0">No encontramos citas activas con ese dato.</p>'; return; }
-    citas.sort((a,b) => a.fecha.localeCompare(b.fecha));
-    resultado.innerHTML = citas.map(c => `
-      <div class="cita-result-card">
-        <div class="cita-result-nombre">${c.cliente?.nombre || '—'}</div>
-        <div class="cita-result-row"><span>Servicio</span><span>${c.servicio}</span></div>
-        <div class="cita-result-row"><span>Fecha</span><span>${fechaLabel(c.fecha)}</span></div>
-        <div class="cita-result-row"><span>Hora</span><span>${horaLabel(c.hora)}</span></div>
-        <div class="cita-result-row"><span>Estado</span><span>${c.estado}</span></div>
-        <button class="btn-cancelar" onclick="cancelarCita('${c.id}','${c.servicio}','${c.fecha}',${c.hora},'${c.cliente?.nombre}','${c.cliente?.correo}')">Cancelar esta cita</button>
+window.buscarCita=async function(){
+  const buscar=document.getElementById('inp-buscar').value.trim();
+  if(!buscar){mostrarToast('Ingresá tu correo o teléfono','error');return;}
+  const resultado=document.getElementById('resultado-cita');
+  resultado.innerHTML='<div class="spinner"></div>';
+  try{
+    const hoy=new Date().toISOString().split('T')[0];
+    const campo=buscar.includes('@')?'cliente.correo':'cliente.telefono';
+    const snap=await getDocs(query(collection(db,'citas'),where(campo,'==',buscar),where('fecha','>=',hoy)));
+    let citas=[];
+    snap.forEach(d=>{const data=d.data();if(data.estado!=='cancelada'&&data.estado!=='finalizada')citas.push({id:d.id,...data});});
+    if(!citas.length){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0;font-size:14px">No encontramos citas activas con ese dato.</p>';return;}
+    citas.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    resultado.innerHTML=citas.map(c=>`
+      <div class="cita-card">
+        <div class="cita-card-nombre">${c.cliente?.nombre||'—'}</div>
+        <div class="cita-row"><span>Servicio</span><span>${c.servicio}</span></div>
+        <div class="cita-row"><span>Fecha</span><span>${fechaLabel(c.fecha)}</span></div>
+        <div class="cita-row"><span>Hora</span><span>${horaLabel(c.hora)}</span></div>
+        <div class="cita-row"><span>Estado</span><span>${c.estado}</span></div>
+        <button class="btn-cancelar-cita" onclick="cancelarCita('${c.id}','${c.servicio}','${c.fecha}',${c.hora},'${c.cliente?.nombre}','${c.cliente?.correo}')">Cancelar esta cita</button>
       </div>`).join('');
-  } catch(e) { resultado.innerHTML = '<p style="text-align:center;color:var(--gris);padding:20px">Error al buscar. Intentá de nuevo.</p>'; }
+  }catch(e){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0">Error al buscar. Intentá de nuevo.</p>';}
 };
 
-window.cancelarCita = async function(id, servicio, fecha, hora, clienteNombre, clienteCorreo) {
-  if (!confirm('¿Estás seguro que querés cancelar esta cita?')) return;
-  try {
-    await updateDoc(doc(db,'citas',id), { estado: 'cancelada' });
-    const fechaStr = fechaLabel(fecha), horaStr = horaLabel(hora);
-    await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
-      negocio: CONFIG.negocio, destinatario_nombre: clienteNombre, correo_destinatario: clienteCorreo,
-      cliente_nombre: clienteNombre, servicio, fecha: fechaStr, hora: horaStr,
-      mensaje_extra: 'Si necesitás reagendar, podés hacerlo desde nuestra página.'
+window.cancelarCita=async function(id,servicio,fecha,hora,clienteNombre,clienteCorreo){
+  if(!confirm('¿Estás seguro que querés cancelar esta cita?')) return;
+  try{
+    await updateDoc(doc(db,'citas',id),{estado:'cancelada'});
+    const fechaStr=fechaLabel(fecha),horaStr=horaLabel(hora);
+    await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.templateCancelacion,{
+      negocio:CONFIG.negocio,destinatario_nombre:clienteNombre,correo_destinatario:clienteCorreo,
+      cliente_nombre:clienteNombre,servicio,fecha:fechaStr,hora:horaStr,
+      mensaje_extra:'Si necesitás reagendar, podés hacerlo desde nuestra página.'
     });
-    if (CONFIG.contacto.correoAdmin) {
-      await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
-        negocio: CONFIG.negocio, destinatario_nombre: 'Administrador', correo_destinatario: CONFIG.contacto.correoAdmin,
-        cliente_nombre: clienteNombre, servicio, fecha: fechaStr, hora: horaStr,
-        mensaje_extra: 'El cliente canceló su cita desde la página web.'
+    if(CONFIG.contacto.correoAdmin){
+      await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.templateCancelacion,{
+        negocio:CONFIG.negocio,destinatario_nombre:'Administrador',correo_destinatario:CONFIG.contacto.correoAdmin,
+        cliente_nombre:clienteNombre,servicio,fecha:fechaStr,hora:horaStr,
+        mensaje_extra:'El cliente canceló su cita desde la página web.'
       });
     }
-    document.getElementById('resultado-cita').innerHTML = `
-      <div class="cita-result-card" style="text-align:center;padding:32px">
-        <div style="font-size:40px;margin-bottom:16px">✕</div>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:8px">Cita cancelada</p>
-        <p style="font-size:14px;color:var(--gris)">Tu cita de ${servicio} del ${fechaStr} fue cancelada. Te enviamos un correo de confirmación.</p>
+    document.getElementById('resultado-cita').innerHTML=`
+      <div class="cita-card" style="text-align:center;padding:40px">
+        <div style="font-size:40px;color:var(--dorado);margin-bottom:16px">✕</div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:8px">Cita cancelada</p>
+        <p style="font-size:13px;color:var(--gris)">Tu cita de ${servicio} del ${fechaStr} fue cancelada.<br>Te enviamos un correo de confirmación.</p>
       </div>`;
     mostrarToast('Cita cancelada correctamente');
-  } catch(e) { mostrarToast('Error al cancelar. Intentá de nuevo.', 'error'); }
+  }catch(e){mostrarToast('Error al cancelar. Intentá de nuevo.','error');}
 };
 
-function mostrarToast(msg, tipo='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + tipo;
-  setTimeout(() => t.className = '', 3000);
+function mostrarToast(msg,tipo=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+tipo;
+  setTimeout(()=>t.className='',3000);
 }
 
 cargarServicios();
