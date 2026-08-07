@@ -26,11 +26,13 @@ const CONFIG = {
     whatsapp: "",
     ubicacion: "",
     googleMaps: "",
-    waze: ""
+    waze: "",
+    correoAdmin: "admin@salon.com"
   },
   emailjs: {
     serviceId: "service_mlmct2l",
     templateId: "template_8ns7id3",
+    templateCancelacion: "template_5nluude",
     publicKey: "wbu7jftXOgmyV__Vc"
   },
   admin: {

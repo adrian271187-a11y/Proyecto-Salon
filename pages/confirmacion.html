@@ -34,11 +34,15 @@
     📬 Recibirás una confirmación por correo cuando el salón apruebe tu cita.
   </div>
 
-  <a href="../index.html" class="btn btn-outline" style="width:100%">Volver al inicio</a>
+  <a href="../index.html" class="btn btn-outline" style="width:100%;margin-bottom:10px">Volver al inicio</a>
+  <button class="btn btn-danger" style="width:100%" onclick="irACancelar()">Cancelar mi cita</button>
 </div>
 
 <script src="../config.js"></script>
 <script>
+window.irACancelar = function() {
+  window.location.href = 'cancelar.html';
+};
 const cita = JSON.parse(sessionStorage.getItem('cita_confirmada') || 'null');
 if (!cita) { window.location.href = '../index.html'; }
 else {
