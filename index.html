@@ -22,204 +22,115 @@
     body{font-family:'Jost',sans-serif;background:var(--negro);color:var(--blanco);overflow-x:hidden;}
 
     /* NAV */
-    .nav{
-      position:fixed;top:0;left:0;right:0;z-index:100;
-      padding:28px 60px;
-      display:flex;align-items:center;justify-content:space-between;
-      transition:all 0.5s;
-    }
-    .nav.scrolled{background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);padding:18px 60px;border-bottom:0.5px solid rgba(201,169,110,0.2);}
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:var(--blanco);}
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:28px 60px;display:flex;align-items:center;justify-content:space-between;transition:all 0.5s;}
+    .nav.scrolled{background:rgba(13,13,13,0.96);backdrop-filter:blur(12px);padding:16px 60px;border-bottom:0.5px solid rgba(201,169,110,0.2);}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;}
     .nav-links{display:flex;align-items:center;gap:40px;}
-    .nav-link{font-size:11px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.6);cursor:pointer;transition:color 0.3s;}
+    .nav-link{font-size:11px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.6);cursor:pointer;transition:color 0.3s;background:none;border:none;}
     .nav-link:hover{color:var(--dorado);}
     .nav-cta{font-size:11px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--negro);background:var(--dorado);border:none;padding:12px 28px;cursor:pointer;transition:all 0.3s;}
     .nav-cta:hover{background:var(--dorado2);}
 
     /* HERO */
-    .hero{
-      height:100vh;min-height:700px;
-      position:relative;display:flex;align-items:center;justify-content:center;
-      overflow:hidden;
-    }
-    .hero-bg{
-      position:absolute;inset:0;
-      background:url('https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg?auto=compress&cs=tinysrgb&w=1800') center/cover no-repeat;
-      filter:brightness(0.35);
-      transform:scale(1.08);
-      transition:transform 10s ease;
-    }
+    .hero{height:100vh;min-height:700px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .hero-bg{position:absolute;inset:0;background:url('img/hero.jpg') center/cover no-repeat;filter:brightness(0.32);transform:scale(1.06);transition:transform 8s ease;}
     .hero-bg.loaded{transform:scale(1);}
     .hero-content{position:relative;text-align:center;padding:0 24px;max-width:900px;}
-    .hero-eyebrow{
-      font-size:11px;font-weight:300;letter-spacing:0.5em;text-transform:uppercase;
-      color:var(--dorado);margin-bottom:32px;
-      display:flex;align-items:center;justify-content:center;gap:20px;
-    }
+    .hero-eyebrow{font-size:11px;font-weight:300;letter-spacing:0.5em;text-transform:uppercase;color:var(--dorado);margin-bottom:32px;display:flex;align-items:center;justify-content:center;gap:20px;}
     .hero-eyebrow::before,.hero-eyebrow::after{content:'';width:40px;height:0.5px;background:var(--dorado);}
-    .hero-titulo{
-      font-family:'Cormorant Garamond',serif;
-      font-size:clamp(64px,10vw,120px);
-      font-weight:300;line-height:0.9;
-      letter-spacing:-0.01em;
-      margin-bottom:16px;
-    }
+    .hero-titulo{font-family:'Cormorant Garamond',serif;font-size:clamp(60px,10vw,116px);font-weight:300;line-height:0.9;margin-bottom:20px;}
     .hero-titulo em{font-style:italic;color:var(--dorado);display:block;}
-    .hero-sub{
-      font-size:13px;font-weight:200;letter-spacing:0.4em;text-transform:uppercase;
-      color:rgba(255,255,255,0.5);margin-bottom:64px;
-    }
-    .hero-btns{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
-    .btn-dorado{
-      font-size:11px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;
-      background:var(--dorado);color:var(--negro);border:none;
-      padding:18px 48px;cursor:pointer;transition:all 0.3s;
-    }
+    .hero-sub{font-size:12px;font-weight:200;letter-spacing:0.5em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:60px;}
+    .hero-btns{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;}
+    .btn-dorado{font-size:11px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;background:var(--dorado);color:var(--negro);border:none;padding:18px 48px;cursor:pointer;transition:all 0.3s;}
     .btn-dorado:hover{background:var(--dorado2);transform:translateY(-2px);}
-    .btn-outline-w{
-      font-size:11px;font-weight:300;letter-spacing:0.25em;text-transform:uppercase;
-      background:transparent;color:rgba(255,255,255,0.7);
-      border:0.5px solid rgba(255,255,255,0.3);
-      padding:18px 48px;cursor:pointer;transition:all 0.3s;
-    }
+    .btn-outline-w{font-size:11px;font-weight:300;letter-spacing:0.25em;text-transform:uppercase;background:transparent;color:rgba(255,255,255,0.65);border:0.5px solid rgba(255,255,255,0.25);padding:18px 48px;cursor:pointer;transition:all 0.3s;}
     .btn-outline-w:hover{border-color:var(--dorado);color:var(--dorado);}
-    .hero-scroll{
-      position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
-      display:flex;flex-direction:column;align-items:center;gap:10px;
-      color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
-    }
-    .scroll-dot{width:1px;height:50px;background:linear-gradient(to bottom,rgba(201,169,110,0.8),transparent);animation:scrollDot 2s ease-in-out infinite;}
-    @keyframes scrollDot{0%,100%{opacity:0.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(0.5)}}
+    .hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;}
+    .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--dorado),transparent);animation:sc 2s ease-in-out infinite;}
+    @keyframes sc{0%,100%{opacity:0.3}50%{opacity:1}}
 
-    /* STRIP DE STATS */
-    .stats-strip{
-      background:var(--negro2);border-top:0.5px solid rgba(201,169,110,0.2);border-bottom:0.5px solid rgba(201,169,110,0.2);
-      padding:32px 60px;
-      display:grid;grid-template-columns:repeat(3,1fr);
-      gap:0;
-    }
-    .stat-item{text-align:center;padding:0 20px;position:relative;}
-    .stat-item+.stat-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:40px;width:0.5px;background:rgba(201,169,110,0.2);}
-    .stat-num{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--dorado);line-height:1;}
-    .stat-label{font-size:10px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:var(--gris);margin-top:6px;}
-
-    /* FOTO STRIP */
-    .foto-strip{display:grid;grid-template-columns:1fr 1fr 1fr;height:480px;}
+    /* STRIP DE FOTOS 3 */
+    .foto-strip{display:grid;grid-template-columns:1fr 1fr 1fr;height:500px;}
     .foto-item{position:relative;overflow:hidden;cursor:pointer;}
-    .foto-item img{width:100%;height:100%;object-fit:cover;filter:brightness(0.65);transition:all 0.7s ease;}
-    .foto-item:hover img{filter:brightness(0.45);transform:scale(1.06);}
-    .foto-overlay{
-      position:absolute;inset:0;
-      display:flex;flex-direction:column;justify-content:flex-end;
-      padding:32px;
-    }
-    .foto-cat{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;}
-    .foto-label{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:white;line-height:1;}
-    .foto-linea{width:0;height:0.5px;background:var(--dorado);margin-top:12px;transition:width 0.4s ease;}
-    .foto-item:hover .foto-linea{width:40px;}
+    .foto-item img{width:100%;height:100%;object-fit:cover;filter:brightness(0.6);transition:all 0.7s ease;}
+    .foto-item:hover img{filter:brightness(0.4);transform:scale(1.07);}
+    .foto-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:36px;}
+    .foto-num{font-size:10px;letter-spacing:0.4em;text-transform:uppercase;color:var(--dorado);margin-bottom:10px;}
+    .foto-label{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:white;line-height:1;}
+    .foto-linea{width:0;height:1px;background:var(--dorado);margin-top:14px;transition:width 0.5s ease;}
+    .foto-item:hover .foto-linea{width:48px;}
+
+    /* GALERÍA MOSAICO */
+    .galeria-section{padding:0;background:var(--negro);}
+    .galeria-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:300px 300px;gap:3px;}
+    .gal-item{overflow:hidden;position:relative;}
+    .gal-item img{width:100%;height:100%;object-fit:cover;filter:brightness(0.75);transition:all 0.5s;}
+    .gal-item:hover img{filter:brightness(0.55);transform:scale(1.04);}
+    .gal-item:first-child{grid-row:span 2;}
 
     /* SERVICIOS */
-    .servicios-section{padding:120px 60px;background:var(--negro);}
-    .sec-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:80px;}
+    .servicios-section{padding:120px 80px;background:var(--negro);}
+    .sec-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px;}
     .sec-eyebrow{font-size:10px;letter-spacing:0.4em;text-transform:uppercase;color:var(--dorado);margin-bottom:20px;}
-    .sec-titulo{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5vw,64px);font-weight:300;line-height:1.05;}
+    .sec-titulo{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5vw,60px);font-weight:300;line-height:1.05;}
     .sec-titulo em{font-style:italic;color:var(--dorado);}
-    .sec-desc{font-size:14px;font-weight:300;color:var(--gris);line-height:1.9;align-self:end;}
-
-    /* TABS CATEGORÍAS */
-    .cat-tabs{display:flex;gap:0;border-bottom:0.5px solid rgba(255,255,255,0.1);margin-bottom:48px;}
-    .cat-tab{
-      font-size:11px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;
-      padding:16px 32px;cursor:pointer;color:var(--gris);
-      border-bottom:1px solid transparent;margin-bottom:-0.5px;
-      background:none;border-top:none;border-left:none;border-right:none;
-      transition:all 0.2s;
-    }
+    .sec-desc{font-size:14px;font-weight:200;color:var(--gris);line-height:2;align-self:end;}
+    .cat-tabs{display:flex;gap:0;border-bottom:0.5px solid rgba(255,255,255,0.08);margin-bottom:48px;}
+    .cat-tab{font-size:11px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;padding:16px 32px;cursor:pointer;color:var(--gris);border-bottom:1px solid transparent;margin-bottom:-0.5px;background:none;border-top:none;border-left:none;border-right:none;transition:all 0.2s;}
     .cat-tab.active{color:var(--dorado);border-bottom-color:var(--dorado);}
     .cat-tab:hover{color:var(--blanco);}
     .cat-panel{display:none;}
     .cat-panel.active{display:block;}
-
-    /* SERVICIOS LISTA */
-    .srv-lista{border-top:0.5px solid rgba(255,255,255,0.08);}
-    .srv-item{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:28px 0;border-bottom:0.5px solid rgba(255,255,255,0.08);
-      cursor:pointer;transition:all 0.2s;gap:20px;
-    }
-    .srv-item:hover{padding-left:16px;}
-    .srv-item.selected{padding-left:16px;border-bottom-color:rgba(201,169,110,0.3);}
+    .srv-lista{border-top:0.5px solid rgba(255,255,255,0.07);}
+    .srv-item{display:flex;align-items:center;justify-content:space-between;padding:26px 0;border-bottom:0.5px solid rgba(255,255,255,0.07);cursor:pointer;transition:all 0.25s;gap:20px;}
+    .srv-item:hover,.srv-item.selected{padding-left:20px;background:rgba(201,169,110,0.03);}
     .srv-left{display:flex;align-items:center;gap:20px;flex:1;}
-    .srv-dot{width:6px;height:6px;border-radius:50%;background:var(--dorado);opacity:0;transition:opacity 0.2s;flex-shrink:0;}
+    .srv-dot{width:5px;height:5px;border-radius:50%;background:var(--dorado);opacity:0;transition:opacity 0.2s;flex-shrink:0;}
     .srv-item.selected .srv-dot,.srv-item:hover .srv-dot{opacity:1;}
     .srv-nombre{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;}
-    .srv-dur{font-size:11px;letter-spacing:0.1em;color:var(--gris);margin-top:3px;}
+    .srv-dur{font-size:11px;letter-spacing:0.08em;color:var(--gris);margin-top:3px;}
     .srv-right{display:flex;align-items:center;gap:24px;}
     .srv-precio{font-size:18px;font-weight:300;color:var(--dorado);}
-    .srv-arrow{font-size:18px;color:var(--dorado);opacity:0;transition:opacity 0.2s;}
+    .srv-arrow{font-size:16px;color:var(--dorado);opacity:0;transition:opacity 0.2s;}
     .srv-item.selected .srv-arrow,.srv-item:hover .srv-arrow{opacity:1;}
 
     /* CANCELAR */
-    .cancel-section{padding:100px 60px;background:var(--negro2);border-top:0.5px solid rgba(201,169,110,0.15);}
-    .cancel-inner{max-width:600px;}
-    .cancel-inner h2{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;margin-bottom:16px;line-height:1.1;}
+    .cancel-section{padding:100px 80px;background:var(--negro2);border-top:0.5px solid rgba(201,169,110,0.12);}
+    .cancel-inner{max-width:560px;}
+    .cancel-inner h2{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;margin-bottom:14px;line-height:1.1;}
     .cancel-inner h2 em{font-style:italic;color:var(--dorado);}
-    .cancel-inner p{font-size:14px;font-weight:300;color:var(--gris);line-height:1.8;margin-bottom:40px;}
-    .search-row{display:flex;gap:0;border:0.5px solid rgba(255,255,255,0.15);}
-    .search-row input{
-      flex:1;background:transparent;border:none;
-      padding:16px 24px;font-size:14px;font-family:'Jost',sans-serif;
-      color:var(--blanco);outline:none;
-    }
-    .search-row input::placeholder{color:rgba(255,255,255,0.25);}
-    .search-row button{
-      background:var(--dorado);color:var(--negro);border:none;
-      padding:16px 32px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
-      cursor:pointer;font-family:'Jost',sans-serif;transition:background 0.2s;white-space:nowrap;
-    }
+    .cancel-inner p{font-size:14px;font-weight:200;color:var(--gris);line-height:1.9;margin-bottom:36px;}
+    .search-row{display:flex;border:0.5px solid rgba(255,255,255,0.12);}
+    .search-row input{flex:1;background:transparent;border:none;padding:16px 24px;font-size:14px;font-family:'Jost',sans-serif;color:var(--blanco);outline:none;}
+    .search-row input::placeholder{color:rgba(255,255,255,0.2);}
+    .search-row button{background:var(--dorado);color:var(--negro);border:none;padding:16px 32px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:background 0.2s;white-space:nowrap;}
     .search-row button:hover{background:var(--dorado2);}
-    .cita-card{background:rgba(255,255,255,0.04);border:0.5px solid rgba(201,169,110,0.2);padding:32px;margin-top:24px;}
+    .cita-card{background:rgba(255,255,255,0.03);border:0.5px solid rgba(201,169,110,0.18);padding:32px;margin-top:24px;}
     .cita-card-nombre{font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:20px;}
-    .cita-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,0.06);font-size:13px;}
+    .cita-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);font-size:13px;}
     .cita-row:last-of-type{border-bottom:none;}
-    .cita-row span:first-child{color:var(--gris);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;}
-    .btn-cancelar-cita{
-      width:100%;background:transparent;color:#e05555;
-      border:0.5px solid rgba(224,85,85,0.4);
-      padding:14px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
-      cursor:pointer;font-family:'Jost',sans-serif;margin-top:20px;transition:all 0.2s;
-    }
-    .btn-cancelar-cita:hover{background:rgba(224,85,85,0.1);}
+    .cita-row span:first-child{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gris);}
+    .btn-cancelar-cita{width:100%;background:transparent;color:#e05555;border:0.5px solid rgba(224,85,85,0.35);padding:14px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;margin-top:20px;transition:all 0.2s;}
+    .btn-cancelar-cita:hover{background:rgba(224,85,85,0.08);}
 
     /* FOOTER */
-    .footer{background:#080808;padding:80px 60px 40px;border-top:0.5px solid rgba(201,169,110,0.15);}
+    .footer{background:#080808;padding:80px 80px 40px;border-top:0.5px solid rgba(201,169,110,0.12);}
     .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:60px;}
     .footer-logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;letter-spacing:0.15em;color:var(--dorado);margin-bottom:16px;}
-    .footer-tagline{font-size:13px;font-weight:200;color:rgba(255,255,255,0.35);line-height:1.8;}
+    .footer-tagline{font-size:13px;font-weight:200;color:rgba(255,255,255,0.3);line-height:1.9;}
     .footer-col-title{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--dorado);margin-bottom:24px;}
-    .footer-link{display:block;font-size:13px;font-weight:300;color:rgba(255,255,255,0.4);margin-bottom:12px;cursor:pointer;transition:color 0.2s;}
+    .footer-link{display:block;font-size:13px;font-weight:200;color:rgba(255,255,255,0.35);margin-bottom:12px;cursor:pointer;transition:color 0.2s;}
     .footer-link:hover{color:var(--blanco);}
-    .footer-bottom{border-top:0.5px solid rgba(255,255,255,0.06);padding-top:32px;display:flex;justify-content:space-between;align-items:center;}
-    .footer-copy{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.05em;}
-    .footer-made{font-size:11px;color:rgba(255,255,255,0.15);}
+    .footer-bottom{border-top:0.5px solid rgba(255,255,255,0.05);padding-top:28px;display:flex;justify-content:space-between;align-items:center;}
+    .footer-copy{font-size:11px;color:rgba(255,255,255,0.18);letter-spacing:0.05em;}
 
     /* STICKY */
-    .sticky-bar{
-      position:fixed;bottom:0;left:0;right:0;
-      background:rgba(13,13,13,0.97);backdrop-filter:blur(12px);
-      border-top:0.5px solid rgba(201,169,110,0.3);
-      padding:16px 60px;
-      display:none;align-items:center;justify-content:space-between;gap:20px;
-      z-index:90;
-    }
+    .sticky-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,13,0.97);backdrop-filter:blur(12px);border-top:0.5px solid rgba(201,169,110,0.25);padding:16px 60px;display:none;align-items:center;justify-content:space-between;gap:20px;z-index:90;}
     .sticky-bar.visible{display:flex;}
     .sticky-info small{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gris);display:block;margin-bottom:4px;}
-    .sticky-nombre{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--blanco);}
-    .sticky-cta{
-      background:var(--dorado);color:var(--negro);border:none;
-      padding:16px 40px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
-      cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;transition:all 0.2s;
-    }
+    .sticky-nombre{font-family:'Cormorant Garamond',serif;font-size:20px;}
+    .sticky-cta{background:var(--dorado);color:var(--negro);border:none;padding:16px 40px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;transition:all 0.2s;}
     .sticky-cta:hover{background:var(--dorado2);}
 
     #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--negro2);border:0.5px solid rgba(201,169,110,0.3);color:var(--blanco);padding:14px 28px;font-size:13px;z-index:999;transition:transform 0.3s;white-space:nowrap;}
@@ -229,85 +140,83 @@
     @keyframes spin{to{transform:rotate(360deg);}}
 
     @media(max-width:900px){
-      .nav{padding:20px 24px;}.nav.scrolled{padding:14px 24px;}
+      .nav{padding:18px 20px;}.nav.scrolled{padding:12px 20px;}
       .nav-links .nav-link{display:none;}
-      .stats-strip{grid-template-columns:1fr;gap:24px;padding:40px 24px;}
-      .stat-item+.stat-item::before{display:none;}
-      .foto-strip{grid-template-columns:1fr 1fr;height:300px;}
-      .foto-item:last-child{display:none;}
-      .servicios-section{padding:80px 24px;}
-      .sec-header{grid-template-columns:1fr;gap:24px;}
-      .cat-tab{padding:12px 16px;}
-      .cancel-section{padding:80px 24px;}
-      .footer{padding:60px 24px 32px;}
-      .footer-top{grid-template-columns:1fr;gap:40px;}
-      .sticky-bar{padding:16px 24px;}
-      .hero-titulo{font-size:clamp(52px,14vw,80px);}
+      .foto-strip{grid-template-columns:1fr 1fr;height:320px;}.foto-item:last-child{display:none;}
+      .galeria-grid{grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;}.gal-item:first-child{grid-row:auto;}
+      .servicios-section{padding:80px 24px;}.sec-header{grid-template-columns:1fr;gap:24px;}
+      .cancel-section,.footer{padding:80px 24px;}
+      .footer-top{grid-template-columns:1fr;gap:36px;}
+      .sticky-bar{padding:16px 20px;}
+      .cat-tab{padding:12px 14px;font-size:10px;}
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav" id="nav">
   <div class="nav-logo" id="nav-logo">Salón</div>
   <div class="nav-links">
-    <span class="nav-link" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Servicios</span>
-    <span class="nav-link" onclick="document.getElementById('cancelar').scrollIntoView({behavior:'smooth'})">Mis citas</span>
+    <button class="nav-link" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Servicios</button>
+    <button class="nav-link" onclick="document.getElementById('cancelar').scrollIntoView({behavior:'smooth'})">Mis citas</button>
     <button class="nav-cta" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Reservar</button>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO con foto real del negocio -->
 <section class="hero">
   <div class="hero-bg" id="hero-bg"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow" id="hero-eyebrow">Belleza de Autor</div>
+    <div class="hero-eyebrow">Belleza &amp; Estilo</div>
     <h1 class="hero-titulo">
       <span id="hero-line1">Realzamos</span>
       <em id="hero-line2">tu belleza</em>
     </h1>
     <p class="hero-sub">Uñas &nbsp;·&nbsp; Pestañas &nbsp;·&nbsp; Cejas</p>
     <div class="hero-btns">
-      <button class="btn-dorado" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Ver servicios</button>
+      <button class="btn-dorado" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">Reservar cita</button>
       <button class="btn-outline-w" onclick="document.getElementById('cancelar').scrollIntoView({behavior:'smooth'})">Mis citas</button>
     </div>
   </div>
-  <div class="hero-scroll"><div class="scroll-dot"></div><span>Scroll</span></div>
+  <div class="hero-scroll"><div class="scroll-line"></div><span>Scroll</span></div>
 </section>
 
-<!-- STATS -->
-<div class="stats-strip">
-  <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Especialidades</div></div>
-  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Atención personalizada</div></div>
-  <div class="stat-item"><div class="stat-num">24/7</div><div class="stat-label">Citas en línea</div></div>
-</div>
-
-<!-- FOTO STRIP -->
+<!-- STRIP 3 CATEGORÍAS con fotos reales -->
 <div class="foto-strip">
   <div class="foto-item">
-    <img src="https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Uñas">
+    <img src="img/unas1.jpg" alt="Uñas">
     <div class="foto-overlay">
-      <div class="foto-cat">01</div>
+      <div class="foto-num">01</div>
       <div class="foto-label">Uñas</div>
       <div class="foto-linea"></div>
     </div>
   </div>
   <div class="foto-item">
-    <img src="https://images.pexels.com/photos/3764013/pexels-photo-3764013.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Pestañas">
+    <img src="img/pestanas1.jpg" alt="Pestañas">
     <div class="foto-overlay">
-      <div class="foto-cat">02</div>
+      <div class="foto-num">02</div>
       <div class="foto-label">Pestañas</div>
       <div class="foto-linea"></div>
     </div>
   </div>
   <div class="foto-item">
-    <img src="https://images.pexels.com/photos/3985329/pexels-photo-3985329.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Cejas">
+    <img src="img/cejas1.jpg" alt="Cejas">
     <div class="foto-overlay">
-      <div class="foto-cat">03</div>
+      <div class="foto-num">03</div>
       <div class="foto-label">Cejas</div>
       <div class="foto-linea"></div>
     </div>
+  </div>
+</div>
+
+<!-- GALERÍA MOSAICO con fotos reales -->
+<div class="galeria-section">
+  <div class="galeria-grid">
+    <div class="gal-item"><img src="img/galeria1.jpg" alt="Galería"></div>
+    <div class="gal-item"><img src="img/unas2.jpg" alt="Galería"></div>
+    <div class="gal-item"><img src="img/pestanas2.jpg" alt="Galería"></div>
+    <div class="gal-item"><img src="img/galeria2.jpg" alt="Galería"></div>
+    <div class="gal-item"><img src="img/cejas2.jpg" alt="Galería"></div>
   </div>
 </div>
 
@@ -318,7 +227,7 @@
       <p class="sec-eyebrow">Lo que ofrecemos</p>
       <h2 class="sec-titulo">Nuestros <em>servicios</em></h2>
     </div>
-    <p class="sec-desc">Cada servicio es una experiencia diseñada para realzar tu belleza natural con productos de primera calidad y técnicas de vanguardia.</p>
+    <p class="sec-desc">Cada servicio es una experiencia diseñada para realzar tu belleza natural con técnicas de vanguardia y atención personalizada.</p>
   </div>
   <div class="cat-tabs" id="cat-tabs"></div>
   <div id="cat-panels"><div class="spinner"></div></div>
@@ -358,7 +267,7 @@
   </div>
   <div class="footer-bottom">
     <span class="footer-copy" id="footer-copy">© 2025 Salón de Belleza</span>
-    <span class="footer-made">Reservas en línea 24/7</span>
+    <span class="footer-copy">Reservas en línea 24/7</span>
   </div>
 </footer>
 
@@ -381,7 +290,6 @@ import { db } from './js/firebase.js';
 import { collection, getDocs, doc, updateDoc, query, where }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Aplicar config
 document.getElementById('nav-logo').textContent    = CONFIG.negocio;
 document.getElementById('footer-logo').textContent = CONFIG.negocio;
 document.getElementById('footer-tagline').textContent = CONFIG.slogan;
@@ -390,23 +298,20 @@ document.title = CONFIG.negocio;
 if(CONFIG.contacto.ubicacion) document.getElementById('footer-ubicacion').textContent = CONFIG.contacto.ubicacion;
 if(CONFIG.contacto.whatsapp)  document.getElementById('footer-whatsapp').textContent  = 'WhatsApp: ' + CONFIG.contacto.whatsapp;
 
-// Hero
 const heroBg = document.getElementById('hero-bg');
-heroBg.style.backgroundImage = "url('https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg?auto=compress&cs=tinysrgb&w=1800')";
+heroBg.style.backgroundImage = "url('img/hero.jpg')";
 setTimeout(()=>heroBg.classList.add('loaded'),100);
 
-// Scroll nav
 window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',window.scrollY>80);
 });
 
-// Servicios
 let servicioSel = null;
 const catConfig = [
-  {key:'unas',    label:'Uñas'},
+  {key:'unas',label:'Uñas'},
   {key:'pestanas',label:'Pestañas'},
-  {key:'cejas',   label:'Cejas'},
-  {key:'otro',    label:'Otros'},
+  {key:'cejas',label:'Cejas'},
+  {key:'otro',label:'Otros'},
 ];
 
 async function cargarServicios(){
@@ -414,17 +319,14 @@ async function cargarServicios(){
     const snap = await getDocs(collection(db,'servicios'));
     let todos = [];
     snap.forEach(d=>{ const s=d.data(); if(s.activo!==false) todos.push({id:d.id,...s}); });
-    if(todos.length===0) todos=CONFIG.servicios.filter(s=>s.activo);
-
+    if(!todos.length) todos=CONFIG.servicios.filter(s=>s.activo);
     const tabs=document.getElementById('cat-tabs');
     const panels=document.getElementById('cat-panels');
     tabs.innerHTML=''; panels.innerHTML='';
     let primera=true;
-
     catConfig.forEach(cat=>{
       const grupo=todos.filter(s=>(s.categoria||'otro')===cat.key);
       if(!grupo.length) return;
-
       const tab=document.createElement('button');
       tab.className='cat-tab'+(primera?' active':'');
       tab.textContent=cat.label;
@@ -435,7 +337,6 @@ async function cargarServicios(){
         document.getElementById('panel-'+cat.key).classList.add('active');
       };
       tabs.appendChild(tab);
-
       const panel=document.createElement('div');
       panel.className='cat-panel'+(primera?' active':'');
       panel.id='panel-'+cat.key;
@@ -443,10 +344,7 @@ async function cargarServicios(){
         <div class="srv-item" id="srv-${s.id}" onclick="seleccionar('${s.id}','${s.nombre}',${s.duracion},${s.precio})">
           <div class="srv-left">
             <div class="srv-dot"></div>
-            <div>
-              <div class="srv-nombre">${s.nombre}</div>
-              <div class="srv-dur">${s.duracion} min</div>
-            </div>
+            <div><div class="srv-nombre">${s.nombre}</div><div class="srv-dur">${s.duracion} min</div></div>
           </div>
           <div class="srv-right">
             ${s.precio>0?`<span class="srv-precio">₡${s.precio.toLocaleString()}</span>`:''}
@@ -456,12 +354,9 @@ async function cargarServicios(){
       panels.appendChild(panel);
       primera=false;
     });
-
-    if(!tabs.children.length){
-      panels.innerHTML='<p style="color:var(--gris);padding:40px 0">No hay servicios disponibles.</p>';
-    }
+    if(!tabs.children.length) panels.innerHTML='<p style="color:var(--gris);padding:40px 0">No hay servicios disponibles.</p>';
   }catch(e){
-    document.getElementById('cat-panels').innerHTML='<p style="color:var(--gris);padding:40px 0">Error al cargar servicios.</p>';
+    document.getElementById('cat-panels').innerHTML='<p style="color:var(--gris);padding:40px 0">Error al cargar.</p>';
   }
 }
 
@@ -473,16 +368,11 @@ window.seleccionar=function(id,nombre,duracion,precio){
   document.getElementById('sticky-bar').classList.add('visible');
   document.getElementById('sticky-nombre').textContent=nombre;
 };
+window.irAReserva=function(){ if(servicioSel) window.location.href='pages/booking.html'; };
 
-window.irAReserva=function(){
-  if(!servicioSel) return;
-  window.location.href='pages/booking.html';
-};
-
-// Cancelar
 const mesesN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-function horaLabel(h){const hs=Math.floor(h),ms=Math.round((h-hs)*60);return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;}
-function fechaLabel(f){const[a,m,d]=f.split('-');return `${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${a}`;}
+function horaLabel(h){const hs=Math.floor(h),ms=Math.round((h-hs)*60);return`${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;}
+function fechaLabel(f){const[a,m,d]=f.split('-');return`${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${a}`;}
 
 window.buscarCita=async function(){
   const buscar=document.getElementById('inp-buscar').value.trim();
@@ -495,7 +385,7 @@ window.buscarCita=async function(){
     const snap=await getDocs(query(collection(db,'citas'),where(campo,'==',buscar),where('fecha','>=',hoy)));
     let citas=[];
     snap.forEach(d=>{const data=d.data();if(data.estado!=='cancelada'&&data.estado!=='finalizada')citas.push({id:d.id,...data});});
-    if(!citas.length){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0;font-size:14px">No encontramos citas activas con ese dato.</p>';return;}
+    if(!citas.length){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0;font-size:14px">No encontramos citas activas.</p>';return;}
     citas.sort((a,b)=>a.fecha.localeCompare(b.fecha));
     resultado.innerHTML=citas.map(c=>`
       <div class="cita-card">
@@ -506,7 +396,7 @@ window.buscarCita=async function(){
         <div class="cita-row"><span>Estado</span><span>${c.estado}</span></div>
         <button class="btn-cancelar-cita" onclick="cancelarCita('${c.id}','${c.servicio}','${c.fecha}',${c.hora},'${c.cliente?.nombre}','${c.cliente?.correo}')">Cancelar esta cita</button>
       </div>`).join('');
-  }catch(e){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0">Error al buscar. Intentá de nuevo.</p>';}
+  }catch(e){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0">Error al buscar.</p>';}
 };
 
 window.cancelarCita=async function(id,servicio,fecha,hora,clienteNombre,clienteCorreo){
@@ -514,26 +404,11 @@ window.cancelarCita=async function(id,servicio,fecha,hora,clienteNombre,clienteC
   try{
     await updateDoc(doc(db,'citas',id),{estado:'cancelada'});
     const fechaStr=fechaLabel(fecha),horaStr=horaLabel(hora);
-    await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.templateCancelacion,{
-      negocio:CONFIG.negocio,destinatario_nombre:clienteNombre,correo_destinatario:clienteCorreo,
-      cliente_nombre:clienteNombre,servicio,fecha:fechaStr,hora:horaStr,
-      mensaje_extra:'Si necesitás reagendar, podés hacerlo desde nuestra página.'
-    });
-    if(CONFIG.contacto.correoAdmin){
-      await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.templateCancelacion,{
-        negocio:CONFIG.negocio,destinatario_nombre:'Administrador',correo_destinatario:CONFIG.contacto.correoAdmin,
-        cliente_nombre:clienteNombre,servicio,fecha:fechaStr,hora:horaStr,
-        mensaje_extra:'El cliente canceló su cita desde la página web.'
-      });
-    }
-    document.getElementById('resultado-cita').innerHTML=`
-      <div class="cita-card" style="text-align:center;padding:40px">
-        <div style="font-size:40px;color:var(--dorado);margin-bottom:16px">✕</div>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:8px">Cita cancelada</p>
-        <p style="font-size:13px;color:var(--gris)">Tu cita de ${servicio} del ${fechaStr} fue cancelada.<br>Te enviamos un correo de confirmación.</p>
-      </div>`;
+    await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.templateCancelacion,{negocio:CONFIG.negocio,destinatario_nombre:clienteNombre,correo_destinatario:clienteCorreo,cliente_nombre:clienteNombre,servicio,fecha:fechaStr,hora:horaStr,mensaje_extra:'Si necesitás reagendar, podés hacerlo desde nuestra página.'});
+    if(CONFIG.contacto.correoAdmin) await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.templateCancelacion,{negocio:CONFIG.negocio,destinatario_nombre:'Administrador',correo_destinatario:CONFIG.contacto.correoAdmin,cliente_nombre:clienteNombre,servicio,fecha:fechaStr,hora:horaStr,mensaje_extra:'El cliente canceló su cita desde la página web.'});
+    document.getElementById('resultado-cita').innerHTML=`<div class="cita-card" style="text-align:center;padding:40px"><div style="font-size:36px;color:var(--dorado);margin-bottom:16px">✕</div><p style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:8px">Cita cancelada</p><p style="font-size:13px;color:var(--gris)">Tu cita de ${servicio} del ${fechaStr} fue cancelada.<br>Te enviamos un correo de confirmación.</p></div>`;
     mostrarToast('Cita cancelada correctamente');
-  }catch(e){mostrarToast('Error al cancelar. Intentá de nuevo.','error');}
+  }catch(e){mostrarToast('Error al cancelar','error');}
 };
 
 function mostrarToast(msg,tipo=''){
@@ -541,7 +416,6 @@ function mostrarToast(msg,tipo=''){
   t.textContent=msg;t.className='show '+tipo;
   setTimeout(()=>t.className='',3000);
 }
-
 cargarServicios();
 </script>
 </body>
