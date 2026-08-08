@@ -248,6 +248,7 @@
       <div class="page-eyebrow">Gestión</div>
       <div class="page-header-row">
         <div class="page-titulo">Todas las <em>citas</em></div>
+        <button class="btn-outline btn-sm" onclick="cargarTodasLasCitas()" id="btn-refresh" style="display:flex;align-items:center;gap:6px">↻ Actualizar</button>
       </div>
       <div class="filtros">
         <button class="filtro-btn active" onclick="filtrar('todas',this)">Todas</button>
@@ -477,6 +478,11 @@ onAuthStateChanged(auth, user => {
     inicializarDisponibilidad();
     inicializarServicios();
     inicializarEstadisticas();
+    // Auto-refresh agenda cada 30 segundos
+    setInterval(()=>{
+      const agendaActiva = document.getElementById('screen-agenda').classList.contains('active');
+      if(agendaActiva) cargarTodasLasCitas();
+    }, 30000);
   } else {
     document.getElementById('login-section').style.display='flex';
     document.getElementById('admin-section').style.display='none';
@@ -502,8 +508,9 @@ window.irScreen = function(id){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
-  if(id==='espera') cargarEspera();
-  if(id==='stats')  cargarEstadisticas();
+  if(id==='agenda')    cargarTodasLasCitas();
+  if(id==='espera')    cargarEspera();
+  if(id==='stats')     cargarEstadisticas();
   if(id==='historial') renderHistorial();
 };
 
@@ -511,6 +518,8 @@ window.irScreen = function(id){
 let todasLasCitas=[], filtroActual='todas', fechaFiltro=null;
 
 async function cargarTodasLasCitas(){
+  const btn = document.getElementById('btn-refresh');
+  if(btn){ btn.textContent='↻ Cargando...'; btn.disabled=true; }
   document.getElementById('lista-citas').innerHTML='<div class="spinner"></div>';
   try{
     const snap=await getDocs(collection(db,'citas'));
@@ -522,6 +531,7 @@ async function cargarTodasLasCitas(){
   }catch(e){
     document.getElementById('lista-citas').innerHTML='<div class="empty-state">Error al cargar citas.</div>';
   }
+  if(btn){ btn.textContent='↻ Actualizar'; btn.disabled=false; }
 }
 
 window.filtrar=function(estado,btn){
