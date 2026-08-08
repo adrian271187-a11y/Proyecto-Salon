@@ -239,7 +239,7 @@
     <h2>¿Tenés una <em>cita</em>?</h2>
     <p>Ingresá tu correo o número de teléfono para ver y gestionar tu reserva.</p>
     <div class="search-row">
-      <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8888-8888">
+      <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8888-8888" onkeydown="if(event.key==='Enter')buscarCita()">
       <button onclick="buscarCita()">Buscar</button>
     </div>
     <div id="resultado-cita"></div>
@@ -381,8 +381,7 @@ window.buscarCita=async function(){
   resultado.innerHTML='<div class="spinner"></div>';
   try{
     const hoy=new Date().toISOString().split('T')[0];
-    const campo=buscar.includes('@')?'cliente.correo':'cliente.telefono';
-    // Un solo where para evitar error de índice compuesto; el filtro de fecha se hace en JS
+    const campo=buscar.includes('@')?'correo':'telefono';
     const snap=await getDocs(query(collection(db,'citas'),where(campo,'==',buscar)));
     let citas=[];
     snap.forEach(d=>{const data=d.data();if(data.estado!=='cancelada'&&data.estado!=='finalizada'&&data.fecha>=hoy)citas.push({id:d.id,...data});});
