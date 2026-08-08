@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Código QR — App Cliente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --negro:  #0d0d0d;
+      --dorado: #C9A96E;
+      --gris:   #6a6a6a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Jost', sans-serif; background: #f5f2ed; color: var(--negro); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; gap: 32px; }
+
+    /* ── TARJETA PRINCIPAL ── */
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      padding: 48px 40px;
+      text-align: center;
+      border: 0.5px solid #ddd;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+    }
+    .card-eyebrow { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--dorado); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .card-eyebrow::before, .card-eyebrow::after { content: ''; width: 32px; height: 0.5px; background: var(--dorado); }
+    .card-titulo { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1.1; margin-bottom: 6px; }
+    .card-titulo em { font-style: italic; color: var(--dorado); }
+    .card-sub { font-size: 12px; font-weight: 200; color: var(--gris); letter-spacing: 0.1em; margin-bottom: 36px; }
+
+    /* ── QR ── */
+    .qr-wrap { display: inline-flex; flex-direction: column; align-items: center; gap: 0; }
+    .qr-marco {
+      border: 3px solid var(--negro);
+      padding: 20px;
+      position: relative;
+      background: white;
+    }
+    .qr-marco::before, .qr-marco::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--dorado);
+      border-style: solid;
+    }
+    .qr-marco::before { top: -3px; left: -3px; border-width: 3px 0 0 3px; }
+    .qr-marco::after  { bottom: -3px; right: -3px; border-width: 0 3px 3px 0; }
+    .qr-corner-tr, .qr-corner-bl {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--dorado);
+      border-style: solid;
+    }
+    .qr-corner-tr { top: -3px; right: -3px; border-width: 3px 3px 0 0; }
+    .qr-corner-bl { bottom: -3px; left: -3px; border-width: 0 0 3px 3px; }
+    #qr-print { display: block; }
+    .qr-instruccion { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dorado); margin-top: 16px; }
+
+    /* ── PASOS ── */
+    .pasos { display: flex; justify-content: center; gap: 0; margin: 32px 0; border-top: 0.5px solid #eee; border-bottom: 0.5px solid #eee; padding: 24px 0; }
+    .paso { flex: 1; text-align: center; padding: 0 12px; border-right: 0.5px solid #eee; }
+    .paso:last-child { border-right: none; }
+    .paso-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--dorado); margin-bottom: 6px; }
+    .paso-txt { font-size: 11px; font-weight: 200; color: var(--gris); line-height: 1.5; }
+
+    /* ── URL ── */
+    .url-box { background: #f8f5f0; border: 0.5px solid #ddd; padding: 12px 20px; margin-bottom: 24px; }
+    .url-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gris); margin-bottom: 4px; }
+    .url-txt { font-size: 12px; color: var(--negro); letter-spacing: 0.03em; word-break: break-all; }
+
+    /* ── NEGOCIO ── */
+    .negocio-footer { border-top: 0.5px solid #eee; padding-top: 20px; }
+    .negocio-nombre { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; letter-spacing: 0.15em; color: var(--dorado); }
+    .negocio-slogan { font-size: 11px; font-weight: 200; color: var(--gris); margin-top: 4px; letter-spacing: 0.08em; }
+
+    /* ── BOTONES (no se imprimen) ── */
+    .acciones { display: flex; gap: 12px; width: 100%; max-width: 480px; }
+    .btn { flex: 1; padding: 14px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-print { background: var(--negro); color: white; }
+    .btn-print:hover { background: #222; }
+    .btn-back { background: transparent; color: var(--gris); border: 0.5px solid #ddd; }
+    .btn-back:hover { border-color: var(--negro); color: var(--negro); }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: white; padding: 0; justify-content: flex-start; }
+      .card { box-shadow: none; border: none; max-width: 100%; }
+      .acciones { display: none; }
+      .card-eyebrow::before, .card-eyebrow::after { background: var(--dorado); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-eyebrow">App para clientes</div>
+  <h1 class="card-titulo">Reservá tu <em>cita</em></h1>
+  <p class="card-sub">Escaneá con la cámara de tu celular</p>
+
+  <div class="qr-wrap">
+    <div class="qr-marco">
+      <div class="qr-corner-tr"></div>
+      <div class="qr-corner-bl"></div>
+      <canvas id="qr-print"></canvas>
+    </div>
+    <div class="qr-instruccion">Apuntá la cámara aquí</div>
+  </div>
+
+  <div class="pasos">
+    <div class="paso">
+      <div class="paso-num">01</div>
+      <div class="paso-txt">Escaneá el código</div>
+    </div>
+    <div class="paso">
+      <div class="paso-num">02</div>
+      <div class="paso-txt">Abrí el enlace</div>
+    </div>
+    <div class="paso">
+      <div class="paso-num">03</div>
+      <div class="paso-txt">Instalá la app</div>
+    </div>
+  </div>
+
+  <div class="url-box">
+    <div class="url-label">O ingresá directamente</div>
+    <div class="url-txt" id="qr-url-txt">proyecto-salon-production.up.railway.app/cliente/</div>
+  </div>
+
+  <div class="negocio-footer">
+    <div class="negocio-nombre" id="qr-negocio">Salón de Belleza</div>
+    <div class="negocio-slogan" id="qr-slogan">Tu belleza, nuestra pasión</div>
+  </div>
+</div>
+
+<div class="acciones">
+  <button class="btn btn-print" onclick="window.print()">🖨 Imprimir</button>
+  <button class="btn btn-back" onclick="history.back()">← Volver</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="/config.js"></script>
+<script>
+const URL_APP = 'https://proyecto-salon-production.up.railway.app/cliente/';
+
+document.getElementById('qr-negocio').textContent = CONFIG.negocio;
+document.getElementById('qr-slogan').textContent  = CONFIG.slogan;
+document.title = 'App — ' + CONFIG.negocio;
+
+QRCode.toCanvas(
+  document.getElementById('qr-print'),
+  URL_APP,
+  { width: 240, margin: 0, color: { dark: '#0d0d0d', light: '#ffffff' } },
+  err => { if(err) console.error(err); }
+);
+</script>
+</body>
+</html>
