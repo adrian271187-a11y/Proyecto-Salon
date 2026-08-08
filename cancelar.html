@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancelar cita</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .container { max-width: 480px; margin: 40px auto; padding: 24px 16px; }
+    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .page-sub   { color: var(--texto-suave); font-size: 14px; margin-bottom: 28px; }
+    .info-card  { background: var(--superficie); border: 0.5px solid var(--borde); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+    .info-row   { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--borde); font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: var(--texto-suave); }
+    .info-row span:last-child  { font-weight: 500; }
+    .warning { background: #FAEEDA; border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: #854F0B; margin-bottom: 20px; }
+    .cancelada-wrap { text-align: center; padding: 20px 0; }
+    .cancelada-wrap .x-circle { width: 72px; height: 72px; border-radius: 50%; background: #FCEBEB; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+    .buscar-section { margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span id="header-nombre" class="header-logo">Salón</span>
+  <a href="../index.html" style="font-size:13px;color:var(--texto-suave)">← Volver</a>
+</div>
+
+<div class="container">
+  <h1 class="page-title">Cancelar cita</h1>
+  <p class="page-sub">Ingresá tu correo o número de teléfono para buscar tu cita</p>
+
+  <div class="buscar-section" id="buscar-section">
+    <div class="form-group">
+      <label>Correo o teléfono</label>
+      <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8XXXXXXX">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="buscarCita()">Buscar mi cita</button>
+  </div>
+
+  <div id="resultado"></div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="../config.js"></script>
+<script>emailjs.init(CONFIG.emailjs.publicKey);</script>
+
+<script type="module">
+import { db } from '../js/firebase.js';
+import { collection, getDocs, doc, updateDoc, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+document.getElementById('header-nombre').textContent = CONFIG.negocio;
+document.title = 'Cancelar cita — ' + CONFIG.negocio;
+
+const mesesNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function horaLabel(h) {
+  const hs = Math.floor(h), ms = Math.round((h - hs) * 60);
+  return `${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+}
+
+function fechaLabel(f) {
+  const [anio, mes, dia] = f.split('-');
+  return `${parseInt(dia)} de ${mesesNom[parseInt(mes)-1]} de ${anio}`;
+}
+
+window.buscarCita = async function() {
+  const buscar = document.getElementById('inp-buscar').value.trim().toLowerCase();
+  if (!buscar) { mostrarToast('Ingresá tu correo o teléfono', 'error'); return; }
+
+  const resultado = document.getElementById('resultado');
+  resultado.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const hoy = new Date().toISOString().split('T')[0];
+
+    // Determinar si es correo o teléfono
+    const esTelefono = /^[\d\s\+\-]+$/.test(buscar);
+    const campo = esTelefono ? 'cliente.telefono' : 'cliente.correo';
+    const valor = esTelefono ? buscar.replace(/\s/g, '') : buscar;
+
+    // Un solo where para evitar error de índice compuesto;
+    // el filtro de fecha se hace en JS
+    const snap = await getDocs(query(
+      collection(db, 'citas'),
+      where(campo, '==', valor)
+    ));
+
+    let citas = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (
+        data.estado !== 'cancelada' &&
+        data.estado !== 'finalizada' &&
+        data.fecha >= hoy
+      ) {
+        citas.push({ id: d.id, ...data });
+      }
+    });
+
+    if (citas.length === 0) {
+      resultado.innerHTML = `
+        <div class="warning">No encontramos citas activas con ese dato.</div>
+        <a href="../index.html" class="btn btn-outline" style="width:100%">Volver al inicio</a>
+      `;
+      return;
+    }
+
+    citas.sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+    resultado.innerHTML = citas.map(c => `
+      <div class="info-card">
+        <div class="info-row"><span>Servicio</span><span>${c.servicio}</span></div>
+        <div class="info-row"><span>Fecha</span><span>${fechaLabel(c.fecha)}</span></div>
+        <div class="info-row"><span>Hora</span><span>${horaLabel(c.hora)}</span></div>
+        <div class="info-row"><span>Estado</span><span><span class="badge badge-${c.estado}">${c.estado}</span></span></div>
+        <div style="margin-top:14px">
+          <button class="btn btn-danger" style="width:100%" onclick="cancelarCita('${c.id}', '${c.servicio}', '${c.fecha}', ${c.hora}, '${c.cliente?.nombre}', '${c.cliente?.correo}')">
+            Cancelar esta cita
+          </button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    resultado.innerHTML = '<p class="text-muted">Error al buscar. Intentá de nuevo.</p>';
+  }
+};
+
+window.cancelarCita = async function(id, servicio, fecha, hora, clienteNombre, clienteCorreo) {
+  if (!confirm('¿Estás seguro que querés cancelar esta cita?')) return;
+  try {
+    await updateDoc(doc(db, 'citas', id), { estado: 'cancelada' });
+
+    const fechaStr = fechaLabel(fecha);
+    const horaStr  = horaLabel(hora);
+
+    // Correo al cliente
+    await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
+      negocio: CONFIG.negocio,
+      destinatario_nombre: clienteNombre,
+      correo_destinatario: clienteCorreo,
+      cliente_nombre: clienteNombre,
+      servicio,
+      fecha: fechaStr,
+      hora: horaStr,
+      mensaje_extra: 'Si necesitás reagendar, podés hacerlo desde nuestra página.'
+    });
+
+    // Correo al admin
+    if (CONFIG.contacto.correoAdmin) {
+      await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateCancelacion, {
+        negocio: CONFIG.negocio,
+        destinatario_nombre: 'Administrador',
+        correo_destinatario: CONFIG.contacto.correoAdmin,
+        cliente_nombre: clienteNombre,
+        servicio,
+        fecha: fechaStr,
+        hora: horaStr,
+        mensaje_extra: 'El cliente canceló su cita desde la página web.'
+      });
+    }
+
+    document.getElementById('buscar-section').style.display = 'none';
+    document.getElementById('resultado').innerHTML = `
+      <div class="cancelada-wrap">
+        <div class="x-circle">✕</div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Cita cancelada</h2>
+        <p class="text-muted">Tu cita de ${servicio} del ${fechaStr} fue cancelada. Te enviamos un correo de confirmación.</p>
+        <a href="../index.html" class="btn btn-outline" style="width:100%;margin-top:20px">Volver al inicio</a>
+      </div>
+    `;
+  } catch(e) {
+    mostrarToast('Error al cancelar. Intentá de nuevo.', 'error');
+  }
+};
+
+function mostrarToast(msg, tipo = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tipo;
+  setTimeout(() => t.className = '', 3000);
+}
+</script>
+</body>
+</html>
