@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Migración de citas</title>
+  <style>
+    body { font-family: monospace; background: #0d0d0d; color: #fafaf8; padding: 40px; }
+    h2 { color: #C9A96E; margin-bottom: 24px; }
+    #log { background: #161616; padding: 24px; border: 0.5px solid #333; line-height: 2; }
+    .ok  { color: #4caf50; }
+    .skip{ color: #9a9a9a; }
+    .err { color: #e05555; }
+    .done{ color: #C9A96E; font-size: 18px; margin-top: 16px; }
+    button { background: #C9A96E; color: #0d0d0d; border: none; padding: 14px 32px;
+             font-size: 14px; cursor: pointer; margin-bottom: 24px; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <h2>🔧 Migración de citas — Salon Citas Piloto</h2>
+  <button id="btn" onclick="migrar()">Iniciar migración</button>
+  <div id="log">Presioná el botón para empezar...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBEOIQ9wsjHY5GxTG7PIOqLDZzKUrUv-fI",
+  authDomain: "salon-citas-piloto.firebaseapp.com",
+  projectId: "salon-citas-piloto",
+  storageBucket: "salon-citas-piloto.firebasestorage.app",
+  messagingSenderId: "322452978480",
+  appId: "1:322452978480:web:59cb4121a52166d70526f5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+function log(msg, tipo=''){
+  const div = document.getElementById('log');
+  div.innerHTML += `<div class="${tipo}">${msg}</div>`;
+}
+
+window.migrar = async function(){
+  const btn = document.getElementById('btn');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
+  log('Leyendo citas de Firestore...');
+
+  try {
+    const snap = await getDocs(collection(db, 'citas'));
+    log(`Total de citas encontradas: <b>${snap.size}</b>`);
+    let actualizadas = 0, omitidas = 0, errores = 0;
+
+    for (const d of snap.docs) {
+      const data = d.data();
+      const telefono = data.cliente?.telefono || data.telefono || null;
+      const correo   = data.cliente?.correo   || data.correo   || null;
+
+      // Si ya tiene ambos campos planos, saltar
+      if (data.telefono && data.correo) {
+        log(`⏭ ${d.id.slice(0,8)}... — ya migrada`, 'skip');
+        omitidas++;
+        continue;
+      }
+
+      if (!telefono && !correo) {
+        log(`⚠ ${d.id.slice(0,8)}... — sin datos de cliente, saltando`, 'skip');
+        omitidas++;
+        continue;
+      }
+
+      try {
+        const update = {};
+        if (telefono) update.telefono = telefono;
+        if (correo)   update.correo   = correo;
+        await updateDoc(doc(db, 'citas', d.id), update);
+        log(`✓ ${d.id.slice(0,8)}... — tel: ${telefono || '—'} | correo: ${correo || '—'}`, 'ok');
+        actualizadas++;
+      } catch(e) {
+        log(`✗ ${d.id.slice(0,8)}... — error: ${e.message}`, 'err');
+        errores++;
+      }
+    }
+
+    log('─────────────────────────────────────');
+    log(`✅ Migración completa — Actualizadas: ${actualizadas} | Omitidas: ${omitidas} | Errores: ${errores}`, 'done');
+  } catch(e) {
+    log(`Error al leer Firestore: ${e.message}`, 'err');
+  }
+
+  btn.disabled = false;
+};
+</script>
+</body>
+</html>
