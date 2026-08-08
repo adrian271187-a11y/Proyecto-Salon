@@ -212,6 +212,16 @@
 </head>
 <body>
 
+<!-- INSTALL BANNER -->
+<div id="install-banner" style="display:none;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:rgba(201,169,110,0.08);border-bottom:0.5px solid rgba(201,169,110,0.2);flex-shrink:0;">
+  <div style="flex:1">
+    <div style="font-size:12px;color:var(--dorado);font-weight:400;margin-bottom:2px">Instalá la app admin</div>
+    <div style="font-size:11px;color:var(--gris2)">Accedé rápido desde tu pantalla de inicio</div>
+  </div>
+  <button id="install-btn" style="background:var(--dorado);color:var(--negro);border:none;padding:8px 16px;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-family:'Jost',sans-serif;cursor:pointer;white-space:nowrap;">Instalar</button>
+  <button onclick="document.getElementById('install-banner').style.display='none'" style="background:none;border:none;color:var(--gris);font-size:20px;cursor:pointer;padding:0 4px;line-height:1;">×</button>
+</div>
+
 <!-- LOGIN -->
 <div id="login-section">
   <div class="login-card">
@@ -768,6 +778,25 @@ async function cargarEstadisticas(){
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/admin-app/sw.js').catch(()=>{});
 }
+
+// ── PWA INSTALL ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  banner.style.display = 'flex';
+});
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner').style.display = 'none';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').style.display = 'none';
+});
 </script>
 </body>
 </html>
