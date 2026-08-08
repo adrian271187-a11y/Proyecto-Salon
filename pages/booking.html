@@ -117,7 +117,9 @@
 
 <div id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="../config.js"></script>
+<script>emailjs.init(CONFIG.emailjs.publicKey);</script>
 <script type="module">
 import { db } from '../js/firebase.js';
 import { collection, addDoc, getDocs, query, where, Timestamp }
@@ -250,7 +252,7 @@ window.confirmarCita=async function(){
         servicio: servicio.nombre,
         fecha: fechaStr,
         hora: horaStr,
-        correo_cliente: 'enviossaloncr@gmail.com',
+        correo_cliente: CONFIG.contacto.correoAdmin,
         email: correo
       });
     } catch(e){ console.warn('No se pudo notificar al admin:', e); }
