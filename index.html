@@ -139,7 +139,27 @@
     .spinner{width:32px;height:32px;border:1.5px solid rgba(201,169,110,0.2);border-top-color:var(--dorado);border-radius:50%;animation:spin 0.8s linear infinite;margin:40px auto;}
     @keyframes spin{to{transform:rotate(360deg);}}
 
+    /* APP QR */
+    .app-section{padding:100px 80px;background:var(--negro);border-top:0.5px solid rgba(201,169,110,0.12);}
+    .app-inner{display:grid;grid-template-columns:1fr auto;gap:80px;align-items:center;max-width:960px;}
+    .app-desc{font-size:14px;font-weight:200;color:var(--gris);line-height:2;margin-bottom:36px;}
+    .app-pasos{display:flex;flex-direction:column;gap:16px;margin-bottom:32px;}
+    .app-paso{display:flex;align-items:center;gap:16px;}
+    .paso-num{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--dorado);opacity:0.6;min-width:28px;}
+    .paso-txt{font-size:13px;font-weight:300;color:var(--gris);}
+    .btn-qr-print{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dorado);text-decoration:none;border-bottom:0.5px solid rgba(201,169,110,0.3);padding-bottom:3px;transition:opacity 0.2s;}
+    .btn-qr-print:hover{opacity:0.7;}
+    .app-qr-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+    .qr-label{font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--dorado);}
+    .qr-canvas{background:white;padding:16px;width:200px;height:200px;display:flex;align-items:center;justify-content:center;}
+    .qr-canvas canvas{display:block;}
+    .qr-url{font-size:10px;color:var(--gris);letter-spacing:0.05em;text-align:center;max-width:200px;word-break:break-all;}
+
     @media(max-width:900px){
+      .app-section{padding:80px 24px;}
+      .app-inner{grid-template-columns:1fr;gap:40px;}
+      .app-qr-wrap{order:-1;}
+      .qr-canvas{width:160px;height:160px;}
       .nav{padding:18px 20px;}.nav.scrolled{padding:12px 20px;}
       .nav-links .nav-link{display:none;}
       .foto-strip{grid-template-columns:1fr 1fr;height:320px;}.foto-item:last-child{display:none;}
@@ -246,6 +266,28 @@
   </div>
 </section>
 
+<!-- APP CLIENTE QR -->
+<section class="app-section" id="app">
+  <div class="app-inner">
+    <div class="app-texto">
+      <p class="sec-eyebrow">App para clientes</p>
+      <h2 class="sec-titulo">Reservá desde <em>tu celular</em></h2>
+      <p class="app-desc">Instalá nuestra app y gestioná tus citas desde cualquier lugar. Disponible para Android e iPhone, sin pasar por ninguna tienda.</p>
+      <div class="app-pasos">
+        <div class="app-paso"><div class="paso-num">01</div><div class="paso-txt">Escaneá el código QR con tu cámara</div></div>
+        <div class="app-paso"><div class="paso-num">02</div><div class="paso-txt">Abrí el enlace en tu navegador</div></div>
+        <div class="app-paso"><div class="paso-num">03</div><div class="paso-txt">Instalá la app desde el banner</div></div>
+      </div>
+      <a href="/cliente/qr.html" target="_blank" class="btn-qr-print">Ver código para imprimir →</a>
+    </div>
+    <div class="app-qr-wrap">
+      <div class="qr-label">Escaneá para instalar</div>
+      <div id="qr-canvas" class="qr-canvas"></div>
+      <div class="qr-url">proyecto-salon-production.up.railway.app/cliente/</div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-top">
@@ -282,6 +324,7 @@
 
 <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="config.js"></script>
 <script>emailjs.init(CONFIG.emailjs.publicKey);</script>
@@ -417,6 +460,16 @@ function mostrarToast(msg,tipo=''){
   setTimeout(()=>t.className='',3000);
 }
 cargarServicios();
+
+// Generar QR app cliente
+new QRCode(document.getElementById('qr-canvas'), {
+  text: 'https://proyecto-salon-production.up.railway.app/cliente/',
+  width: 168,
+  height: 168,
+  colorDark: '#0d0d0d',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
 </script>
 </body>
 </html>
