@@ -17,6 +17,8 @@ app.get('/cliente/',   (req, res) => res.sendFile(path.join(__dirname, 'cliente'
 app.get('/admin-app',  (req, res) => res.redirect('/admin-app/'));
 app.get('/admin-app/', (req, res) => res.sendFile(path.join(__dirname, 'admin-app', 'index.html')));
 
+app.get('/sala-espera', (req, res) => res.sendFile(path.join(__dirname, 'sala-espera.html')));
+
 app.get('/admin',      (req, res) => res.redirect('/admin/'));
 app.get('/admin/',     (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 

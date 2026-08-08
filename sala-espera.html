@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="30">
+  <title>Sala de Espera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --negro:  #0d0d0d;
+      --negro2: #111111;
+      --negro3: #161616;
+      --dorado: #C9A96E;
+      --dorado2:#e8c98a;
+      --blanco: #fafaf8;
+      --gris:   #6a6a6a;
+      --gris2:  #9a9a9a;
+      --verde:  #4caf50;
+      --borde:  rgba(201,169,110,0.14);
+      --borde2: rgba(255,255,255,0.07);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { font-family: 'Jost', sans-serif; background: var(--negro); color: var(--blanco); display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
+
+    /* ── HEADER ── */
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 28px 60px; border-bottom: 0.5px solid var(--borde); flex-shrink: 0; }
+    .header-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; letter-spacing: 0.15em; }
+    .header-logo em { font-style: italic; color: var(--dorado); }
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .header-time { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--dorado); letter-spacing: 0.05em; line-height: 1; }
+    .header-date { font-size: 12px; font-weight: 200; color: var(--gris2); letter-spacing: 0.15em; text-transform: uppercase; text-align: right; margin-top: 4px; }
+
+    /* ── MAIN GRID ── */
+    .main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; }
+
+    /* ── EN ATENCIÓN ── */
+    .atendiendo-panel { background: rgba(201,169,110,0.04); border-right: 0.5px solid var(--borde); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 80px; text-align: center; position: relative; overflow: hidden; }
+    .atendiendo-panel::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,169,110,0.06) 0%, transparent 70%); pointer-events: none; }
+    .atendiendo-eyebrow { font-size: 10px; letter-spacing: 0.6em; text-transform: uppercase; color: var(--dorado); margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+    .atendiendo-eyebrow::before, .atendiendo-eyebrow::after { content: ''; width: 32px; height: 0.5px; background: var(--dorado); opacity: 0.5; }
+    .atendiendo-indicador { width: 12px; height: 12px; background: var(--verde); border-radius: 50%; animation: pulso 2s ease-in-out infinite; margin: 0 auto 24px; box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
+    @keyframes pulso { 0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.4)} 50%{box-shadow:0 0 0 16px rgba(76,175,80,0)} }
+    .atendiendo-nombre { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 6vw, 96px); font-weight: 300; line-height: 1; margin-bottom: 16px; color: var(--blanco); }
+    .atendiendo-servicio { font-size: 16px; font-weight: 200; color: var(--gris2); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+    .atendiendo-hora { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--dorado); opacity: 0.7; }
+    .sin-atencion { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: rgba(255,255,255,0.2); font-style: italic; }
+
+    /* ── COLA ── */
+    .cola-panel { display: flex; flex-direction: column; padding: 48px 60px; overflow: hidden; }
+    .cola-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 36px; padding-bottom: 20px; border-bottom: 0.5px solid var(--borde2); }
+    .cola-titulo { font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gris2); }
+    .cola-count { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--dorado); }
+    .cola-count span { font-size: 13px; font-weight: 200; color: var(--gris2); letter-spacing: 0.1em; margin-left: 8px; }
+    .cola-lista { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+    .cola-item { display: flex; align-items: center; gap: 20px; padding: 18px 24px; background: var(--negro3); border: 0.5px solid var(--borde2); animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .cola-item:first-child { border-color: rgba(201,169,110,0.25); background: rgba(201,169,110,0.05); }
+    .cola-pos { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--dorado); opacity: 0.5; min-width: 40px; text-align: center; }
+    .cola-item:first-child .cola-pos { opacity: 1; }
+    .cola-info { flex: 1; }
+    .cola-nombre { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; line-height: 1.1; }
+    .cola-item:first-child .cola-nombre { font-size: 32px; }
+    .cola-det { font-size: 12px; font-weight: 200; color: var(--gris2); letter-spacing: 0.1em; margin-top: 4px; }
+    .cola-hora-badge { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--dorado); opacity: 0.6; }
+    .proximo-badge { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado); background: rgba(201,169,110,0.1); border: 0.5px solid rgba(201,169,110,0.3); padding: 4px 10px; display: inline-block; margin-top: 6px; }
+    .cola-vacia { flex: 1; display: flex; align-items: center; justify-content: center; }
+    .cola-vacia p { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: rgba(255,255,255,0.15); font-style: italic; }
+
+    /* ── FOOTER ── */
+    .footer { padding: 16px 60px; border-top: 0.5px solid var(--borde); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .footer-msg { font-size: 12px; font-weight: 200; color: var(--gris); letter-spacing: 0.1em; }
+    .refresh-dot { width: 6px; height: 6px; background: var(--dorado); border-radius: 50%; opacity: 0.5; animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    /* ── SPINNER ── */
+    .spinner { width: 32px; height: 32px; border: 1px solid rgba(201,169,110,0.15); border-top-color: var(--dorado); border-radius: 50%; animation: spin 0.8s linear infinite; margin: auto; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .atendiendo-panel { padding: 40px 24px; border-right: none; border-bottom: 0.5px solid var(--borde); }
+      .atendiendo-nombre { font-size: 48px; }
+      .cola-panel { padding: 24px; }
+      .header { padding: 20px 24px; }
+      .header-time { font-size: 36px; }
+      .footer { padding: 14px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-logo" id="h-logo">Salón <em>de Belleza</em></div>
+  </div>
+  <div class="header-right">
+    <div>
+      <div class="header-time" id="reloj">--:--</div>
+      <div class="header-date" id="fecha-hoy"></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- EN ATENCIÓN -->
+  <div class="atendiendo-panel">
+    <div class="atendiendo-eyebrow">En atención</div>
+    <div class="atendiendo-indicador" id="indicador" style="display:none"></div>
+    <div id="atendiendo-content"><div class="spinner"></div></div>
+  </div>
+
+  <!-- COLA -->
+  <div class="cola-panel">
+    <div class="cola-header">
+      <div class="cola-titulo">Cola de espera</div>
+      <div class="cola-count"><span id="cola-num">—</span><span>en espera</span></div>
+    </div>
+    <div class="cola-lista" id="cola-lista"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-msg" id="footer-msg">Actualización automática cada 30 segundos</div>
+  <div class="refresh-dot"></div>
+</div>
+
+<script src="/config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBEOIQ9wsjHY5GxTG7PIOqLDZzKUrUv-fI",
+  authDomain: "salon-citas-piloto.firebaseapp.com",
+  projectId: "salon-citas-piloto",
+  storageBucket: "salon-citas-piloto.firebasestorage.app",
+  messagingSenderId: "322452978480",
+  appId: "1:322452978480:web:59cb4121a52166d70526f5"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// Config
+document.getElementById('h-logo').innerHTML = CONFIG.negocio.split(' ').slice(0,1).join(' ') + ' <em>' + CONFIG.negocio.split(' ').slice(1).join(' ') + '</em>';
+document.title = 'Sala de Espera — ' + CONFIG.negocio;
+
+// Reloj
+const mesesN = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const diasSemana = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+function actualizarReloj(){
+  const ahora = new Date();
+  const h = String(ahora.getHours()).padStart(2,'0');
+  const m = String(ahora.getMinutes()).padStart(2,'0');
+  document.getElementById('reloj').textContent = `${h}:${m}`;
+  document.getElementById('fecha-hoy').textContent =
+    `${diasSemana[ahora.getDay()]}, ${ahora.getDate()} de ${mesesN[ahora.getMonth()]} ${ahora.getFullYear()}`;
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
+
+function horaLabel(h){ const hs=Math.floor(h),ms=Math.round((h-hs)*60); return`${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`; }
+function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+async function cargar(){
+  try{
+    const snap = await getDocs(query(collection(db,'citas'), where('fecha','==',hoyStr())));
+    let citas = [];
+    snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada'&&data.estado!=='finalizada') citas.push({id:d.id,...data}); });
+    citas.sort((a,b)=>a.hora-b.hora);
+
+    const atendiendo = citas.find(c=>c.estado==='en_atencion');
+    const cola = citas.filter(c=>c.estado==='confirmada');
+
+    // Render atendiendo
+    const contenido = document.getElementById('atendiendo-content');
+    const indicador = document.getElementById('indicador');
+    if(atendiendo){
+      indicador.style.display = 'block';
+      contenido.innerHTML = `
+        <div class="atendiendo-nombre">${atendiendo.cliente?.nombre||'—'}</div>
+        <div class="atendiendo-servicio">${atendiendo.servicio}</div>
+        <div class="atendiendo-hora">${horaLabel(atendiendo.hora)}</div>`;
+    } else {
+      indicador.style.display = 'none';
+      contenido.innerHTML = `<div class="sin-atencion">Nadie siendo atendido</div>`;
+    }
+
+    // Render cola
+    document.getElementById('cola-num').textContent = cola.length;
+    const colaEl = document.getElementById('cola-lista');
+    if(!cola.length){
+      colaEl.innerHTML = `<div class="cola-vacia"><p>Sin clientes en espera</p></div>`;
+    } else {
+      colaEl.innerHTML = cola.map((c,i)=>`
+        <div class="cola-item">
+          <div class="cola-pos">${i+1}</div>
+          <div class="cola-info">
+            <div class="cola-nombre">${c.cliente?.nombre||'—'}</div>
+            <div class="cola-det">${c.servicio}</div>
+            ${i===0?'<div class="proximo-badge">Próximo</div>':''}
+          </div>
+          <div class="cola-hora-badge">${horaLabel(c.hora)}</div>
+        </div>`).join('');
+    }
+  }catch(e){
+    document.getElementById('atendiendo-content').innerHTML='<div class="sin-atencion">Sin conexión</div>';
+  }
+}
+
+cargar();
+setInterval(cargar, 15000); // Actualiza cada 15 segundos (además del meta refresh cada 30)
+</script>
+</body>
+</html>
