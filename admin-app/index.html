@@ -253,8 +253,7 @@
         <button class="filtro-btn active" onclick="filtrar('todas',this)">Todas</button>
         <button class="filtro-btn" onclick="filtrar('pendiente',this)">Pendientes</button>
         <button class="filtro-btn" onclick="filtrar('confirmada',this)">Confirmadas</button>
-        <button class="filtro-btn" onclick="filtrar('finalizada',this)">Finalizadas</button>
-        <button class="filtro-btn" onclick="filtrar('cancelada',this)">Canceladas</button>
+        <button class="filtro-btn" onclick="filtrar('en_atencion',this)">En atención</button>
       </div>
       <div class="search-fecha">
         <input class="inp-fecha" type="date" id="inp-fecha" onchange="filtrarFecha()">
@@ -322,6 +321,22 @@
       <div id="lista-servicios"><div class="spinner"></div></div>
     </div>
 
+    <!-- HISTORIAL -->
+    <div class="screen" id="screen-historial">
+      <div class="page-eyebrow">Registro</div>
+      <div class="page-titulo"><em>Historial</em></div>
+      <div class="filtros">
+        <button class="filtro-btn active" onclick="filtrarHist('todas',this)">Todas</button>
+        <button class="filtro-btn" onclick="filtrarHist('finalizada',this)">Finalizadas</button>
+        <button class="filtro-btn" onclick="filtrarHist('cancelada',this)">Canceladas</button>
+      </div>
+      <div class="search-fecha">
+        <input class="inp-fecha" type="date" id="inp-fecha-hist" onchange="filtrarFechaHist()">
+        <button class="btn-outline btn-sm" onclick="limpiarFechaHist()">Todas las fechas</button>
+      </div>
+      <div id="lista-historial"><div class="spinner"></div></div>
+    </div>
+
     <!-- ESTADÍSTICAS -->
     <div class="screen" id="screen-stats">
       <div class="page-eyebrow">Resumen</div>
@@ -362,6 +377,10 @@
     <button class="nav-btn" id="nav-servicios" onclick="irScreen('servicios')">
       <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       Servicios
+    </button>
+    <button class="nav-btn" id="nav-historial" onclick="irScreen('historial')">
+      <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z" rx="2"/><polyline points="9 9 12 12 15 9"/><line x1="12" y1="5" x2="12" y2="12"/></svg>
+      Historial
     </button>
     <button class="nav-btn" id="nav-stats" onclick="irScreen('stats')">
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -485,9 +504,10 @@ window.irScreen = function(id){
   document.getElementById('nav-'+id).classList.add('active');
   if(id==='espera') cargarEspera();
   if(id==='stats')  cargarEstadisticas();
+  if(id==='historial') renderHistorial();
 };
 
-// ── AGENDA — TODAS LAS CITAS ──
+// ── AGENDA — CITAS ACTIVAS ──
 let todasLasCitas=[], filtroActual='todas', fechaFiltro=null;
 
 async function cargarTodasLasCitas(){
@@ -498,6 +518,7 @@ async function cargarTodasLasCitas(){
     snap.forEach(d=>todasLasCitas.push({id:d.id,...d.data()}));
     todasLasCitas.sort((a,b)=>b.fecha.localeCompare(a.fecha)||a.hora-b.hora);
     renderCitas();
+    renderHistorial();
   }catch(e){
     document.getElementById('lista-citas').innerHTML='<div class="empty-state">Error al cargar citas.</div>';
   }
@@ -505,7 +526,7 @@ async function cargarTodasLasCitas(){
 
 window.filtrar=function(estado,btn){
   filtroActual=estado;
-  document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.filtros .filtro-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderCitas();
 };
@@ -514,44 +535,75 @@ window.filtrarFecha=function(){
   fechaFiltro=document.getElementById('inp-fecha').value||null;
   renderCitas();
 };
-
 window.limpiarFecha=function(){
-  fechaFiltro=null;
-  document.getElementById('inp-fecha').value='';
-  renderCitas();
+  fechaFiltro=null; document.getElementById('inp-fecha').value=''; renderCitas();
 };
 
 function renderCitas(){
   const lista=document.getElementById('lista-citas');
-  let citas=todasLasCitas;
+  // Solo citas activas en la agenda
+  let citas=todasLasCitas.filter(c=>c.estado!=='cancelada'&&c.estado!=='finalizada');
   if(filtroActual!=='todas') citas=citas.filter(c=>c.estado===filtroActual);
   if(fechaFiltro) citas=citas.filter(c=>c.fecha===fechaFiltro);
-  if(!citas.length){ lista.innerHTML='<div class="empty-state">No hay citas con estos filtros.</div>'; return; }
-  lista.innerHTML=citas.map(c=>`
-    <div class="cita-card ${c.estado}">
-      <div class="cita-card-top">
-        <div class="cita-fecha-hora">
-          <div class="cita-hora">${horaLabel(c.hora)}</div>
-          <div class="cita-fecha">${fechaLabel(c.fecha)}</div>
-        </div>
-        <span class="badge badge-${c.estado}">${c.estado}</span>
+  if(!citas.length){ lista.innerHTML='<div class="empty-state">No hay citas activas.</div>'; return; }
+  lista.innerHTML=citas.map(c=>renderCitaCard(c)).join('');
+}
+
+// ── HISTORIAL ──
+let filtroHist='todas', fechaFiltroHist=null;
+
+window.filtrarHist=function(estado,btn){
+  filtroHist=estado;
+  document.querySelectorAll('#screen-historial .filtro-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistorial();
+};
+window.filtrarFechaHist=function(){
+  fechaFiltroHist=document.getElementById('inp-fecha-hist').value||null;
+  renderHistorial();
+};
+window.limpiarFechaHist=function(){
+  fechaFiltroHist=null; document.getElementById('inp-fecha-hist').value=''; renderHistorial();
+};
+
+function renderHistorial(){
+  const lista=document.getElementById('lista-historial');
+  if(!lista) return;
+  let citas=todasLasCitas.filter(c=>c.estado==='cancelada'||c.estado==='finalizada');
+  if(filtroHist!=='todas') citas=citas.filter(c=>c.estado===filtroHist);
+  if(fechaFiltroHist) citas=citas.filter(c=>c.fecha===fechaFiltroHist);
+  if(!citas.length){ lista.innerHTML='<div class="empty-state">No hay registros en el historial.</div>'; return; }
+  lista.innerHTML=citas.map(c=>renderCitaCard(c,true)).join('');
+}
+
+function renderCitaCard(c, historial=false){
+  return `<div class="cita-card ${c.estado}">
+    <div class="cita-card-top">
+      <div class="cita-fecha-hora">
+        <div class="cita-hora">${horaLabel(c.hora)}</div>
+        <div class="cita-fecha">${fechaLabel(c.fecha)}</div>
       </div>
-      <div class="cita-info">
-        <div class="cita-field"><span>Servicio</span><div class="cita-field-val">${c.servicio}</div></div>
-        <div class="cita-field"><span>Duración</span><div class="cita-field-val">${c.duracion} min</div></div>
-        <div class="cita-field"><span>Cliente</span><div class="cita-field-val">${c.cliente?.nombre||'—'}</div></div>
-        <div class="cita-field"><span>Teléfono</span><div class="cita-field-val">${c.cliente?.telefono||'—'}</div></div>
-        ${c.nota?`<div class="cita-field" style="grid-column:span 2"><span>Nota</span><div class="cita-field-val">${c.nota}</div></div>`:''}
-      </div>
-      <div class="cita-acciones">
-        ${c.estado==='pendiente'?`
-          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','confirmada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✓ Confirmar</button>
-          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
-        ${c.estado==='confirmada'?`
-          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada','','','','',0)">Finalizar</button>
-          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
-      </div>
-    </div>`).join('');
+      <span class="badge badge-${c.estado}">${c.estado}</span>
+    </div>
+    <div class="cita-info">
+      <div class="cita-field"><span>Servicio</span><div class="cita-field-val">${c.servicio}</div></div>
+      <div class="cita-field"><span>Duración</span><div class="cita-field-val">${c.duracion} min</div></div>
+      <div class="cita-field"><span>Cliente</span><div class="cita-field-val">${c.cliente?.nombre||'—'}</div></div>
+      <div class="cita-field"><span>Teléfono</span><div class="cita-field-val">${c.cliente?.telefono||'—'}</div></div>
+      ${c.nota?`<div class="cita-field" style="grid-column:span 2"><span>Nota</span><div class="cita-field-val">${c.nota}</div></div>`:''}
+    </div>
+    ${!historial?`<div class="cita-acciones">
+      ${c.estado==='pendiente'?`
+        <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','confirmada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✓ Confirmar</button>
+        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
+      ${c.estado==='confirmada'?`
+        <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada','','','','',0)">Finalizar</button>
+        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
+      ${c.estado==='en_atencion'?`
+        <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada','','','','',0)">✓ Finalizar</button>
+        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
+    </div>`:''}
+  </div>`;
 }
 
 window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora){
@@ -572,6 +624,7 @@ window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora)
       });
     }
     renderCitas();
+    renderHistorial();
     mostrarToast(estado==='confirmada'?'Cita confirmada — correo enviado':'Estado actualizado');
   }catch(e){ mostrarToast('Error al actualizar','error'); }
 };
