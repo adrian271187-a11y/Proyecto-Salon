@@ -234,6 +234,27 @@ window.confirmarCita=async function(){
       telefono,correo,
       nota,estado:'pendiente',creadoEn:Timestamp.now()
     });
+
+    // Notificar al admin de nueva cita pendiente
+    const mesesN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const [fa,fm,fd]=fechaSeleccionada.split('-');
+    const fechaStr=`${parseInt(fd)} de ${mesesN[parseInt(fm)-1]} de ${fa}`;
+    const hs=Math.floor(horaSeleccionada),ms=Math.round((horaSeleccionada-hs)*60);
+    const horaStr=`${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+    try {
+      await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+        negocio: CONFIG.negocio,
+        name: nombre,
+        cliente_nombre: 'Administrador',
+        estado: 'pendiente de aprobación ⏳',
+        servicio: servicio.nombre,
+        fecha: fechaStr,
+        hora: horaStr,
+        correo_cliente: 'enviossaloncr@gmail.com',
+        email: correo
+      });
+    } catch(e){ console.warn('No se pudo notificar al admin:', e); }
+
     sessionStorage.setItem('cita_confirmada',JSON.stringify({servicio:servicio.nombre,fecha:fechaSeleccionada,hora:horaSeleccionada,nombre}));
     window.location.href='confirmacion.html';
   } catch(e){
