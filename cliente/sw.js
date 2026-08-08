@@ -1,4 +1,4 @@
-const CACHE = 'salon-cliente-v1';
+const CACHE = 'salon-cliente-v2';
 
 // Al instalar: limpia cachés viejos y toma control inmediato
 self.addEventListener('install', e => {
