@@ -324,7 +324,7 @@
 
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="config.js"></script>
 <script>emailjs.init(CONFIG.emailjs.publicKey);</script>
@@ -462,13 +462,14 @@ function mostrarToast(msg,tipo=''){
 cargarServicios();
 
 // Generar QR app cliente
-QRCode.toCanvas(document.createElement('canvas'),
-  'https://proyecto-salon-production.up.railway.app/cliente/',
-  { width:168, margin:0, color:{ dark:'#0d0d0d', light:'#ffffff' } },
-  (err, canvas) => {
-    if(!err) document.getElementById('qr-canvas').appendChild(canvas);
-  }
-);
+new QRCode(document.getElementById('qr-canvas'), {
+  text: 'https://proyecto-salon-production.up.railway.app/cliente/',
+  width: 168,
+  height: 168,
+  colorDark: '#0d0d0d',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
 </script>
 </body>
 </html>
