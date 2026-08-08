@@ -230,7 +230,9 @@ window.confirmarCita=async function(){
     await addDoc(collection(db,'citas'),{
       servicio:servicio.nombre,servicioId:servicio.id,duracion:servicio.duracion,precio:servicio.precio,
       fecha:fechaSeleccionada,hora:horaSeleccionada,
-      cliente:{nombre,telefono,correo},nota,estado:'pendiente',creadoEn:Timestamp.now()
+      cliente:{nombre,telefono,correo},
+      telefono,correo,
+      nota,estado:'pendiente',creadoEn:Timestamp.now()
     });
     sessionStorage.setItem('cita_confirmada',JSON.stringify({servicio:servicio.nombre,fecha:fechaSeleccionada,hora:horaSeleccionada,nombre}));
     window.location.href='confirmacion.html';
