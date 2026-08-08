@@ -304,6 +304,9 @@
         <div class="nav-item" onclick="mostrarSeccion('estadisticas',this)">
           <span class="nav-icon">📊</span><span class="nav-label">Estadísticas</span>
         </div>
+        <div class="nav-item" onclick="mostrarSeccion('historial',this)">
+          <span class="nav-icon">📋</span><span class="nav-label">Historial</span>
+        </div>
       </div>
       <div class="sidebar-footer">
         <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
@@ -344,8 +347,7 @@
             <button class="filtro-btn active" onclick="filtrar('todas',this)">Todas</button>
             <button class="filtro-btn" onclick="filtrar('pendiente',this)">Pendientes</button>
             <button class="filtro-btn" onclick="filtrar('confirmada',this)">Confirmadas</button>
-            <button class="filtro-btn" onclick="filtrar('finalizada',this)">Finalizadas</button>
-            <button class="filtro-btn" onclick="filtrar('cancelada',this)">Canceladas</button>
+            <button class="filtro-btn" onclick="filtrar('en_atencion',this)">En atención</button>
           </div>
           <div id="lista-citas"><div class="spinner"></div></div>
         </div>
@@ -472,6 +474,26 @@
         </div>
       </div>
 
+      <!-- HISTORIAL -->
+      <div class="seccion" id="sec-historial">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Registro</div>
+            <h1 class="page-titulo">Citas <em>historial</em></h1>
+          </div>
+        </div>
+        <div class="filtros" id="filtros-hist">
+          <button class="filtro-btn active" onclick="filtrarHist('todas',this)">Todas</button>
+          <button class="filtro-btn" onclick="filtrarHist('finalizada',this)">Finalizadas</button>
+          <button class="filtro-btn" onclick="filtrarHist('cancelada',this)">Canceladas</button>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center">
+          <input type="date" id="inp-fecha-hist" style="background:var(--negro3);border:0.5px solid var(--borde2);color:var(--blanco);padding:8px 12px;font-size:13px;font-family:'Jost',sans-serif;outline:none;" onchange="filtrarFechaHist()">
+          <button class="btn btn-outline btn-sm" onclick="limpiarFechaHist()">Todas las fechas</button>
+        </div>
+        <div id="lista-historial"><div class="spinner"></div></div>
+      </div>
+
     </div><!-- /main-content -->
   </div><!-- /admin-layout -->
 </div><!-- /admin-section -->
@@ -594,6 +616,7 @@ window.mostrarSeccion = function(id, btn) {
   btn.classList.add('active');
   if (id === 'espera') cargarEspera();
   if (id === 'estadisticas') cargarEstadisticas();
+  if (id === 'historial') cargarHistorial();
 };
 
 document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') window.iniciarSesion(); });
@@ -735,8 +758,10 @@ window.irADia = function(fs) {
 
 function renderCitas() {
   const lista = document.getElementById('lista-citas');
-  const citas = filtroActual === 'todas' ? todasLasCitas : todasLasCitas.filter(c => c.estado === filtroActual);
-  if (!citas.length) { lista.innerHTML = '<div class="empty-state">No hay citas para este día.</div>'; return; }
+  // Solo citas activas en la agenda
+  let citas = todasLasCitas.filter(c => c.estado !== 'cancelada' && c.estado !== 'finalizada');
+  if (filtroActual !== 'todas') citas = citas.filter(c => c.estado === filtroActual);
+  if (!citas.length) { lista.innerHTML = '<div class="empty-state">No hay citas activas para este día.</div>'; return; }
   lista.innerHTML = citas.map(c => `
     <div class="cita-card ${c.estado}">
       <div class="cita-card-header">
@@ -757,6 +782,65 @@ function renderCitas() {
         ${c.estado === 'confirmada' ? `
           <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada')">Finalizar</button>
           <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada')">✗ Cancelar</button>` : ''}
+        ${c.estado === 'en_atencion' ? `
+          <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada')">✓ Finalizar</button>
+          <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada')">✗ Cancelar</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ── HISTORIAL ──
+let todasParaHistorial = [];
+let filtroHistorial = 'todas', fechaFiltroHist = null;
+
+async function cargarHistorial() {
+  const lista = document.getElementById('lista-historial');
+  if (!lista) return;
+  lista.innerHTML = '<div class="spinner"></div>';
+  try {
+    const snap = await getDocs(collection(db, 'citas'));
+    todasParaHistorial = [];
+    snap.forEach(d => { const data = d.data(); if (data.estado === 'cancelada' || data.estado === 'finalizada') todasParaHistorial.push({id: d.id, ...data}); });
+    todasParaHistorial.sort((a, b) => b.fecha.localeCompare(a.fecha) || a.hora - b.hora);
+    renderHistorial();
+  } catch(e) { lista.innerHTML = '<div class="empty-state">Error al cargar historial.</div>'; }
+}
+
+window.filtrarHist = function(estado, btn) {
+  filtroHistorial = estado;
+  document.querySelectorAll('#filtros-hist .filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistorial();
+};
+window.filtrarFechaHist = function() {
+  fechaFiltroHist = document.getElementById('inp-fecha-hist').value || null;
+  renderHistorial();
+};
+window.limpiarFechaHist = function() {
+  fechaFiltroHist = null; document.getElementById('inp-fecha-hist').value = ''; renderHistorial();
+};
+
+function renderHistorial() {
+  const lista = document.getElementById('lista-historial');
+  if (!lista) return;
+  let citas = todasParaHistorial;
+  if (filtroHistorial !== 'todas') citas = citas.filter(c => c.estado === filtroHistorial);
+  if (fechaFiltroHist) citas = citas.filter(c => c.fecha === fechaFiltroHist);
+  if (!citas.length) { lista.innerHTML = '<div class="empty-state">No hay registros en el historial.</div>'; return; }
+  lista.innerHTML = citas.map(c => `
+    <div class="cita-card ${c.estado}">
+      <div class="cita-card-header">
+        <span class="cita-hora">${horaLabel(c.hora)}</span>
+        <span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="badge badge-${c.estado}">${c.estado}</span>
+          <span style="font-size:11px;color:var(--gris2)">${c.fecha}</span>
+        </span>
+      </div>
+      <div class="cita-info">
+        <div class="cita-field"><span>Servicio</span><div class="cita-field-val">${c.servicio}</div></div>
+        <div class="cita-field"><span>Duración</span><div class="cita-field-val">${c.duracion} min</div></div>
+        <div class="cita-field"><span>Cliente</span><div class="cita-field-val">${c.cliente?.nombre || '—'}</div></div>
+        <div class="cita-field"><span>Teléfono</span><div class="cita-field-val">${c.cliente?.telefono || '—'}</div></div>
       </div>
     </div>`).join('');
 }
