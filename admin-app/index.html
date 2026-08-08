@@ -426,7 +426,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where, orderBy, Timestamp }
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where, orderBy, Timestamp, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -473,7 +473,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById('login-section').style.display='none';
     document.getElementById('admin-section').style.display='flex';
     resetTimeout();
-    cargarTodasLasCitas();
+    inicializarCitasRealtime();
     inicializarDisponibilidad();
     inicializarServicios();
     inicializarEstadisticas();
@@ -507,22 +507,27 @@ window.irScreen = function(id){
   if(id==='historial') renderHistorial();
 };
 
-// ── AGENDA — CITAS ACTIVAS ──
+// ── AGENDA — TIEMPO REAL ──
 let todasLasCitas=[], filtroActual='todas', fechaFiltro=null;
+let citasUnsubscribe=null;
 
-window.cargarTodasLasCitas = async function cargarTodasLasCitas(){
-  document.getElementById('lista-citas').innerHTML='<div class="spinner"></div>';
-  try{
-    const snap=await getDocs(collection(db,'citas'));
+function inicializarCitasRealtime(){
+  if(citasUnsubscribe) citasUnsubscribe();
+  const btn=document.getElementById('btn-refresh');
+  if(btn){ btn.textContent='● En vivo'; btn.style.color='var(--verde)'; btn.style.borderColor='rgba(76,175,80,0.3)'; btn.disabled=true; }
+  citasUnsubscribe=onSnapshot(collection(db,'citas'), snap=>{
     todasLasCitas=[];
     snap.forEach(d=>todasLasCitas.push({id:d.id,...d.data()}));
     todasLasCitas.sort((a,b)=>b.fecha.localeCompare(a.fecha)||a.hora-b.hora);
     renderCitas();
     renderHistorial();
-  }catch(e){
-    document.getElementById('lista-citas').innerHTML='<div class="empty-state">Error al cargar citas.</div>';
-  }
+  }, err=>{
+    console.error('Error listener:', err);
+    if(btn){ btn.textContent='↻ Actualizar'; btn.style.color=''; btn.style.borderColor=''; btn.disabled=false; }
+  });
 }
+
+window.cargarTodasLasCitas=function(){ inicializarCitasRealtime(); }
 
 window.filtrar=function(estado,btn){
   filtroActual=estado;
@@ -609,24 +614,32 @@ function renderCitaCard(c, historial=false){
 window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora){
   try{
     await updateDoc(doc(db,'citas',id),{estado});
-    const idx=todasLasCitas.findIndex(c=>c.id===id);
-    if(idx>=0) todasLasCitas[idx].estado=estado;
-    if((estado==='confirmada'||estado==='cancelada')&&correo){
+    mostrarToast(estado==='confirmada'?'Cita confirmada':'Estado actualizado');
+  }catch(e){ mostrarToast('Error al actualizar','error'); return; }
+
+  // Enviar correo si aplica (por separado para no bloquear si falla)
+  if((estado==='confirmada'||estado==='cancelada')&&correo){
+    try{
       const template=estado==='confirmada'?CONFIG.emailjs.templateId:CONFIG.emailjs.templateCancelacion;
       const [a,m,d]=fecha.split('-');
       const fs=`${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${a}`;
       await emailjs.send(CONFIG.emailjs.serviceId,template,{
-        negocio:CONFIG.negocio, name:nombre, cliente_nombre:nombre,
+        negocio:CONFIG.negocio,
+        name:nombre||'Cliente',
+        cliente_nombre:nombre||'Cliente',
+        destinatario_nombre:nombre||'Cliente',
+        correo_destinatario:correo,
         estado:estado==='confirmada'?'confirmada ✓':'cancelada',
-        servicio, fecha:fs, hora:horaLabel(hora),
-        correo_cliente:correo, email:correo,
+        servicio:servicio||'—',
+        fecha:fs,
+        hora:horaLabel(parseFloat(hora)),
+        correo_cliente:correo,
+        email:correo,
         mensaje_extra:estado==='confirmada'?'Te esperamos.':'Lamentamos los inconvenientes.'
       });
-    }
-    renderCitas();
-    renderHistorial();
-    mostrarToast(estado==='confirmada'?'Cita confirmada — correo enviado':'Estado actualizado');
-  }catch(e){ mostrarToast('Error al actualizar','error'); }
+      mostrarToast(estado==='confirmada'?'Confirmada — correo enviado':'Cancelada — correo enviado');
+    }catch(e){ console.warn('Error emailjs:', e); mostrarToast('Estado actualizado (correo falló)'); }
+  }
 };
 
 // ── SALA DE ESPERA ──
