@@ -382,9 +382,10 @@ window.buscarCita=async function(){
   try{
     const hoy=new Date().toISOString().split('T')[0];
     const campo=buscar.includes('@')?'cliente.correo':'cliente.telefono';
-    const snap=await getDocs(query(collection(db,'citas'),where(campo,'==',buscar),where('fecha','>=',hoy)));
+    // Un solo where para evitar error de índice compuesto; el filtro de fecha se hace en JS
+    const snap=await getDocs(query(collection(db,'citas'),where(campo,'==',buscar)));
     let citas=[];
-    snap.forEach(d=>{const data=d.data();if(data.estado!=='cancelada'&&data.estado!=='finalizada')citas.push({id:d.id,...data});});
+    snap.forEach(d=>{const data=d.data();if(data.estado!=='cancelada'&&data.estado!=='finalizada'&&data.fecha>=hoy)citas.push({id:d.id,...data});});
     if(!citas.length){resultado.innerHTML='<p style="color:var(--gris);padding:24px 0;font-size:14px">No encontramos citas activas.</p>';return;}
     citas.sort((a,b)=>a.fecha.localeCompare(b.fecha));
     resultado.innerHTML=citas.map(c=>`
