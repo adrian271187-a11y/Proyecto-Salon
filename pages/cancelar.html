@@ -29,12 +29,12 @@
 
 <div class="container">
   <h1 class="page-title">Cancelar cita</h1>
-  <p class="page-sub">Ingresá tu correo para buscar tu cita</p>
+  <p class="page-sub">Ingresá tu correo o número de teléfono para buscar tu cita</p>
 
   <div class="buscar-section" id="buscar-section">
     <div class="form-group">
-      <label>Correo electrónico</label>
-      <input type="email" id="inp-correo" placeholder="tu@correo.com">
+      <label>Correo o teléfono</label>
+      <input type="text" id="inp-buscar" placeholder="tu@correo.com o 8XXXXXXX">
     </div>
     <button class="btn btn-primary" style="width:100%" onclick="buscarCita()">Buscar mi cita</button>
   </div>
@@ -69,31 +69,42 @@ function fechaLabel(f) {
 }
 
 window.buscarCita = async function() {
-  const correo = document.getElementById('inp-correo').value.trim();
-  if (!correo) { mostrarToast('Ingresá tu correo', 'error'); return; }
+  const buscar = document.getElementById('inp-buscar').value.trim().toLowerCase();
+  if (!buscar) { mostrarToast('Ingresá tu correo o teléfono', 'error'); return; }
 
   const resultado = document.getElementById('resultado');
   resultado.innerHTML = '<div class="spinner"></div>';
 
   try {
     const hoy = new Date().toISOString().split('T')[0];
+
+    // Determinar si es correo o teléfono
+    const esTelefono = /^[\d\s\+\-]+$/.test(buscar);
+    const campo = esTelefono ? 'cliente.telefono' : 'cliente.correo';
+    const valor = esTelefono ? buscar.replace(/\s/g, '') : buscar;
+
+    // Un solo where para evitar error de índice compuesto;
+    // el filtro de fecha se hace en JS
     const snap = await getDocs(query(
       collection(db, 'citas'),
-      where('cliente.correo', '==', correo),
-      where('fecha', '>=', hoy)
+      where(campo, '==', valor)
     ));
 
     let citas = [];
     snap.forEach(d => {
       const data = d.data();
-      if (data.estado !== 'cancelada' && data.estado !== 'finalizada') {
+      if (
+        data.estado !== 'cancelada' &&
+        data.estado !== 'finalizada' &&
+        data.fecha >= hoy
+      ) {
         citas.push({ id: d.id, ...data });
       }
     });
 
     if (citas.length === 0) {
       resultado.innerHTML = `
-        <div class="warning">No encontramos citas activas con ese correo.</div>
+        <div class="warning">No encontramos citas activas con ese dato.</div>
         <a href="../index.html" class="btn btn-outline" style="width:100%">Volver al inicio</a>
       `;
       return;
