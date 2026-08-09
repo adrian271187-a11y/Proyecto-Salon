@@ -644,8 +644,12 @@ document.getElementById('btn-buscar-cancelar').addEventListener('click',async()=
   const snap=await db.collection('appointments').where('tel','==',tel).get();
   if(snap.empty){resultados.innerHTML='<p class="note">No encontramos citas con ese teléfono.</p>';return;}
   resultados.innerHTML='';
+  let hayActivas=false;
   snap.forEach(doc=>{
     const d=doc.data();
+    // Solo mostrar citas que aún se pueden cancelar
+    if(d.estado==='cancelada'||d.estado==='finalizada'||d.estado==='en_atencion') return;
+    hayActivas=true;
     const svcNombre=d.serviceName||d.servicio||d.service||'—';
     const fecha=d.fecha||d.date||d.day||'—';
     const hora=d.hora||d.start||'—';
@@ -668,6 +672,9 @@ document.getElementById('btn-buscar-cancelar').addEventListener('click',async()=
     row.appendChild(btn);
     resultados.appendChild(row);
   });
+  if(!hayActivas){
+    resultados.innerHTML='<p class="note">No tenés citas activas para cancelar.</p>';
+  }
 });
 </script>
 </body>
