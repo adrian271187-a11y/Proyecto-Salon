@@ -268,37 +268,42 @@ function actualizarReloj(){
 actualizarReloj();
 setInterval(actualizarReloj, 1000);
 
-// Escuchar queue en tiempo real
-db.collection('queue').orderBy('createdAt').onSnapshot(snap => {
-  const cola = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+// Escuchar citas de hoy en tiempo real — igual que el admin
+function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+db.collection('citas').where('fecha','==',hoyStr()).onSnapshot(snap => {
+  let citasHoy = [];
+  snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada'&&data.estado!=='finalizada') citasHoy.push({id:d.id,...data}); });
+  citasHoy.sort((a,b)=>a.hora-b.hora);
+
+  const atendiendo = citasHoy.find(c=>c.estado==='en_atencion');
+  const cola       = citasHoy.filter(c=>c.estado==='confirmada');
 
   const contenido = document.getElementById('atendiendo-content');
   const indicador = document.getElementById('indicador');
-  const colaEl   = document.getElementById('cola-lista');
+  const colaEl    = document.getElementById('cola-lista');
 
-  if(cola.length > 0){
-    const actual = cola[0];
+  if(atendiendo){
     indicador.style.display = 'block';
     contenido.innerHTML =
-      '<div class="atendiendo-nombre">'+( actual.name||'—')+'</div>'+
-      '<div class="atendiendo-servicio">'+( actual.service||'')+'</div>';
+      '<div class="atendiendo-nombre">'+(atendiendo.cliente?.nombre||'—')+'</div>'+
+      '<div class="atendiendo-servicio">'+(atendiendo.servicio||'')+'</div>';
   } else {
     indicador.style.display = 'none';
     contenido.innerHTML = '<div class="sin-atencion">Nadie siendo atendido</div>';
   }
 
-  const espera = cola.slice(1);
-  document.getElementById('cola-num').textContent = espera.length;
+  document.getElementById('cola-num').textContent = cola.length;
 
-  if(!espera.length){
+  if(!cola.length){
     colaEl.innerHTML = '<div class="cola-vacia"><p>Sin clientes en espera</p></div>';
   } else {
-    colaEl.innerHTML = espera.map((c,i) =>
+    colaEl.innerHTML = cola.map((c,i) =>
       '<div class="cola-item">'+
-        '<div class="cola-pos">''+"+"+'(i+2)+'</div>'+
+        '<div class="cola-pos">'+(i+1)+'</div>'+
         '<div class="cola-info">'+
-          '<div class="cola-nombre">'+( c.name||'—')+'</div>'+
-          '<div class="cola-det">'+( c.service||'')+'</div>'+
+          '<div class="cola-nombre">'+(c.cliente?.nombre||'—')+'</div>'+
+          '<div class="cola-det">'+(c.servicio||'')+'</div>'+
           (i===0?'<div class="proximo-badge">Próximo</div>':'')+
         '</div>'+
       '</div>'
