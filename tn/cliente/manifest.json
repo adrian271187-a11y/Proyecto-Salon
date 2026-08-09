@@ -1,0 +1,16 @@
+{
+  "name": "TN Esteticista",
+  "short_name": "TN Estética",
+  "description": "Reservá tu cita con Tatiana Núñez",
+  "start_url": "/tn/cliente/",
+  "scope": "/tn/cliente/",
+  "display": "standalone",
+  "background_color": "#E9CAC7",
+  "theme_color": "#B4A8A0",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    { "src": "/tn/logo.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+    { "src": "/tn/logo.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" }
+  ]
+}
