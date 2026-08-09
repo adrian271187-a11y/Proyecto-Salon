@@ -1,0 +1,16 @@
+{
+  "name": "TN Admin",
+  "short_name": "TN Admin",
+  "description": "Panel de administración TN Esteticista",
+  "start_url": "/tn/admin-app/",
+  "scope": "/tn/admin-app/",
+  "display": "standalone",
+  "background_color": "#2C2016",
+  "theme_color": "#2C2016",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    { "src": "/tn/logo.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+    { "src": "/tn/logo.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" }
+  ]
+}
