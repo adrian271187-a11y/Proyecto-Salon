@@ -268,12 +268,11 @@ function actualizarReloj(){
 actualizarReloj();
 setInterval(actualizarReloj, 1000);
 
-// Escuchar citas de hoy en tiempo real — igual que el admin
-function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-
-db.collection('citas').where('fecha','==',hoyStr()).onSnapshot(snap => {
+// Escuchar TODAS las citas en_atencion y confirmada en tiempo real
+// (sin filtrar por fecha, porque el check-in puede pasar en un día distinto al de la cita)
+db.collection('citas').where('estado','in',['en_atencion','confirmada']).onSnapshot(snap => {
   let citasHoy = [];
-  snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada'&&data.estado!=='finalizada') citasHoy.push({id:d.id,...data}); });
+  snap.forEach(d=>{ const data=d.data(); citasHoy.push({id:d.id,...data}); });
   citasHoy.sort((a,b)=>a.hora-b.hora);
 
   const atendiendo = citasHoy.find(c=>c.estado==='en_atencion');
