@@ -640,7 +640,7 @@ window.confirmarCita=async function(id,correo,nombre,servicio,fecha,hora){
 window.cancelarCita=async function(id,nombre,correo,servicio,fecha,hora){
   if(!confirm('¿Cancelar la cita de '+nombre+'?')) return;
   try{
-    await db.collection('appointments').doc(id).delete();
+    await db.collection('appointments').doc(id).update({estado:'cancelada'});
     mostrarToast('Cita cancelada');
     if(correo){ try{ await emailjs.send(EMAILJS_SERVICE_ID,'template_y3zvu9a',{to_email:correo,to_name:nombre,tipo:'Tu cita ha sido cancelada',cliente_nombre:nombre,cliente_tel:'—',service_name:servicio,appointment_date:fecha,appointment_time:hora}); }catch(e){} }
     try{ await emailjs.send(EMAILJS_SERVICE_ID,'template_y3zvu9a',{to_email:'adrian22-11@hotmail.com',to_name:'Tatiana',tipo:'❌ Cita CANCELADA por admin',cliente_nombre:nombre,cliente_tel:'—',service_name:servicio,appointment_date:fecha,appointment_time:hora}); }catch(e){}
