@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2C2016">
+  <meta name="theme-color" content="#FAF7F4">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="TN Admin">
   <link rel="manifest" href="/tn/admin-app/manifest.json">
   <link rel="apple-touch-icon" href="/tn/logo.jpg">
@@ -16,155 +16,160 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --fondo:  #2C2016; --fondo2: #3a2a1c; --fondo3: #4a3828;
-      --rosa:   #E9CAC7; --rosa2:  #D4A8A4; --cafe:   #B4A8A0;
-      --blanco: #FDF8F6; --gris:   #8a7f7a; --gris2:  #6a5f5a;
-      --verde:  #4caf50; --rojo:   #e05555; --dorado: #EF9F27;
-      --borde:  rgba(233,202,199,0.15); --borde2: rgba(233,202,199,0.08);
+      --crema:  #FAF7F4; --crema2: #F4EDE8; --crema3: #EDE4DC;
+      --rosa:   #D4A8A4; --rosa2:  #C49090; --rosa3:  #B47878;
+      --cafe:   #8B6F5E; --cafe2:  #6B4F3E;
+      --negro:  #2C2016; --negro2: #3D2E20;
+      --gris:   #9A8880; --gris2:  #C4B8B0;
+      --verde:  #5A8A6A; --rojo:   #C05050; --dorado: #C8903A;
+      --borde:  rgba(180,120,120,0.2); --borde2: rgba(180,120,120,0.1);
+      --sombra: 0 2px 16px rgba(44,32,22,0.08);
       --safe-top: env(safe-area-inset-top,0px); --safe-bot: env(safe-area-inset-bottom,0px);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
-    body { font-family: 'Jost', sans-serif; background: var(--fondo); color: var(--blanco); display: flex; flex-direction: column; overflow: hidden; }
+    body { font-family: 'Jost', sans-serif; background: var(--crema); color: var(--negro); display: flex; flex-direction: column; overflow: hidden; }
 
-    /* LOGIN */
-    #login-section { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 24px; position: relative; }
-    #login-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(233,202,199,0.06) 0%, transparent 70%); pointer-events: none; }
-    .login-card { width: 100%; max-width: 360px; position: relative; text-align: center; }
-    .login-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--rosa2); margin: 0 auto 20px; display: block; }
-    .login-eyebrow { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; justify-content: center; }
-    .login-eyebrow::before, .login-eyebrow::after { content: ''; flex: 1; max-width: 40px; height: 0.5px; background: var(--rosa2); opacity: 0.4; }
-    .login-titulo { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; margin-bottom: 6px; }
+    /* ── LOGIN ── */
+    #login-section { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 24px; background: var(--crema); position: relative; }
+    #login-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(212,168,164,0.15) 0%, transparent 70%); pointer-events: none; }
+    .login-card { width: 100%; max-width: 360px; text-align: center; position: relative; }
+    .login-logo { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 20px rgba(180,120,120,0.25); margin: 0 auto 20px; display: block; }
+    .login-eyebrow { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+    .login-eyebrow::before, .login-eyebrow::after { content: ''; flex: 1; max-width: 40px; height: 0.5px; background: var(--rosa2); }
+    .login-titulo { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1.1; margin-bottom: 4px; }
     .login-titulo em { font-style: italic; color: var(--rosa2); }
-    .login-sub { font-size: 12px; color: var(--gris); margin-bottom: 32px; }
-    .login-error { background: rgba(224,85,85,0.08); border: 0.5px solid rgba(224,85,85,0.3); color: var(--rojo); padding: 10px 14px; font-size: 12px; margin-bottom: 14px; display: none; }
-    .inp-group { margin-bottom: 18px; text-align: left; }
-    .inp-group label { display: block; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gris); margin-bottom: 6px; }
-    .inp-group input { width: 100%; background: transparent; border: none; border-bottom: 0.5px solid rgba(233,202,199,0.2); padding: 10px 0; font-size: 15px; font-family: 'Jost', sans-serif; color: var(--blanco); outline: none; transition: border-color 0.3s; }
-    .inp-group input:focus { border-bottom-color: var(--rosa2); }
-    .inp-group input::placeholder { color: rgba(255,255,255,0.2); }
-    .btn-login { width: 100%; background: var(--rosa2); color: var(--fondo); border: none; padding: 14px; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
-    .btn-login:hover { background: var(--rosa); }
+    .login-sub { font-size: 12px; font-weight: 200; color: var(--gris); margin-bottom: 32px; letter-spacing: 0.05em; }
+    .login-error { background: rgba(192,80,80,0.08); border: 0.5px solid rgba(192,80,80,0.3); color: var(--rojo); padding: 10px 14px; font-size: 12px; margin-bottom: 16px; display: none; border-radius: 4px; }
+    .inp-group { margin-bottom: 20px; text-align: left; }
+    .inp-group label { display: block; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gris); margin-bottom: 8px; }
+    .inp-group input { width: 100%; background: white; border: 0.5px solid var(--borde); padding: 12px 16px; font-size: 14px; font-family: 'Jost', sans-serif; color: var(--negro); outline: none; transition: border-color 0.2s; border-radius: 0; }
+    .inp-group input:focus { border-color: var(--rosa2); }
+    .inp-group input::placeholder { color: var(--gris2); }
+    .btn-login { width: 100%; background: var(--rosa2); color: white; border: none; padding: 14px; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+    .btn-login:hover { background: var(--rosa3); }
     .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* INSTALL BANNER */
-    #install-banner { display: none; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: rgba(233,202,199,0.08); border-bottom: 0.5px solid var(--borde); flex-shrink: 0; }
+    /* ── INSTALL BANNER ── */
+    #install-banner { display: none; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: white; border-bottom: 0.5px solid var(--borde); flex-shrink: 0; box-shadow: var(--sombra); }
     #install-banner.show { display: flex; }
     .install-txt strong { color: var(--rosa2); font-size: 12px; display: block; font-weight: 400; }
     .install-txt span { font-size: 11px; color: var(--gris); }
-    .install-btn { background: var(--rosa2); color: var(--fondo); border: none; padding: 7px 14px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; white-space: nowrap; }
-    .install-close { background: none; border: none; color: var(--gris); font-size: 18px; cursor: pointer; }
+    .install-btn { background: var(--rosa2); color: white; border: none; padding: 7px 14px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; white-space: nowrap; }
+    .install-close { background: none; border: none; color: var(--gris); font-size: 20px; cursor: pointer; line-height: 1; }
 
-    /* APP SHELL */
+    /* ── APP SHELL ── */
     #admin-section { flex: 1; display: none; flex-direction: column; overflow: hidden; }
-    .app-header { padding: calc(var(--safe-top) + 12px) 16px 12px; background: var(--fondo2); border-bottom: 0.5px solid var(--borde); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 10px; }
+    .app-header { padding: calc(var(--safe-top) + 12px) 16px 12px; background: white; border-bottom: 0.5px solid var(--borde); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 1px 8px rgba(44,32,22,0.06); }
     .header-left { display: flex; align-items: center; gap: 10px; }
-    .header-logo-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--rosa2); }
-    .header-titulo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; }
+    .header-logo-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--crema3); }
+    .header-titulo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; color: var(--negro); }
     .header-titulo em { font-style: italic; color: var(--rosa2); }
-    .btn-salir { background: transparent; border: 0.5px solid rgba(233,202,199,0.2); color: var(--gris); padding: 6px 12px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; transition: all 0.2s; }
+    .btn-salir { background: transparent; border: 0.5px solid var(--borde); color: var(--gris); padding: 6px 14px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; transition: all 0.2s; border-radius: 2px; }
     .btn-salir:hover { border-color: var(--rojo); color: var(--rojo); }
 
-    /* SCREENS */
+    /* ── SCREENS ── */
     .screens { flex: 1; overflow: hidden; position: relative; }
-    .screen { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: none; padding: 20px 16px; }
+    .screen { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: none; padding: 20px 16px 24px; background: var(--crema); }
     .screen.active { display: block; }
 
-    /* BOTTOM NAV */
-    .bottom-nav { display: flex; background: var(--fondo2); border-top: 0.5px solid var(--borde); padding-bottom: var(--safe-bot); flex-shrink: 0; }
-    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 10px 4px; cursor: pointer; color: var(--gris); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: none; font-family: 'Jost', sans-serif; transition: color 0.2s; }
+    /* ── BOTTOM NAV ── */
+    .bottom-nav { display: flex; background: white; border-top: 0.5px solid var(--borde); padding-bottom: var(--safe-bot); flex-shrink: 0; box-shadow: 0 -1px 8px rgba(44,32,22,0.06); }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 10px 4px; cursor: pointer; color: var(--gris2); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: none; font-family: 'Jost', sans-serif; transition: color 0.2s; }
     .nav-btn.active { color: var(--rosa2); }
     .nav-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* PAGE HEADER */
+    /* ── PAGE HEADER ── */
     .page-eyebrow { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 6px; }
-    .page-titulo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; margin-bottom: 20px; }
+    .page-titulo { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; margin-bottom: 20px; color: var(--negro); }
     .page-titulo em { font-style: italic; color: var(--rosa2); }
     .page-header-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
 
-    /* BOTONES */
-    .btn { font-family: 'Jost', sans-serif; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-primary { background: var(--rosa2); color: var(--fondo); padding: 9px 18px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
-    .btn-primary:hover { background: var(--rosa); }
+    /* ── BOTONES ── */
+    .btn { font-family: 'Jost', sans-serif; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 2px; }
+    .btn-primary { background: var(--rosa2); color: white; padding: 9px 18px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
+    .btn-primary:hover { background: var(--rosa3); }
     .btn-sm { padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; }
-    .btn-success { background: rgba(76,175,80,0.12); color: var(--verde); border: 0.5px solid rgba(76,175,80,0.3); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
-    .btn-success:hover { background: rgba(76,175,80,0.2); }
-    .btn-danger  { background: rgba(224,85,85,0.1); color: var(--rojo); border: 0.5px solid rgba(224,85,85,0.3); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
-    .btn-danger:hover { background: rgba(224,85,85,0.18); }
-    .btn-outline { background: transparent; color: var(--gris); border: 0.5px solid rgba(233,202,199,0.15); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .btn-success { background: rgba(90,138,106,0.1); color: var(--verde); border: 0.5px solid rgba(90,138,106,0.3); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .btn-success:hover { background: rgba(90,138,106,0.18); }
+    .btn-danger  { background: rgba(192,80,80,0.08); color: var(--rojo); border: 0.5px solid rgba(192,80,80,0.25); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .btn-danger:hover { background: rgba(192,80,80,0.15); }
+    .btn-outline { background: white; color: var(--cafe); border: 0.5px solid var(--borde); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
     .btn-outline:hover { border-color: var(--rosa2); color: var(--rosa2); }
-    .btn-wa { background: rgba(37,211,102,0.12); color: #25D366; border: 0.5px solid rgba(37,211,102,0.35); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
-    .btn-wa:hover { background: rgba(37,211,102,0.22); }
-    .btn-checkin { background: rgba(239,159,39,0.12); color: var(--dorado); border: 0.5px solid rgba(239,159,39,0.35); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .btn-wa { background: rgba(37,211,102,0.08); color: #4A9A5A; border: 0.5px solid rgba(37,211,102,0.3); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .btn-checkin { background: rgba(200,144,58,0.1); color: var(--dorado); border: 0.5px solid rgba(200,144,58,0.3); padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
 
-    /* BADGES */
-    .badge { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 8px; }
-    .badge-pendiente  { background: rgba(239,159,39,0.12); color: var(--dorado); border: 0.5px solid rgba(239,159,39,0.3); }
-    .badge-confirmada { background: rgba(76,175,80,0.1); color: var(--verde); border: 0.5px solid rgba(76,175,80,0.25); }
-    .badge-cancelada  { background: rgba(224,85,85,0.1); color: var(--rojo); border: 0.5px solid rgba(224,85,85,0.25); }
+    /* ── BADGES ── */
+    .badge { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; }
+    .badge-pendiente  { background: rgba(200,144,58,0.1); color: var(--dorado); border: 0.5px solid rgba(200,144,58,0.3); }
+    .badge-confirmada { background: rgba(90,138,106,0.1); color: var(--verde); border: 0.5px solid rgba(90,138,106,0.25); }
+    .badge-cancelada  { background: rgba(192,80,80,0.08); color: var(--rojo); border: 0.5px solid rgba(192,80,80,0.2); }
 
-    /* FILTROS */
-    .filtros { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-    .filtro-btn { padding: 5px 12px; border: 0.5px solid rgba(233,202,199,0.15); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; background: transparent; color: var(--gris); font-family: 'Jost', sans-serif; transition: all 0.2s; white-space: nowrap; }
-    .filtro-btn.active { background: rgba(212,168,164,0.12); color: var(--rosa2); border-color: rgba(212,168,164,0.4); }
+    /* ── FILTROS ── */
+    .filtros { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filtro-btn { padding: 6px 14px; border: 0.5px solid var(--borde); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; background: white; color: var(--gris); font-family: 'Jost', sans-serif; transition: all 0.2s; border-radius: 2px; }
+    .filtro-btn.active { background: var(--rosa2); color: white; border-color: var(--rosa2); }
+    .filtro-btn:hover:not(.active) { border-color: var(--rosa2); color: var(--rosa2); }
 
     /* FECHA */
-    .inp-fecha { background: var(--fondo3); border: 0.5px solid var(--borde2); color: var(--blanco); padding: 8px 12px; font-size: 13px; font-family: 'Jost', sans-serif; outline: none; margin-bottom: 16px; }
-    .search-fecha { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+    .inp-fecha { background: white; border: 0.5px solid var(--borde); color: var(--negro); padding: 8px 12px; font-size: 13px; font-family: 'Jost', sans-serif; outline: none; border-radius: 2px; }
+    .search-fecha { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
 
-    /* CITAS */
-    .cita-card { background: var(--fondo2); border: 0.5px solid var(--borde2); border-left: 2px solid var(--borde); padding: 14px 16px; margin-bottom: 8px; }
+    /* ── CITAS ── */
+    .cita-card { background: white; border: 0.5px solid var(--borde2); border-left: 3px solid var(--crema3); padding: 16px; margin-bottom: 10px; box-shadow: var(--sombra); border-radius: 0 4px 4px 0; transition: border-left-color 0.2s; }
     .cita-card.pendiente  { border-left-color: var(--dorado); }
     .cita-card.confirmada { border-left-color: var(--verde); }
-    .cita-card.cancelada  { border-left-color: var(--rojo); opacity: 0.5; }
-    .cita-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .cita-hora { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--rosa2); }
-    .cita-fecha-txt { font-size: 11px; color: var(--gris); margin-left: 8px; }
-    .cita-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 12px; }
-    .cita-field span { display: block; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris2); margin-bottom: 2px; }
-    .cita-field-val { font-size: 13px; font-weight: 300; }
-    .cita-acciones { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 10px; border-top: 0.5px solid var(--borde2); }
-    .empty-state { text-align: center; padding: 48px 20px; color: var(--gris); font-size: 13px; border: 0.5px dashed rgba(233,202,199,0.1); }
+    .cita-card.cancelada  { border-left-color: var(--rojo); opacity: 0.55; }
+    .cita-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cita-hora { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: var(--rosa2); }
+    .cita-fecha-txt { font-size: 11px; color: var(--gris); margin-left: 8px; letter-spacing: 0.05em; }
+    .cita-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 14px; }
+    .cita-field span { display: block; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris); margin-bottom: 2px; }
+    .cita-field-val { font-size: 13px; font-weight: 300; color: var(--negro); }
+    .cita-acciones { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 12px; border-top: 0.5px solid var(--crema3); }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--gris); font-size: 13px; background: white; border: 0.5px dashed var(--borde); border-radius: 4px; }
 
-    /* SALA DE ESPERA */
-    .atendiendo-card { background: rgba(233,202,199,0.06); border: 0.5px solid rgba(233,202,199,0.2); padding: 24px 16px; margin-bottom: 20px; text-align: center; }
-    .atendiendo-label { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 10px; }
+    /* ── SALA DE ESPERA ── */
+    .atendiendo-card { background: white; border: 1px solid rgba(212,168,164,0.4); padding: 28px 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 20px rgba(180,120,120,0.12); border-radius: 4px; position: relative; overflow: hidden; }
+    .atendiendo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rosa), var(--rosa2), var(--cafe)); }
+    .atendiendo-label { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 12px; }
     .atendiendo-indicador { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; animation: pulso 2s ease-in-out infinite; margin: 0 auto 16px; }
-    @keyframes pulso { 0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.4)} 50%{box-shadow:0 0 0 12px rgba(76,175,80,0)} }
-    .atendiendo-nombre { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; }
-    .atendiendo-srv { font-size: 12px; color: var(--gris); margin-top: 4px; }
-    .espera-titulo { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gris); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-    .espera-titulo::after { content: ''; flex: 1; height: 0.5px; background: var(--borde2); }
-    .cola-item { background: var(--fondo2); border: 0.5px solid var(--borde2); padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-    .cola-num { width: 24px; height: 24px; background: rgba(212,168,164,0.1); border: 0.5px solid rgba(212,168,164,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--rosa2); flex-shrink: 0; }
+    @keyframes pulso { 0%,100%{box-shadow:0 0 0 0 rgba(90,138,106,0.4)} 50%{box-shadow:0 0 0 12px rgba(90,138,106,0)} }
+    .atendiendo-nombre { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--negro); }
+    .atendiendo-srv { font-size: 12px; color: var(--gris); margin-top: 4px; letter-spacing: 0.08em; }
+    .espera-titulo { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cafe); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .espera-titulo::after { content: ''; flex: 1; height: 0.5px; background: var(--crema3); }
+    .cola-item { background: white; border: 0.5px solid var(--borde2); padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; box-shadow: var(--sombra); border-radius: 4px; }
+    .cola-num { width: 28px; height: 28px; background: var(--crema2); border: 0.5px solid var(--borde); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--rosa2); font-family: 'Cormorant Garamond', serif; font-size: 18px; flex-shrink: 0; border-radius: 50%; }
     .cola-info { flex: 1; }
-    .cola-nombre { font-size: 14px; font-weight: 300; }
+    .cola-nombre { font-size: 14px; font-weight: 300; color: var(--negro); }
     .cola-det { font-size: 11px; color: var(--gris); margin-top: 2px; }
 
-    /* STATS */
+    /* ── STATS ── */
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .stat-card { background: var(--fondo2); border: 0.5px solid var(--borde2); padding: 18px 16px; }
-    .stat-card.hi { border-color: rgba(212,168,164,0.3); background: rgba(212,168,164,0.05); }
-    .stat-label { font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gris); margin-bottom: 8px; }
-    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--rosa2); line-height: 1; }
-    .stat-sub { font-size: 11px; color: var(--gris2); margin-top: 4px; }
+    .stat-card { background: white; border: 0.5px solid var(--borde2); padding: 20px 16px; box-shadow: var(--sombra); border-radius: 4px; }
+    .stat-card.hi { border-top: 2px solid var(--rosa2); }
+    .stat-label { font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gris); margin-bottom: 10px; }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--rosa2); line-height: 1; }
+    .stat-sub { font-size: 11px; color: var(--gris); margin-top: 4px; }
     .mes-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .mes-nav button { background: transparent; border: 0.5px solid var(--borde2); color: var(--gris); padding: 7px 12px; font-size: 14px; cursor: pointer; font-family: 'Jost', sans-serif; }
-    #mes-label { font-size: 14px; font-weight: 300; min-width: 140px; text-align: center; }
-    .ranking { background: var(--fondo2); border: 0.5px solid var(--borde2); padding: 20px 16px; }
+    .mes-nav button { background: white; border: 0.5px solid var(--borde); color: var(--cafe); padding: 7px 14px; font-size: 14px; cursor: pointer; font-family: 'Jost', sans-serif; border-radius: 2px; transition: all 0.2s; }
+    .mes-nav button:hover { border-color: var(--rosa2); color: var(--rosa2); }
+    #mes-label { font-size: 15px; font-weight: 300; min-width: 140px; text-align: center; color: var(--negro); }
+    .ranking { background: white; border: 0.5px solid var(--borde2); padding: 20px 16px; box-shadow: var(--sombra); border-radius: 4px; }
     .ranking-titulo { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 16px; }
-    .rank-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--borde2); }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--crema3); }
     .rank-item:last-child { border-bottom: none; }
-    .rank-num { width: 16px; font-size: 11px; color: var(--gris); }
-    .bar-wrap { flex: 1; height: 2px; background: rgba(233,202,199,0.1); }
-    .bar-fill { height: 100%; background: var(--rosa2); opacity: 0.7; }
+    .rank-num { width: 18px; font-size: 12px; color: var(--gris); font-family: 'Cormorant Garamond', serif; font-size: 16px; }
+    .bar-wrap { flex: 1; height: 3px; background: var(--crema2); border-radius: 2px; }
+    .bar-fill { height: 100%; background: var(--rosa2); border-radius: 2px; opacity: 0.8; }
 
-    /* SPINNER / TOAST */
-    .spinner { width: 24px; height: 24px; border: 1px solid rgba(233,202,199,0.15); border-top-color: var(--rosa2); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
+    /* ── SPINNER / TOAST ── */
+    .spinner { width: 24px; height: 24px; border: 2px solid var(--crema3); border-top-color: var(--rosa2); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #toast { position: fixed; bottom: calc(var(--safe-bot) + 60px); left: 50%; transform: translateX(-50%) translateY(80px); background: var(--fondo2); border: 0.5px solid var(--borde); color: var(--blanco); padding: 12px 20px; font-size: 12px; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
+    #toast { position: fixed; bottom: calc(var(--safe-bot) + 64px); left: 50%; transform: translateX(-50%) translateY(80px); background: var(--negro); color: white; padding: 12px 20px; font-size: 12px; z-index: 999; transition: transform 0.3s; white-space: nowrap; letter-spacing: 0.05em; border-radius: 4px; box-shadow: 0 4px 16px rgba(44,32,22,0.2); }
     #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.error { border-color: rgba(224,85,85,0.4); color: var(--rojo); }
+    #toast.error { background: var(--rojo); }
   </style>
 </head>
 <body>
@@ -203,10 +208,10 @@
   <div class="screens">
     <!-- AGENDA -->
     <div class="screen active" id="screen-agenda">
-      <div class="page-eyebrow">Gestión</div>
+      <div class="page-eyebrow">Gestión de citas</div>
       <div class="page-header-row">
         <div class="page-titulo">Todas las <em>citas</em></div>
-        <button class="btn-outline btn-sm" id="btn-refresh" onclick="inicializarCitasRealtime()">↻ En vivo</button>
+        <button class="btn-outline btn-sm" id="btn-refresh" onclick="inicializarCitasRealtime()" style="color:var(--verde);border-color:rgba(90,138,106,0.3)">● En vivo</button>
       </div>
       <div class="filtros">
         <button class="filtro-btn active" onclick="filtrar('todas',this)">Todas</button>
@@ -215,7 +220,7 @@
       </div>
       <div class="search-fecha">
         <input class="inp-fecha" type="date" id="inp-fecha" onchange="filtrarFecha()">
-        <button class="btn-outline btn-sm" onclick="limpiarFecha()">Todas</button>
+        <button class="btn-outline btn-sm" onclick="limpiarFecha()">Todas las fechas</button>
       </div>
       <div id="lista-citas"><div class="spinner"></div></div>
     </div>
@@ -230,31 +235,31 @@
       </div>
       <div class="search-fecha">
         <input class="inp-fecha" type="date" id="inp-fecha-hist" onchange="filtrarFechaHist()">
-        <button class="btn-outline btn-sm" onclick="limpiarFechaHist()">Todas</button>
+        <button class="btn-outline btn-sm" onclick="limpiarFechaHist()">Todas las fechas</button>
       </div>
       <div id="lista-historial"><div class="spinner"></div></div>
     </div>
 
     <!-- SALA DE ESPERA -->
     <div class="screen" id="screen-espera">
-      <div class="page-eyebrow">Hoy</div>
+      <div class="page-eyebrow">Turno actual</div>
       <div class="page-titulo">Sala de <em>espera</em></div>
       <div class="atendiendo-card">
         <div class="atendiendo-label">Atendiendo ahora</div>
         <div class="atendiendo-indicador" id="indicador" style="display:none"></div>
         <div id="atendiendo-content"><div class="spinner"></div></div>
         <div id="acciones-atendiendo" style="display:none;justify-content:center;gap:8px;margin-top:16px">
-          <button class="btn btn-danger btn-sm" onclick="finalizarTurno()">✓ Finalizar turno</button>
+          <button class="btn btn-success btn-sm" onclick="finalizarTurno()">✓ Finalizar turno</button>
         </div>
       </div>
       <div class="espera-titulo">Cola de espera</div>
       <div id="cola-espera"><div class="spinner"></div></div>
-      <p style="font-size:11px;color:var(--gris);margin-top:12px">↻ Actualización en tiempo real</p>
+      <p style="font-size:11px;color:var(--gris);margin-top:14px;letter-spacing:0.05em">↻ Actualización en tiempo real</p>
     </div>
 
     <!-- ESTADÍSTICAS -->
     <div class="screen" id="screen-stats">
-      <div class="page-eyebrow">Resumen</div>
+      <div class="page-eyebrow">Resumen del mes</div>
       <div class="page-titulo"><em>Estadísticas</em></div>
       <div class="mes-nav">
         <button onclick="cambiarMes(-1)">←</button>
@@ -263,7 +268,7 @@
       </div>
       <div class="stat-grid">
         <div class="stat-card hi"><div class="stat-label">Citas del mes</div><div class="stat-num" id="stat-total">—</div></div>
-        <div class="stat-card hi"><div class="stat-label">Ventas estimadas</div><div class="stat-num" style="font-size:20px" id="stat-monto">—</div></div>
+        <div class="stat-card hi"><div class="stat-label">Ventas estimadas</div><div class="stat-num" style="font-size:22px" id="stat-monto">—</div></div>
         <div class="stat-card"><div class="stat-label">Confirmadas</div><div class="stat-num" id="stat-confirmadas">—</div></div>
         <div class="stat-card"><div class="stat-label">Canceladas</div><div class="stat-num" id="stat-canceladas">—</div></div>
         <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-num" id="stat-pendientes">—</div></div>
@@ -309,42 +314,29 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db   = firebase.firestore();
 const auth = firebase.auth();
-
 emailjs.init({ publicKey: 'TP2wpzYa9TFR2mjxU' });
+
 const EMAILJS_SERVICE_ID  = 'service_pwktaba';
 const EMAILJS_TEMPLATE_ID = 'template_jm35zux';
 const NOMBRE_NEGOCIO = 'TN Esteticista';
-
 const SLOT_LABELS = [];
 for(let h=8; h<18; h++){ SLOT_LABELS.push(h+':00'); SLOT_LABELS.push(h+':30'); }
-
 const mesesN = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const mesesC = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-function horaLabel(start){
-  if(typeof start === 'string' && start.includes(':')) return start;
-  return SLOT_LABELS[start] || '—';
-}
-function fechaLabel(f){
-  if(!f) return '—';
-  const [a,m,d] = f.split('-');
-  return `${parseInt(d)} de ${mesesN[parseInt(m)-1]}`;
-}
-function hoyStr(){
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
+function horaLabel(start){ if(typeof start==='string'&&start.includes(':')) return start; return SLOT_LABELS[start]||'—'; }
+function fechaLabel(f){ if(!f) return '—'; const[a,m,d]=f.split('-'); return`${parseInt(d)} de ${mesesN[parseInt(m)-1]}`; }
+function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function mostrarToast(msg,tipo=''){
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='show '+tipo;
   setTimeout(()=>t.className='',3000);
 }
 
-// ── AUTH ──
+// AUTH
 let timeoutTimer=null;
-function resetTimeout(){ clearTimeout(timeoutTimer); timeoutTimer=setTimeout(()=>auth.signOut(), 30*60*1000); }
-document.addEventListener('touchstart', resetTimeout);
-document.addEventListener('click', resetTimeout);
+function resetTimeout(){ clearTimeout(timeoutTimer); timeoutTimer=setTimeout(()=>auth.signOut(),30*60*1000); }
+document.addEventListener('touchstart',resetTimeout); document.addEventListener('click',resetTimeout);
 
 auth.onAuthStateChanged(user=>{
   if(user){
@@ -360,19 +352,18 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-window.iniciarSesion = async function(){
+window.iniciarSesion=async function(){
   const usuario=document.getElementById('inp-usuario').value.trim();
   const pass=document.getElementById('inp-pass').value;
-  const btn=document.getElementById('btn-login');
-  const err=document.getElementById('error-msg');
+  const btn=document.getElementById('btn-login'), err=document.getElementById('error-msg');
   err.style.display='none'; btn.disabled=true; btn.textContent='Ingresando...';
-  try{ await auth.signInWithEmailAndPassword(usuario, pass); }
+  try{ await auth.signInWithEmailAndPassword(usuario,pass); }
   catch(e){ err.style.display='block'; btn.disabled=false; btn.textContent='Ingresar'; }
 };
 window.cerrarSesion=()=>auth.signOut();
 document.getElementById('inp-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') window.iniciarSesion(); });
 
-// ── NAVEGACIÓN ──
+// NAVEGACIÓN
 window.irScreen=function(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -383,44 +374,27 @@ window.irScreen=function(id){
   if(id==='historial') renderHistorial();
 };
 
-// ── AGENDA EN TIEMPO REAL ──
-let todasLasCitas=[], filtroActual='todas', fechaFiltro=null;
-let citasUnsubscribe=null;
+// AGENDA TIEMPO REAL
+let todasLasCitas=[], filtroActual='todas', fechaFiltro=null, citasUnsubscribe=null;
 
 window.inicializarCitasRealtime=function(){
   if(citasUnsubscribe) citasUnsubscribe();
-  const btn=document.getElementById('btn-refresh');
-  if(btn){ btn.textContent='● En vivo'; btn.style.color='var(--verde)'; btn.style.borderColor='rgba(76,175,80,0.3)'; }
-
-  citasUnsubscribe = db.collection('appointments').onSnapshot(snap=>{
+  citasUnsubscribe=db.collection('appointments').onSnapshot(snap=>{
     todasLasCitas=[];
     snap.forEach(doc=>{
       const d=doc.data();
-      const dia = d.day || d.date || d.fecha;
-      const startVal = typeof d.start === 'number' ? d.start : SLOT_LABELS.indexOf(d.start);
-      todasLasCitas.push({
-        id: doc.id,
-        fecha: dia,
-        start: startVal,
-        hora: horaLabel(startVal),
-        service: d.service || d.serviceName || '—',
-        name: d.name || d.nombre || '—',
-        tel: d.tel || d.telefono || '—',
-        correo: d.correo || '',
-        estado: d.estado || 'pendiente'
-      });
+      const dia=d.day||d.date||d.fecha;
+      const startVal=typeof d.start==='number'?d.start:SLOT_LABELS.indexOf(d.start);
+      todasLasCitas.push({id:doc.id,fecha:dia,start:startVal,hora:horaLabel(startVal),
+        service:d.service||d.serviceName||'—',name:d.name||d.nombre||'—',
+        tel:d.tel||d.telefono||'—',correo:d.correo||'',estado:d.estado||'pendiente'});
     });
-    todasLasCitas.sort((a,b)=> a.fecha===b.fecha ? a.start-b.start : (a.fecha<b.fecha?-1:1));
-    renderCitas();
-    renderHistorial();
-  }, err=>{ console.error('Error listener:', err); });
+    todasLasCitas.sort((a,b)=>a.fecha===b.fecha?a.start-b.start:(a.fecha<b.fecha?-1:1));
+    renderCitas(); renderHistorial();
+  },err=>console.error('Error listener:',err));
 };
 
-window.filtrar=function(estado,btn){
-  filtroActual=estado;
-  document.querySelectorAll('.filtros .filtro-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); renderCitas();
-};
+window.filtrar=function(estado,btn){ filtroActual=estado; document.querySelectorAll('.filtros .filtro-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderCitas(); };
 window.filtrarFecha=function(){ fechaFiltro=document.getElementById('inp-fecha').value||null; renderCitas(); };
 window.limpiarFecha=function(){ fechaFiltro=null; document.getElementById('inp-fecha').value=''; renderCitas(); };
 
@@ -433,13 +407,9 @@ function renderCitas(){
   lista.innerHTML=citas.map(c=>renderCitaCard(c)).join('');
 }
 
-// ── HISTORIAL ──
+// HISTORIAL
 let filtroHist='todas', fechaFiltroHist=null;
-window.filtrarHist=function(estado,btn){
-  filtroHist=estado;
-  document.querySelectorAll('#filtros-hist .filtro-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); renderHistorial();
-};
+window.filtrarHist=function(estado,btn){ filtroHist=estado; document.querySelectorAll('#filtros-hist .filtro-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderHistorial(); };
 window.filtrarFechaHist=function(){ fechaFiltroHist=document.getElementById('inp-fecha-hist').value||null; renderHistorial(); };
 window.limpiarFechaHist=function(){ fechaFiltroHist=null; document.getElementById('inp-fecha-hist').value=''; renderHistorial(); };
 
@@ -453,14 +423,15 @@ function renderHistorial(){
   lista.innerHTML=citas.map(c=>renderCitaCard(c,true)).join('');
 }
 
-function renderCitaCard(c, historial=false){
+function renderCitaCard(c,historial=false){
   const tel=c.tel.replace(/[^0-9]/g,'');
   const telWa=tel?(tel.length===8?'506'+tel:tel):'';
-  return `<div class="cita-card ${c.estado}">
+  const waMsg=encodeURIComponent('Hola '+c.name+'! Tu cita de '+c.service+' el '+c.fecha+' a las '+c.hora+' en '+NOMBRE_NEGOCIO+' está confirmada. ¡Te esperamos!');
+  return`<div class="cita-card ${c.estado}">
     <div class="cita-card-top">
       <div style="display:flex;align-items:baseline;gap:8px">
         <div class="cita-hora">${c.hora}</div>
-        <div class="cita-fecha-txt">${fechaLabel(c.fecha)}</div>
+        <div class="cita-fecha-txt">${fechaLabel(c.fecha)} · ${c.fecha||''}</div>
       </div>
       <span class="badge badge-${c.estado}">${c.estado}</span>
     </div>
@@ -477,7 +448,7 @@ function renderCitaCard(c, historial=false){
       ${c.estado==='confirmada'?`
         <button class="btn btn-checkin btn-sm" onclick="checkinCita('${c.id}','${c.name}','${c.service}')">📋 Check-in</button>
         <button class="btn btn-danger btn-sm" onclick="cancelarCita('${c.id}','${c.name}','${c.correo}','${c.service}','${c.fecha}','${c.hora}')">✗ Cancelar</button>`:''}
-      ${telWa?`<a class="btn btn-wa btn-sm" href="https://wa.me/${telWa}?text=${encodeURIComponent('Hola '+c.name+'! Tu cita de '+c.service+' el '+c.fecha+' a las '+c.hora+' en '+NOMBRE_NEGOCIO+' está confirmada. ¡Te esperamos!')}" target="_blank">💬 WA</a>`:''}
+      ${telWa?`<a class="btn btn-wa btn-sm" href="https://wa.me/${telWa}?text=${waMsg}" target="_blank">💬 WhatsApp</a>`:''}
     </div>`:''}
   </div>`;
 }
@@ -487,14 +458,8 @@ window.confirmarCita=async function(id,correo,nombre,servicio,fecha,hora){
     await db.collection('appointments').doc(id).update({estado:'confirmada'});
     mostrarToast('Cita confirmada');
     if(correo){
-      try{
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID,{
-          to_name:nombre, to_email:correo, service_name:servicio,
-          appointment_date:fecha, appointment_time:hora,
-          business_name:NOMBRE_NEGOCIO, email:correo
-        });
-        mostrarToast('Confirmada — correo enviado');
-      }catch(e){ console.warn('EmailJS error:', e); }
+      try{ await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:nombre,to_email:correo,service_name:servicio,appointment_date:fecha,appointment_time:hora,business_name:NOMBRE_NEGOCIO,email:correo}); mostrarToast('Confirmada — correo enviado'); }
+      catch(e){ console.warn('EmailJS:',e); }
     }
   }catch(e){ mostrarToast('Error al confirmar','error'); }
 };
@@ -504,138 +469,83 @@ window.cancelarCita=async function(id,nombre,correo,servicio,fecha,hora){
   try{
     await db.collection('appointments').doc(id).delete();
     mostrarToast('Cita cancelada');
-    if(correo){
-      try{
-        await emailjs.send(EMAILJS_SERVICE_ID, 'template_y3zvu9a',{
-          to_email:correo, to_name:nombre,
-          tipo:'Tu cita ha sido cancelada',
-          cliente_nombre:nombre, cliente_tel:'—',
-          service_name:servicio, appointment_date:fecha, appointment_time:hora
-        });
-      }catch(e){ console.warn('EmailJS error:', e); }
-    }
-    // Aviso admins
-    try{
-      await emailjs.send(EMAILJS_SERVICE_ID,'template_y3zvu9a',{
-        to_email:'adrian22-11@hotmail.com', to_name:'Tatiana',
-        tipo:'❌ Cita CANCELADA por admin',
-        cliente_nombre:nombre, cliente_tel:'—',
-        service_name:servicio, appointment_date:fecha, appointment_time:hora
-      });
-    }catch(e){}
+    if(correo){ try{ await emailjs.send(EMAILJS_SERVICE_ID,'template_y3zvu9a',{to_email:correo,to_name:nombre,tipo:'Tu cita ha sido cancelada',cliente_nombre:nombre,cliente_tel:'—',service_name:servicio,appointment_date:fecha,appointment_time:hora}); }catch(e){} }
+    try{ await emailjs.send(EMAILJS_SERVICE_ID,'template_y3zvu9a',{to_email:'adrian22-11@hotmail.com',to_name:'Tatiana',tipo:'❌ Cita CANCELADA por admin',cliente_nombre:nombre,cliente_tel:'—',service_name:servicio,appointment_date:fecha,appointment_time:hora}); }catch(e){}
   }catch(e){ mostrarToast('Error al cancelar','error'); }
 };
 
 window.checkinCita=async function(id,nombre,servicio){
-  try{
-    await db.collection('queue').add({
-      name:nombre, service:servicio,
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    mostrarToast(nombre+' agregado a la cola');
-  }catch(e){ mostrarToast('Error al hacer check-in','error'); }
+  try{ await db.collection('queue').add({name:nombre,service:servicio,createdAt:firebase.firestore.FieldValue.serverTimestamp()}); mostrarToast(nombre+' en la cola'); }
+  catch(e){ mostrarToast('Error','error'); }
 };
 
-// ── SALA DE ESPERA ──
+// SALA DE ESPERA
 let queueUnsubscribe=null;
 function inicializarEspera(){}
-
 function cargarEspera(){
   if(queueUnsubscribe) queueUnsubscribe();
-  queueUnsubscribe = db.collection('queue').orderBy('createdAt').onSnapshot(snap=>{
+  queueUnsubscribe=db.collection('queue').orderBy('createdAt').onSnapshot(snap=>{
     const cola=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderEspera(cola);
   });
 }
-
 function renderEspera(cola){
   const contenido=document.getElementById('atendiendo-content');
   const acciones=document.getElementById('acciones-atendiendo');
   const indicador=document.getElementById('indicador');
-
   if(cola.length>0){
     const actual=cola[0];
     indicador.style.display='block';
     contenido.innerHTML=`<div class="atendiendo-nombre">${actual.name}</div><div class="atendiendo-srv">${actual.service}</div>`;
-    acciones.style.display='flex';
-    acciones.dataset.id=actual.id;
+    acciones.style.display='flex'; acciones.dataset.id=actual.id;
   } else {
     indicador.style.display='none';
-    contenido.innerHTML='<div style="font-size:14px;color:var(--gris);padding:8px">Nadie siendo atendido</div>';
+    contenido.innerHTML='<div style="font-size:15px;color:var(--gris);padding:8px;font-weight:200">Nadie siendo atendido</div>';
     acciones.style.display='none';
   }
-
   const colaEl=document.getElementById('cola-espera');
   const siguiente=cola.slice(1);
   colaEl.innerHTML=!siguiente.length
-    ?'<p style="font-size:12px;color:var(--gris)">No hay clientes en espera.</p>'
+    ?'<p style="font-size:12px;color:var(--gris);padding:12px 0">No hay clientes en espera.</p>'
     :siguiente.map((c,i)=>`<div class="cola-item"><div class="cola-num">${i+2}</div><div class="cola-info"><div class="cola-nombre">${c.name}</div><div class="cola-det">${c.service}</div></div><button class="btn btn-danger btn-sm" onclick="finalizarDeCola('${c.id}')">Quitar</button></div>`).join('');
 }
+window.finalizarTurno=async function(){ const id=document.getElementById('acciones-atendiendo').dataset.id; try{ await db.collection('queue').doc(id).delete(); mostrarToast('Turno finalizado'); }catch(e){ mostrarToast('Error','error'); } };
+window.finalizarDeCola=async function(id){ try{ await db.collection('queue').doc(id).delete(); mostrarToast('Cliente removido'); }catch(e){ mostrarToast('Error','error'); } };
 
-window.finalizarTurno=async function(){
-  const id=document.getElementById('acciones-atendiendo').dataset.id;
-  try{ await db.collection('queue').doc(id).delete(); mostrarToast('Turno finalizado'); }
-  catch(e){ mostrarToast('Error','error'); }
-};
-window.finalizarDeCola=async function(id){
-  try{ await db.collection('queue').doc(id).delete(); mostrarToast('Cliente removido'); }
-  catch(e){ mostrarToast('Error','error'); }
-};
-
-// ── ESTADÍSTICAS ──
+// ESTADÍSTICAS
 let mesStats=new Date();
 function inicializarEstadisticas(){ cargarEstadisticas(); }
 window.cambiarMes=function(delta){ mesStats.setMonth(mesStats.getMonth()+delta); cargarEstadisticas(); };
-
 async function cargarEstadisticas(){
   document.getElementById('mes-label').textContent=mesesC[mesStats.getMonth()]+' '+mesStats.getFullYear();
   try{
     const anio=mesStats.getFullYear(), mes=String(mesStats.getMonth()+1).padStart(2,'0');
-    const p1=`${anio}-${mes}-01`;
-    const p2=`${anio}-${mes}-${new Date(anio,mesStats.getMonth()+1,0).getDate()}`;
+    const p1=`${anio}-${mes}-01`, p2=`${anio}-${mes}-${new Date(anio,mesStats.getMonth()+1,0).getDate()}`;
     const snap=await db.collection('appointments').where('day','>=',p1).where('day','<=',p2).get();
-    let citas=[];
-    snap.forEach(d=>{const data=d.data(); citas.push({...data,fecha:data.day||data.date});});
-    const total=citas.length;
-    const confirmadas=citas.filter(c=>c.estado==='confirmada').length;
-    const canceladas=citas.filter(c=>c.estado==='cancelada').length;
-    const pendientes=citas.filter(c=>c.estado==='pendiente'||!c.estado).length;
+    let citas=[]; snap.forEach(d=>{ const data=d.data(); citas.push({...data,fecha:data.day||data.date}); });
+    const total=citas.length, confirmadas=citas.filter(c=>c.estado==='confirmada').length;
+    const canceladas=citas.filter(c=>c.estado==='cancelada').length, pendientes=citas.filter(c=>!c.estado||c.estado==='pendiente').length;
     document.getElementById('stat-total').textContent=total;
     document.getElementById('stat-confirmadas').textContent=confirmadas;
     document.getElementById('stat-canceladas').textContent=canceladas;
     document.getElementById('stat-pendientes').textContent=pendientes;
     document.getElementById('stat-monto').textContent='—';
     const conteo={};
-    citas.forEach(c=>{ if(c.service||c.serviceName){ const s=c.service||c.serviceName; conteo[s]=(conteo[s]||0)+1; }});
+    citas.forEach(c=>{ const s=c.service||c.serviceName; if(s) conteo[s]=(conteo[s]||0)+1; });
     const ranking=Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
     const max=ranking[0]?.[1]||1;
     document.getElementById('ranking-lista').innerHTML=!ranking.length
-      ?'<p style="color:var(--gris);font-size:12px">Sin datos.</p>'
-      :ranking.map(([nombre,count],i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div style="flex:1;font-size:13px;font-weight:300">${nombre}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div><div style="font-size:12px;color:var(--rosa2);min-width:20px;text-align:right">${count}</div></div>`).join('');
+      ?'<p style="color:var(--gris);font-size:12px">Sin datos para este mes.</p>'
+      :ranking.map(([nombre,count],i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div style="flex:1;font-size:13px;font-weight:300;color:var(--negro)">${nombre}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div><div style="font-size:13px;color:var(--rosa2);min-width:24px;text-align:right;font-family:'Cormorant Garamond',serif">${count}</div></div>`).join('');
   }catch(e){ document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris);font-size:12px">Error al cargar.</p>'; }
 }
 
-// ── PWA INSTALL ──
+// PWA
 let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt', e=>{
-  e.preventDefault(); deferredPrompt=e;
-  document.getElementById('install-banner').classList.add('show');
-});
-document.getElementById('install-btn').addEventListener('click', async()=>{
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const {outcome}=await deferredPrompt.userChoice;
-  deferredPrompt=null;
-  document.getElementById('install-banner').classList.remove('show');
-});
-window.addEventListener('appinstalled',()=>{
-  document.getElementById('install-banner').classList.remove('show');
-});
-
-// ── SERVICE WORKER ──
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/tn/admin-app/sw.js').catch(()=>{});
-}
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; document.getElementById('install-banner').classList.add('show'); });
+document.getElementById('install-btn').addEventListener('click',async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; document.getElementById('install-banner').classList.remove('show'); });
+window.addEventListener('appinstalled',()=>document.getElementById('install-banner').classList.remove('show'));
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/tn/admin-app/sw.js').catch(()=>{});
 </script>
 </body>
 </html>
