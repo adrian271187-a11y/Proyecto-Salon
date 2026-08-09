@@ -585,7 +585,12 @@ function renderHistorial(){
 function renderCitaCard(c,historial=false){
   const tel=c.tel.replace(/[^0-9]/g,'');
   const telWa=tel?(tel.length===8?'506'+tel:tel):'';
-  const waMsg=encodeURIComponent('Hola '+c.name+'! Tu cita de '+c.service+' el '+c.fecha+' a las '+c.hora+' en '+NOMBRE_NEGOCIO+' está confirmada. ¡Te esperamos!');
+  const waMsg=encodeURIComponent(
+'Hola '+c.name+' 👋, te confirmamos tu cita en *'+NOMBRE_NEGOCIO+'*:\n\n'+
+'📋 *Servicio:* '+c.service+'\n'+
+'📅 *Fecha:* '+fechaLabel(c.fecha)+'\n'+
+'🕐 *Hora:* '+c.hora+'\n\n'+
+'¡Te esperamos! Si necesitás cambiar o cancelar tu cita, avisanos con anticipación.');
   return`<div class="cita-card ${c.estado}">
     <div class="cita-card-top">
       <div style="display:flex;align-items:baseline;gap:8px">
