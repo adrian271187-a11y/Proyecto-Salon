@@ -1,4 +1,4 @@
-const CACHE = 'salon-admin-v6';
+const CACHE = 'salon-admin-v7';
 
 self.addEventListener('install', e => {
   e.waitUntil(
