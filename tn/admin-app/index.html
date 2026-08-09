@@ -164,6 +164,58 @@
     .bar-wrap { flex: 1; height: 3px; background: var(--crema2); border-radius: 2px; }
     .bar-fill { height: 100%; background: var(--rosa2); border-radius: 2px; opacity: 0.8; }
 
+    /* ── DISPONIBILIDAD ── */
+    .disp-tabs { display: flex; border-bottom: 0.5px solid var(--crema3); margin-bottom: 20px; }
+    .disp-tab { flex: 1; text-align: center; padding: 10px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; color: var(--gris); border-bottom: 2px solid transparent; margin-bottom: -0.5px; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Jost', sans-serif; transition: all 0.2s; }
+    .disp-tab.active { color: var(--rosa2); border-bottom-color: var(--rosa2); }
+    .disp-panel { display: none; }
+    .disp-panel.active { display: block; }
+    .cal-nav-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-nav-row h3 { font-size: 15px; font-weight: 300; color: var(--negro); }
+    .cal-btn { background: white; border: 0.5px solid var(--borde); color: var(--cafe); width: 32px; height: 32px; font-size: 14px; cursor: pointer; font-family: 'Jost', sans-serif; transition: all 0.2s; border-radius: 2px; display: flex; align-items: center; justify-content: center; }
+    .cal-btn:hover { border-color: var(--rosa2); color: var(--rosa2); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 16px; }
+    .cal-dn { text-align: center; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gris); padding: 6px 0; }
+    .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 300; cursor: pointer; border: 0.5px solid var(--borde2); background: white; transition: all 0.15s; border-radius: 2px; color: var(--negro); }
+    .cal-day:hover:not(.dis):not(.emp) { border-color: var(--rosa2); color: var(--rosa2); }
+    .cal-day.bloq { background: rgba(192,80,80,0.06); border-color: rgba(192,80,80,0.25); color: var(--rojo); }
+    .cal-day.dis  { color: var(--gris2); cursor: not-allowed; background: var(--crema2); border-color: transparent; }
+    .cal-day.emp  { cursor: default; background: transparent; border-color: transparent; }
+    .cal-day.hoy  { border-color: var(--rosa2); font-weight: 500; }
+    .legend { display: flex; gap: 16px; margin-bottom: 12px; font-size: 11px; color: var(--gris); align-items: center; }
+    .legend-dot { width: 12px; height: 12px; flex-shrink: 0; border-radius: 2px; }
+    .horas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .hora-item { padding: 10px 4px; text-align: center; font-size: 12px; font-weight: 300; border: 0.5px solid var(--borde2); background: white; cursor: pointer; transition: all 0.15s; border-radius: 2px; }
+    .hora-item:hover { border-color: var(--rosa2); color: var(--rosa2); }
+    .hora-item.bloqueada { background: rgba(192,80,80,0.06); border-color: rgba(192,80,80,0.25); color: var(--rojo); }
+
+    /* ── SERVICIOS ── */
+    .srv-row { background: white; border: 0.5px solid var(--borde2); padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; box-shadow: var(--sombra); border-radius: 4px; }
+    .srv-row.inactivo { opacity: 0.4; }
+    .srv-cat { font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gris); min-width: 70px; }
+    .srv-nombre { flex: 1; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--negro); }
+    .srv-dur { font-size: 11px; color: var(--gris); }
+    .srv-precio { font-size: 14px; color: var(--rosa2); min-width: 70px; text-align: right; }
+
+    /* ── MODAL ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(44,32,22,0.4); backdrop-filter: blur(4px); z-index: 200; align-items: flex-end; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; padding: 28px 20px calc(28px + var(--safe-bot)); width: 100%; max-width: 480px; border-top: 3px solid var(--rosa2); box-shadow: 0 -8px 32px rgba(44,32,22,0.12); }
+    .modal-eyebrow { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--rosa2); margin-bottom: 8px; }
+    .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; margin-bottom: 20px; color: var(--negro); }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris); margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; background: var(--crema); border: 0.5px solid var(--borde); padding: 10px 12px; font-size: 14px; font-family: 'Jost', sans-serif; color: var(--negro); outline: none; transition: border-color 0.2s; border-radius: 2px; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--rosa2); background: white; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .modal-footer { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+    .toggle-switch { position: relative; width: 40px; height: 22px; display: inline-block; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: var(--crema3); cursor: pointer; transition: 0.2s; border-radius: 11px; }
+    .toggle-track::before { content: ''; position: absolute; width: 14px; height: 14px; left: 4px; top: 4px; background: var(--gris2); transition: 0.2s; border-radius: 50%; }
+    input:checked + .toggle-track { background: rgba(196,144,144,0.3); }
+    input:checked + .toggle-track::before { transform: translateX(18px); background: var(--rosa2); }
+
     /* ── SPINNER / TOAST ── */
     .spinner { width: 24px; height: 24px; border: 2px solid var(--crema3); border-top-color: var(--rosa2); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -257,6 +309,48 @@
       <p style="font-size:11px;color:var(--gris);margin-top:14px;letter-spacing:0.05em">↻ Actualización en tiempo real</p>
     </div>
 
+    <!-- DISPONIBILIDAD -->
+    <div class="screen" id="screen-disp">
+      <div class="page-eyebrow">Horarios</div>
+      <div class="page-titulo"><em>Disponibilidad</em></div>
+      <div class="disp-tabs">
+        <button class="disp-tab active" onclick="cambiarDispTab('dias',this)">Días bloqueados</button>
+        <button class="disp-tab" onclick="cambiarDispTab('horas',this)">Horas bloqueadas</button>
+      </div>
+      <div class="disp-panel active" id="disp-dias">
+        <div class="cal-nav-row">
+          <button class="cal-btn" onclick="navDisp(-1,'dias')">←</button>
+          <h3 id="disp-titulo-dias"></h3>
+          <button class="cal-btn" onclick="navDisp(1,'dias')">→</button>
+        </div>
+        <div class="legend">
+          <div class="legend-dot" style="background:rgba(192,80,80,0.1);border:0.5px solid rgba(192,80,80,0.3)"></div> Bloqueado
+          <div class="legend-dot" style="background:white;border:0.5px solid var(--borde)"></div> Disponible
+        </div>
+        <div class="cal-grid" id="cal-dias"></div>
+        <p style="font-size:11px;color:var(--gris)">Tocá un día para bloquearlo o desbloquearlo.</p>
+      </div>
+      <div class="disp-panel" id="disp-horas">
+        <div class="cal-nav-row">
+          <button class="cal-btn" onclick="navDisp(-1,'horas')">←</button>
+          <h3 id="disp-titulo-horas"></h3>
+          <button class="cal-btn" onclick="navDisp(1,'horas')">→</button>
+        </div>
+        <div class="cal-grid" id="cal-horas" style="margin-bottom:16px"></div>
+        <div id="panel-horas"><p style="font-size:12px;color:var(--gris)">Seleccioná un día para ver sus horas.</p></div>
+      </div>
+    </div>
+
+    <!-- SERVICIOS -->
+    <div class="screen" id="screen-servicios">
+      <div class="page-eyebrow">Catálogo</div>
+      <div class="page-header-row">
+        <div class="page-titulo"><em>Servicios</em></div>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalSrv()">+ Agregar</button>
+      </div>
+      <div id="lista-servicios"><div class="spinner"></div></div>
+    </div>
+
     <!-- ESTADÍSTICAS -->
     <div class="screen" id="screen-stats">
       <div class="page-eyebrow">Resumen del mes</div>
@@ -290,6 +384,12 @@
     <button class="nav-btn" id="nav-espera" onclick="irScreen('espera')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Espera
     </button>
+    <button class="nav-btn" id="nav-disp" onclick="irScreen('disp')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Horarios
+    </button>
+    <button class="nav-btn" id="nav-servicios" onclick="irScreen('servicios')">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Servicios
+    </button>
     <button class="nav-btn" id="nav-stats" onclick="irScreen('stats')">
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats
     </button>
@@ -297,6 +397,35 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- Modal servicios -->
+<div class="modal-overlay" id="modal-srv" onclick="cerrarSiOverlay(event)">
+  <div class="modal">
+    <div class="modal-eyebrow">Catálogo de servicios</div>
+    <h2 id="modal-srv-titulo">Agregar servicio</h2>
+    <div class="form-group"><label>Nombre del servicio</label><input type="text" id="inp-srv-nombre" placeholder="Ej: Facial básico"></div>
+    <div class="form-group"><label>Categoría</label>
+      <select id="inp-srv-categoria">
+        <option value="facial">🌿 Facial</option>
+        <option value="corporal">💆 Corporal</option>
+        <option value="unas">💅 Uñas</option>
+        <option value="otro">✨ Otro</option>
+      </select>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Duración (min)</label><input type="number" id="inp-srv-duracion" placeholder="60" min="15" step="15"></div>
+      <div class="form-group"><label>Precio (₡)</label><input type="number" id="inp-srv-precio" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:12px">
+      <label style="margin:0">Activo</label>
+      <label class="toggle-switch"><input type="checkbox" id="inp-srv-activo" checked><span class="toggle-track"></span></label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="cerrarModalSrv()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="guardarServicio()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -376,14 +505,19 @@ window.cerrarSesion=function(){ sesionActiva=false; mostrarLogin(); };
 document.getElementById('inp-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') window.iniciarSesion(); });
 
 // NAVEGACIÓN
+const mesesC2 = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const diasN = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
 window.irScreen=function(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
-  if(id==='espera') cargarEspera();
-  if(id==='stats')  cargarEstadisticas();
+  if(id==='espera')    cargarEspera();
+  if(id==='stats')     cargarEstadisticas();
   if(id==='historial') renderHistorial();
+  if(id==='disp')      inicializarDisponibilidad();
+  if(id==='servicios') inicializarServicios();
 };
 
 // AGENDA TIEMPO REAL
@@ -551,6 +685,161 @@ async function cargarEstadisticas(){
       :ranking.map(([nombre,count],i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div style="flex:1;font-size:13px;font-weight:300;color:var(--negro)">${nombre}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div><div style="font-size:13px;color:var(--rosa2);min-width:24px;text-align:right;font-family:'Cormorant Garamond',serif">${count}</div></div>`).join('');
   }catch(e){ document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris);font-size:12px">Error al cargar.</p>'; }
 }
+
+// ── DISPONIBILIDAD ──
+const TN_HORARIO = { inicio: 8, fin: 18 };
+let mesDisp = { dias: new Date(), horas: new Date() };
+let diasBloqueados = [], horasBloqMap = {}, fechaHorasSel = null;
+
+function inicializarDisponibilidad(){ renderCalDisp('dias'); renderCalDisp('horas'); }
+
+window.cambiarDispTab=function(tab,btn){
+  document.querySelectorAll('.disp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.disp-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('disp-'+tab).classList.add('active');
+};
+window.navDisp=function(delta,tipo){ mesDisp[tipo].setMonth(mesDisp[tipo].getMonth()+delta); renderCalDisp(tipo); };
+
+async function renderCalDisp(tipo){
+  const mes=mesDisp[tipo], anio=mes.getFullYear(), m=mes.getMonth();
+  document.getElementById('disp-titulo-'+tipo).textContent=mesesC2[m]+' '+anio;
+  const snap=await db.collection('dias_bloqueados').get();
+  diasBloqueados=[]; snap.forEach(d=>diasBloqueados.push({id:d.id,...d.data()}));
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const primerDia=new Date(anio,m,1).getDay(), ultimoDia=new Date(anio,m+1,0).getDate();
+  let html=diasN.map(d=>`<div class="cal-dn">${d}</div>`).join('');
+  for(let i=0;i<primerDia;i++) html+=`<div class="cal-day emp"></div>`;
+  for(let d=1;d<=ultimoDia;d++){
+    const fecha=new Date(anio,m,d);
+    const fs=`${anio}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const esPasado=fecha<hoy, esBloq=diasBloqueados.some(b=>b.fecha===fs), esHoy=fecha.getTime()===hoy.getTime();
+    let cls='cal-day'+(esPasado?' dis':esBloq?' bloq':'')+(esHoy?' hoy':'');
+    const fn=tipo==='dias'?`toggleDia('${fs}')`:`selFechaHoras('${fs}')`;
+    html+=`<div class="${cls}" ${!esPasado?`onclick="${fn}"`:''}>${d}</div>`;
+  }
+  document.getElementById('cal-'+tipo).innerHTML=html;
+}
+
+window.toggleDia=async function(fecha){
+  const ex=diasBloqueados.find(b=>b.fecha===fecha);
+  try{
+    if(ex){ await db.collection('dias_bloqueados').doc(ex.id).delete(); mostrarToast('Día desbloqueado'); }
+    else{ await db.collection('dias_bloqueados').add({fecha}); mostrarToast('Día bloqueado'); }
+    renderCalDisp('dias');
+  }catch(e){ mostrarToast('Error','error'); }
+};
+
+window.selFechaHoras=async function(fecha){
+  fechaHorasSel=fecha;
+  const snap=await db.collection('horas_bloqueadas').where('fecha','==',fecha).get();
+  horasBloqMap[fecha]=[]; snap.forEach(d=>horasBloqMap[fecha].push({id:d.id,...d.data()}));
+  const[anio,mes,dia]=fecha.split('-');
+  const panel=document.getElementById('panel-horas');
+  const bloqs=horasBloqMap[fecha];
+  let html=`<p style="font-size:11px;color:var(--gris);margin-bottom:12px">${parseInt(dia)} de ${mesesN[parseInt(mes)-1]} — tocá para bloquear/desbloquear</p><div class="horas-grid">`;
+  for(let h=TN_HORARIO.inicio;h<TN_HORARIO.fin;h++){
+    for(let mn=0;mn<60;mn+=30){
+      const hn=h+mn/60, label=`${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}`;
+      const bloq=bloqs.find(b=>b.hora===hn);
+      html+=`<div class="hora-item ${bloq?'bloqueada':''}" onclick="toggleHora('${fecha}',${hn},'${label}')">${label}</div>`;
+    }
+  }
+  html+='</div>';
+  panel.innerHTML=html;
+};
+
+window.toggleHora=async function(fecha,horaNum,label){
+  const bloqs=horasBloqMap[fecha]||[], ex=bloqs.find(b=>b.hora===horaNum);
+  try{
+    if(ex){ await db.collection('horas_bloqueadas').doc(ex.id).delete(); mostrarToast(`${label} desbloqueada`); }
+    else{ await db.collection('horas_bloqueadas').add({fecha,hora:horaNum}); mostrarToast(`${label} bloqueada`); }
+    await selFechaHoras(fecha);
+  }catch(e){ mostrarToast('Error','error'); }
+};
+
+// ── SERVICIOS ──
+let servicios=[], editandoSrvId=null;
+const catLabelTN={facial:'🌿 Facial',corporal:'💆 Corporal',unas:'💅 Uñas',otro:'✨ Otro'};
+
+async function inicializarServicios(){
+  const lista=document.getElementById('lista-servicios');
+  lista.innerHTML='<div class="spinner"></div>';
+  try{
+    const snap=await db.collection('servicios').get();
+    servicios=[];
+    snap.forEach(d=>servicios.push({id:d.id,...d.data()}));
+    renderServicios();
+  }catch(e){ lista.innerHTML='<div class="empty-state">Error al cargar servicios.</div>'; }
+}
+
+function renderServicios(){
+  const lista=document.getElementById('lista-servicios');
+  if(!servicios.length){ lista.innerHTML='<div class="empty-state">No hay servicios. Agregá el primero.</div>'; return; }
+  lista.innerHTML=servicios.map(s=>`
+    <div class="srv-row ${s.activo===false?'inactivo':''}">
+      <div class="srv-cat">${catLabelTN[s.categoria||'otro']||'—'}</div>
+      <div class="srv-nombre">${s.nombre||s.name||'—'}</div>
+      <div class="srv-dur">${s.duracion||s.slots*30||'—'}min</div>
+      <div class="srv-precio">${(s.precio||s.price)>0?'₡'+(s.precio||s.price).toLocaleString():'—'}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="editarSrv('${s.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarSrv('${s.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+window.abrirModalSrv=function(id=null){
+  editandoSrvId=id;
+  document.getElementById('modal-srv-titulo').textContent=id?'Editar servicio':'Agregar servicio';
+  if(id){
+    const s=servicios.find(x=>x.id===id);
+    document.getElementById('inp-srv-nombre').value=s.nombre||s.name||'';
+    document.getElementById('inp-srv-categoria').value=s.categoria||'otro';
+    document.getElementById('inp-srv-duracion').value=s.duracion||s.slots*30||'';
+    document.getElementById('inp-srv-precio').value=s.precio||s.price||0;
+    document.getElementById('inp-srv-activo').checked=s.activo!==false;
+  } else {
+    document.getElementById('inp-srv-nombre').value='';
+    document.getElementById('inp-srv-categoria').value='facial';
+    document.getElementById('inp-srv-duracion').value='';
+    document.getElementById('inp-srv-precio').value='';
+    document.getElementById('inp-srv-activo').checked=true;
+  }
+  document.getElementById('modal-srv').classList.add('open');
+};
+window.editarSrv=id=>window.abrirModalSrv(id);
+window.cerrarModalSrv=()=>{ editandoSrvId=null; document.getElementById('modal-srv').classList.remove('open'); };
+window.cerrarSiOverlay=e=>{ if(e.target.id==='modal-srv') window.cerrarModalSrv(); };
+
+window.guardarServicio=async function(){
+  const nombre=document.getElementById('inp-srv-nombre').value.trim();
+  const categoria=document.getElementById('inp-srv-categoria').value;
+  const duracion=parseInt(document.getElementById('inp-srv-duracion').value)||0;
+  const precio=parseInt(document.getElementById('inp-srv-precio').value)||0;
+  const activo=document.getElementById('inp-srv-activo').checked;
+  if(!nombre||!duracion){ mostrarToast('Completá nombre y duración','error'); return; }
+  const data={nombre,name:nombre,categoria,duracion,slots:Math.ceil(duracion/30),precio,price:precio,activo};
+  try{
+    if(editandoSrvId){
+      await db.collection('servicios').doc(editandoSrvId).update(data);
+      const idx=servicios.findIndex(s=>s.id===editandoSrvId);
+      if(idx>=0) servicios[idx]={id:editandoSrvId,...data};
+      mostrarToast('Servicio actualizado');
+    } else {
+      const ref=await db.collection('servicios').add(data);
+      servicios.push({id:ref.id,...data});
+      mostrarToast('Servicio agregado');
+    }
+    window.cerrarModalSrv(); renderServicios();
+  }catch(e){ mostrarToast('Error al guardar','error'); }
+};
+
+window.eliminarSrv=async function(id){
+  if(!confirm('¿Eliminar este servicio?')) return;
+  try{ await db.collection('servicios').doc(id).delete(); mostrarToast('Servicio eliminado'); await inicializarServicios(); }
+  catch(e){ mostrarToast('Error','error'); }
+};
 
 // PWA
 let deferredPrompt=null;
