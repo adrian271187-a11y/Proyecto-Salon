@@ -20,7 +20,7 @@ const CONFIG = {
   horario: {
     inicio: 8,
     fin: 18,
-    diasHabiles: [1, 2, 3, 4, 5, 6]
+    diasHabiles: [0, 1, 2, 3, 4, 5, 6]
   },
   contacto: {
     whatsapp: "",
