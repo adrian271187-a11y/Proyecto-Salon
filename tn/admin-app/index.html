@@ -300,7 +300,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 const firebaseConfig = {
@@ -312,9 +311,8 @@ const firebaseConfig = {
   appId: "1:895355336849:web:1a6c5192bf3f3f80bde730"
 };
 firebase.initializeApp(firebaseConfig);
-const db   = firebase.firestore();
-const auth = firebase.auth();
-emailjs.init({ publicKey: 'TP2wpzYa9TFR2mjxU' });
+const db = firebase.firestore();
+let timeoutTimer = null;
 
 const EMAILJS_SERVICE_ID  = 'service_pwktaba';
 const EMAILJS_TEMPLATE_ID = 'template_jm35zux';
@@ -333,34 +331,48 @@ function mostrarToast(msg,tipo=''){
   setTimeout(()=>t.className='',3000);
 }
 
-// AUTH
-let timeoutTimer=null;
-function resetTimeout(){ clearTimeout(timeoutTimer); timeoutTimer=setTimeout(()=>auth.signOut(),30*60*1000); }
-document.addEventListener('touchstart',resetTimeout); document.addEventListener('click',resetTimeout);
+// ── AUTH LOCAL (sin Firebase Auth para evitar reCAPTCHA) ──
+const ADMIN_USER = 'tatiana';
+const ADMIN_PASS = 'tn2024'; // Cambiá esto por la contraseña real
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    document.getElementById('login-section').style.display='none';
-    document.getElementById('admin-section').style.display='flex';
-    resetTimeout();
-    inicializarCitasRealtime();
-    inicializarEspera();
-    inicializarEstadisticas();
-  } else {
-    document.getElementById('login-section').style.display='flex';
-    document.getElementById('admin-section').style.display='none';
-  }
-});
+let sesionActiva = false;
 
-window.iniciarSesion=async function(){
-  const usuario=document.getElementById('inp-usuario').value.trim();
+function resetTimeout(){
+  clearTimeout(timeoutTimer);
+  timeoutTimer = setTimeout(()=>{ sesionActiva=false; mostrarLogin(); }, 30*60*1000);
+}
+document.addEventListener('touchstart', resetTimeout);
+document.addEventListener('click', resetTimeout);
+
+function mostrarLogin(){
+  document.getElementById('login-section').style.display='flex';
+  document.getElementById('admin-section').style.display='none';
+}
+
+function mostrarAdmin(){
+  document.getElementById('login-section').style.display='none';
+  document.getElementById('admin-section').style.display='flex';
+  resetTimeout();
+  inicializarCitasRealtime();
+  inicializarEspera();
+  inicializarEstadisticas();
+}
+
+window.iniciarSesion=function(){
+  const usuario=document.getElementById('inp-usuario').value.trim().toLowerCase();
   const pass=document.getElementById('inp-pass').value;
-  const btn=document.getElementById('btn-login'), err=document.getElementById('error-msg');
-  err.style.display='none'; btn.disabled=true; btn.textContent='Ingresando...';
-  try{ await auth.signInWithEmailAndPassword(usuario,pass); }
-  catch(e){ err.style.display='block'; btn.disabled=false; btn.textContent='Ingresar'; }
+  const err=document.getElementById('error-msg');
+  const btn=document.getElementById('btn-login');
+  err.style.display='none';
+  if(usuario===ADMIN_USER && pass===ADMIN_PASS){
+    sesionActiva=true;
+    mostrarAdmin();
+  } else {
+    err.style.display='block';
+    btn.textContent='Ingresar';
+  }
 };
-window.cerrarSesion=()=>auth.signOut();
+window.cerrarSesion=function(){ sesionActiva=false; mostrarLogin(); };
 document.getElementById('inp-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') window.iniciarSesion(); });
 
 // NAVEGACIÓN
