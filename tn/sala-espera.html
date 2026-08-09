@@ -385,26 +385,24 @@
   </div>
 </div>
 
-<script src="/config.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase de TN Esteticista (jireh-spa-f27b3)
 const firebaseConfig = {
-  apiKey: "AIzaSyBEOIQ9wsjHY5GxTG7PIOqLDZzKUrUv-fI",
-  authDomain: "salon-citas-piloto.firebaseapp.com",
-  projectId: "salon-citas-piloto",
-  storageBucket: "salon-citas-piloto.firebasestorage.app",
-  messagingSenderId: "322452978480",
-  appId: "1:322452978480:web:59cb4121a52166d70526f5"
+  apiKey: "AIzaSyCGoJUcpv7T2b87PdtCYbs0YTD7g8_LGuY",
+  authDomain: "jireh-spa-f27b3.firebaseapp.com",
+  projectId: "jireh-spa-f27b3",
+  storageBucket: "jireh-spa-f27b3.firebasestorage.app",
+  messagingSenderId: "895355336849",
+  appId: "1:895355336849:web:1a6c5192bf3f3f80bde730"
 };
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// Config
-document.getElementById('h-logo').innerHTML = CONFIG.negocio.split(' ').slice(0,1).join(' ') + ' <em>' + CONFIG.negocio.split(' ').slice(1).join(' ') + '</em>';
-document.title = 'Sala de Espera — ' + CONFIG.negocio;
+// Nombre del negocio
+document.getElementById('h-logo').innerHTML = 'TN <em>Esteticista</em>';
+document.title = 'Sala de Espera — TN Esteticista';
 
 // Reloj
 const mesesN = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -420,55 +418,47 @@ function actualizarReloj(){
 actualizarReloj();
 setInterval(actualizarReloj, 1000);
 
-function horaLabel(h){ const hs=Math.floor(h),ms=Math.round((h-hs)*60); return`${String(hs).padStart(2,'0')}:${String(ms).padStart(2,'0')}`; }
-function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+// Escuchar la colección queue en tiempo real (igual que el admin)
+db.collection('queue').orderBy('createdAt').onSnapshot(snap => {
+  const cola = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-async function cargar(){
-  try{
-    const snap = await getDocs(query(collection(db,'citas'), where('fecha','==',hoyStr())));
-    let citas = [];
-    snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada'&&data.estado!=='finalizada') citas.push({id:d.id,...data}); });
-    citas.sort((a,b)=>a.hora-b.hora);
+  const contenido = document.getElementById('atendiendo-content');
+  const indicador = document.getElementById('indicador');
+  const colaEl   = document.getElementById('cola-lista');
 
-    const atendiendo = citas.find(c=>c.estado==='en_atencion');
-    const cola = citas.filter(c=>c.estado==='confirmada');
-
-    const contenido = document.getElementById('atendiendo-content');
-    const indicador = document.getElementById('indicador');
-    if(atendiendo){
-      indicador.style.display = 'block';
-      contenido.innerHTML = `
-        <div class="atendiendo-nombre">${atendiendo.cliente?.nombre||'—'}</div>
-        <div class="atendiendo-servicio">${atendiendo.servicio}</div>
-        <div class="atendiendo-hora">${horaLabel(atendiendo.hora)}</div>`;
-    } else {
-      indicador.style.display = 'none';
-      contenido.innerHTML = `<div class="sin-atencion">Nadie siendo atendido</div>`;
-    }
-
-    document.getElementById('cola-num').textContent = cola.length;
-    const colaEl = document.getElementById('cola-lista');
-    if(!cola.length){
-      colaEl.innerHTML = `<div class="cola-vacia"><p>Sin clientes en espera</p></div>`;
-    } else {
-      colaEl.innerHTML = cola.map((c,i)=>`
-        <div class="cola-item">
-          <div class="cola-pos">${i+1}</div>
-          <div class="cola-info">
-            <div class="cola-nombre">${c.cliente?.nombre||'—'}</div>
-            <div class="cola-det">${c.servicio}</div>
-            ${i===0?'<div class="proximo-badge">Próximo</div>':''}
-          </div>
-          <div class="cola-hora-badge">${horaLabel(c.hora)}</div>
-        </div>`).join('');
-    }
-  }catch(e){
-    document.getElementById('atendiendo-content').innerHTML='<div class="sin-atencion">Sin conexión</div>';
+  // En atención — primero de la queue
+  if(cola.length > 0){
+    const actual = cola[0];
+    indicador.style.display = 'block';
+    contenido.innerHTML = `
+      <div class="atendiendo-nombre">${actual.name||'—'}</div>
+      <div class="atendiendo-servicio">${actual.service||''}</div>`;
+  } else {
+    indicador.style.display = 'none';
+    contenido.innerHTML = `<div class="sin-atencion">Nadie siendo atendido</div>`;
   }
-}
 
-cargar();
-setInterval(cargar, 15000);
+  // Cola de espera — resto de la queue
+  const espera = cola.slice(1);
+  document.getElementById('cola-num').textContent = espera.length;
+
+  if(!espera.length){
+    colaEl.innerHTML = `<div class="cola-vacia"><p>Sin clientes en espera</p></div>`;
+  } else {
+    colaEl.innerHTML = espera.map((c,i) => `
+      <div class="cola-item">
+        <div class="cola-pos">${i+2}</div>
+        <div class="cola-info">
+          <div class="cola-nombre">${c.name||'—'}</div>
+          <div class="cola-det">${c.service||''}</div>
+          ${i===0?'<div class="proximo-badge">Próximo</div>':''}
+        </div>
+      </div>`).join('');
+  }
+}, err => {
+  document.getElementById('atendiendo-content').innerHTML = '<div class="sin-atencion">Sin conexión</div>';
+  console.error(err);
+});
 </script>
 </body>
 </html>
