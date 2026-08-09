@@ -503,9 +503,12 @@ window.irScreen = function(id){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
-  if(id==='espera') cargarEspera();
-  if(id==='stats')  cargarEstadisticas();
+  if(id==='espera')    cargarEspera();
+  if(id==='stats')     suscribirEstadisticas();
   if(id==='historial') renderHistorial();
+  // Cancelar suscripciones al salir
+  if(id!=='espera'&&esperaUnsubscribe){ esperaUnsubscribe(); esperaUnsubscribe=null; }
+  if(id!=='stats'&&statsUnsubscribe){ statsUnsubscribe(); statsUnsubscribe=null; }
 };
 
 // ── AGENDA — TIEMPO REAL ──
@@ -660,24 +663,24 @@ window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora)
 };
 
 // ── SALA DE ESPERA ──
-let esperaTimer=null, citasHoy=[];
+let esperaUnsubscribe=null;
 function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-async function cargarEspera(){
-  clearInterval(esperaTimer);
-  await _cargarEspera();
-  esperaTimer=setInterval(_cargarEspera,15000);
+function cargarEspera(){
+  if(esperaUnsubscribe){ esperaUnsubscribe(); esperaUnsubscribe=null; }
+  esperaUnsubscribe=onSnapshot(
+    query(collection(db,'citas'),where('fecha','==',hoyStr())),
+    snap=>{
+      const citasHoy=[];
+      snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada') citasHoy.push({id:d.id,...data}); });
+      citasHoy.sort((a,b)=>a.hora-b.hora);
+      renderEspera(citasHoy);
+    },
+    err=>console.error('Error sala espera:',err)
+  );
 }
-async function _cargarEspera(){
-  try{
-    const snap=await getDocs(query(collection(db,'citas'),where('fecha','==',hoyStr())));
-    citasHoy=[];
-    snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada') citasHoy.push({id:d.id,...data}); });
-    citasHoy.sort((a,b)=>a.hora-b.hora);
-    renderEspera();
-  }catch(e){}
-}
-function renderEspera(){
+
+function renderEspera(citasHoy){
   const atendiendo=citasHoy.find(c=>c.estado==='en_atencion');
   const cola=citasHoy.filter(c=>c.estado==='confirmada');
   const contenido=document.getElementById('atendiendo-content');
@@ -695,9 +698,9 @@ function renderEspera(){
     ?'<p style="font-size:12px;color:var(--gris2);padding:12px 0">No hay clientes en espera.</p>'
     :cola.map((c,i)=>`<div class="cola-item"><div class="cola-num">${i+1}</div><div class="cola-info"><div class="cola-nombre">${c.cliente?.nombre||'—'}</div><div class="cola-det">${c.servicio} · ${horaLabel(c.hora)}</div></div></div>`).join('');
 }
-window.llamarSiguiente=async function(id){ try{ await updateDoc(doc(db,'citas',id),{estado:'en_atencion'}); mostrarToast('Cliente llamado'); _cargarEspera(); }catch(e){ mostrarToast('Error','error'); } };
-window.finalizarTurno=async function(){ const id=document.getElementById('acciones-atendiendo').dataset.id; try{ await updateDoc(doc(db,'citas',id),{estado:'finalizada'}); mostrarToast('Turno finalizado'); _cargarEspera(); }catch(e){ mostrarToast('Error','error'); } };
-window.cancelarTurno=async function(){ const id=document.getElementById('acciones-atendiendo').dataset.id; try{ await updateDoc(doc(db,'citas',id),{estado:'cancelada'}); mostrarToast('Turno cancelado'); _cargarEspera(); }catch(e){ mostrarToast('Error','error'); } };
+window.llamarSiguiente=async function(id){ try{ await updateDoc(doc(db,'citas',id),{estado:'en_atencion'}); mostrarToast('Cliente llamado'); }catch(e){ mostrarToast('Error','error'); } };
+window.finalizarTurno=async function(){ const id=document.getElementById('acciones-atendiendo').dataset.id; try{ await updateDoc(doc(db,'citas',id),{estado:'finalizada'}); mostrarToast('Turno finalizado'); }catch(e){ mostrarToast('Error','error'); } };
+window.cancelarTurno=async function(){ const id=document.getElementById('acciones-atendiendo').dataset.id; try{ await updateDoc(doc(db,'citas',id),{estado:'cancelada'}); mostrarToast('Turno cancelado'); }catch(e){ mostrarToast('Error','error'); } };
 
 // ── DISPONIBILIDAD ──
 let mesDisp={dias:new Date(),horas:new Date()}, diasBloqueados=[], horasBloqMap={}, fechaHorasSel=null;
@@ -825,36 +828,45 @@ window.eliminarSrv=async function(id){
 
 // ── ESTADÍSTICAS ──
 let mesStats=new Date();
-function inicializarEstadisticas(){ cargarEstadisticas(); }
-window.cambiarMes=function(delta){ mesStats.setMonth(mesStats.getMonth()+delta); cargarEstadisticas(); };
-async function cargarEstadisticas(){
-  document.getElementById('mes-label').textContent=mesesC[mesStats.getMonth()]+' '+mesStats.getFullYear();
-  try{
-    const anio=mesStats.getFullYear(), mes=mesStats.getMonth()+1;
-    const p1=`${anio}-${String(mes).padStart(2,'0')}-01`;
-    const p2=`${anio}-${String(mes).padStart(2,'0')}-${new Date(anio,mes,0).getDate()}`;
-    const snap=await getDocs(query(collection(db,'citas'),where('fecha','>=',p1),where('fecha','<=',p2)));
-    let citas=[]; snap.forEach(d=>citas.push(d.data()));
-    const total=citas.length;
-    const confirmadas=citas.filter(c=>c.estado==='confirmada'||c.estado==='finalizada').length;
-    const canceladas=citas.filter(c=>c.estado==='cancelada').length;
-    const pendientes=citas.filter(c=>c.estado==='pendiente').length;
-    const pct=total>0?Math.round(confirmadas/total*100):0;
-    const monto=citas.filter(c=>c.estado!=='cancelada').reduce((s,c)=>s+(c.precio||0),0);
-    document.getElementById('stat-total').textContent=total;
-    document.getElementById('stat-confirmadas').textContent=confirmadas;
-    document.getElementById('stat-canceladas').textContent=canceladas;
-    document.getElementById('stat-pendientes').textContent=pendientes;
-    document.getElementById('stat-pct').textContent=`${pct}% del total`;
-    document.getElementById('stat-monto').textContent=monto>0?'₡'+monto.toLocaleString():'₡0';
-    const conteo={};
-    citas.forEach(c=>{ if(c.servicio) conteo[c.servicio]=(conteo[c.servicio]||0)+1; });
-    const ranking=Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const max=ranking[0]?.[1]||1;
-    document.getElementById('ranking-lista').innerHTML=!ranking.length
-      ?'<p style="color:var(--gris2);font-size:12px">Sin datos para este mes.</p>'
-      :ranking.map(([nombre,count],i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div style="flex:1;font-size:13px;font-weight:300">${nombre}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div><div style="font-size:12px;color:var(--dorado);min-width:20px;text-align:right">${count}</div></div>`).join('');
-  }catch(e){ document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris2);font-size:12px">Error al cargar.</p>'; }
+let statsUnsubscribe=null;
+
+function inicializarEstadisticas(){ suscribirEstadisticas(); }
+window.cambiarMes=function(delta){ mesStats.setMonth(mesStats.getMonth()+delta); suscribirEstadisticas(); };
+
+function suscribirEstadisticas(){
+  if(statsUnsubscribe){ statsUnsubscribe(); statsUnsubscribe=null; }
+  const anio=mesStats.getFullYear(), mes=mesStats.getMonth()+1;
+  const p1=`${anio}-${String(mes).padStart(2,'0')}-01`;
+  const p2=`${anio}-${String(mes).padStart(2,'0')}-${new Date(anio,mes,0).getDate()}`;
+  document.getElementById('mes-label').textContent=mesesC[mesStats.getMonth()]+' '+anio;
+  document.getElementById('ranking-lista').innerHTML='<div class="spinner"></div>';
+
+  statsUnsubscribe=onSnapshot(
+    query(collection(db,'citas'),where('fecha','>=',p1),where('fecha','<=',p2)),
+    snap=>{
+      let citas=[]; snap.forEach(d=>citas.push(d.data()));
+      const total=citas.length;
+      const confirmadas=citas.filter(c=>c.estado==='confirmada'||c.estado==='finalizada').length;
+      const canceladas=citas.filter(c=>c.estado==='cancelada').length;
+      const pendientes=citas.filter(c=>c.estado==='pendiente').length;
+      const pct=total>0?Math.round(confirmadas/total*100):0;
+      const monto=citas.filter(c=>c.estado!=='cancelada').reduce((s,c)=>s+(c.precio||0),0);
+      document.getElementById('stat-total').textContent=total;
+      document.getElementById('stat-confirmadas').textContent=confirmadas;
+      document.getElementById('stat-canceladas').textContent=canceladas;
+      document.getElementById('stat-pendientes').textContent=pendientes;
+      document.getElementById('stat-pct').textContent=`${pct}% del total`;
+      document.getElementById('stat-monto').textContent=monto>0?'₡'+monto.toLocaleString():'₡0';
+      const conteo={};
+      citas.forEach(c=>{ if(c.servicio) conteo[c.servicio]=(conteo[c.servicio]||0)+1; });
+      const ranking=Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      const max=ranking[0]?.[1]||1;
+      document.getElementById('ranking-lista').innerHTML=!ranking.length
+        ?'<p style="color:var(--gris2);font-size:12px">Sin datos para este mes.</p>'
+        :ranking.map(([nombre,count],i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div style="flex:1;font-size:13px;font-weight:300">${nombre}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div><div style="font-size:12px;color:var(--dorado);min-width:20px;text-align:right">${count}</div></div>`).join('');
+    },
+    err=>{ document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris2);font-size:12px">Error al cargar.</p>'; console.error(err); }
+  );
 }
 
 // ── SERVICE WORKER ──
