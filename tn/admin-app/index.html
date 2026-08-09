@@ -302,6 +302,7 @@
       <div class="page-titulo"><em>Historial</em></div>
       <div class="filtros" id="filtros-hist">
         <button class="filtro-btn active" onclick="filtrarHist('todas',this)">Todas</button>
+        <button class="filtro-btn" onclick="filtrarHist('finalizada',this)">Finalizadas</button>
         <button class="filtro-btn" onclick="filtrarHist('cancelada',this)">Canceladas</button>
       </div>
       <div class="search-fecha">
@@ -529,10 +530,12 @@ window.irScreen=function(id){
   document.getElementById('screen-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
   if(id==='espera')    cargarEspera();
-  if(id==='stats')     cargarEstadisticas();
+  if(id==='stats')     inicializarEstadisticas();
   if(id==='historial') renderHistorial();
   if(id==='disp')      inicializarDisponibilidad();
   if(id==='servicios') inicializarServicios();
+  // Cancelar stats si se sale de esa pantalla
+  if(id!=='stats'&&statsUnsubscribe){ statsUnsubscribe(); statsUnsubscribe=null; }
 };
 
 let todasLasCitas=[], filtroActual='todas', fechaFiltro=null, citasUnsubscribe=null;
@@ -566,7 +569,7 @@ window.limpiarFecha=function(){ fechaFiltro=null; document.getElementById('inp-f
 
 function renderCitas(){
   const lista=document.getElementById('lista-citas');
-  let citas=todasLasCitas.filter(c=>c.estado!=='cancelada');
+  let citas=todasLasCitas.filter(c=>c.estado!=='cancelada'&&c.estado!=='en_atencion'&&c.estado!=='finalizada');
   if(filtroActual!=='todas') citas=citas.filter(c=>c.estado===filtroActual);
   if(fechaFiltro) citas=citas.filter(c=>c.fecha===fechaFiltro);
   if(!citas.length){ lista.innerHTML='<div class="empty-state">No hay citas activas.</div>'; return; }
@@ -581,7 +584,7 @@ window.limpiarFechaHist=function(){ fechaFiltroHist=null; document.getElementByI
 function renderHistorial(){
   const lista=document.getElementById('lista-historial');
   if(!lista) return;
-  let citas=todasLasCitas.filter(c=>c.estado==='cancelada');
+  let citas=todasLasCitas.filter(c=>c.estado==='cancelada'||c.estado==='finalizada');
   if(filtroHist!=='todas') citas=citas.filter(c=>c.estado===filtroHist);
   if(fechaFiltroHist) citas=citas.filter(c=>c.fecha===fechaFiltroHist);
   if(!citas.length){ lista.innerHTML='<div class="empty-state">No hay registros en el historial.</div>'; return; }
@@ -645,8 +648,19 @@ window.cancelarCita=async function(id,nombre,correo,servicio,fecha,hora){
 };
 
 window.checkinCita=async function(id,nombre,servicio){
-  try{ await db.collection('queue').add({name:nombre,service:servicio,createdAt:firebase.firestore.FieldValue.serverTimestamp()}); mostrarToast(nombre+' en la cola'); }
-  catch(e){ mostrarToast('Error','error'); }
+  try{
+    // Agregar a queue Y cambiar estado para que desaparezca de la agenda
+    await Promise.all([
+      db.collection('queue').add({
+        name:nombre,
+        service:servicio,
+        appointmentId:id,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      }),
+      db.collection('appointments').doc(id).update({estado:'en_atencion'})
+    ]);
+    mostrarToast(nombre+' en sala de espera');
+  }catch(e){ mostrarToast('Error','error'); }
 };
 
 let queueUnsubscribe=null;
@@ -666,7 +680,9 @@ function renderEspera(cola){
     const actual=cola[0];
     indicador.style.display='block';
     contenido.innerHTML=`<div class="atendiendo-nombre">${actual.name}</div><div class="atendiendo-srv">${actual.service}</div>`;
-    acciones.style.display='flex'; acciones.dataset.id=actual.id;
+    acciones.style.display='flex';
+    acciones.dataset.id=actual.id;
+    acciones.dataset.apptId=actual.appointmentId||'';
   } else {
     indicador.style.display='none';
     contenido.innerHTML='<div style="font-size:15px;color:var(--gris);padding:8px;font-weight:200">Nadie siendo atendido</div>';
@@ -676,38 +692,95 @@ function renderEspera(cola){
   const siguiente=cola.slice(1);
   colaEl.innerHTML=!siguiente.length
     ?'<p style="font-size:12px;color:var(--gris2);padding:12px 0">No hay clientes en espera.</p>'
-    :siguiente.map((c,i)=>`<div class="cola-item"><div class="cola-num">${i+2}</div><div class="cola-info"><div class="cola-nombre">${c.name}</div><div class="cola-det">${c.service}</div></div><button class="btn btn-danger btn-sm" onclick="finalizarDeCola('${c.id}')">Quitar</button></div>`).join('');
+    :siguiente.map((c,i)=>`<div class="cola-item"><div class="cola-num">${i+2}</div><div class="cola-info"><div class="cola-nombre">${c.name}</div><div class="cola-det">${c.service}</div></div><button class="btn btn-danger btn-sm" onclick="finalizarDeCola('${c.id}','${c.appointmentId||''}')">Quitar</button></div>`).join('');
 }
-window.finalizarTurno=async function(){ const id=document.getElementById('acciones-atendiendo').dataset.id; try{ await db.collection('queue').doc(id).delete(); mostrarToast('Turno finalizado'); }catch(e){ mostrarToast('Error','error'); } };
-window.finalizarDeCola=async function(id){ try{ await db.collection('queue').doc(id).delete(); mostrarToast('Cliente removido'); }catch(e){ mostrarToast('Error','error'); } };
+window.finalizarTurno=async function(){
+  const queueId=document.getElementById('acciones-atendiendo').dataset.id;
+  const appointmentId=document.getElementById('acciones-atendiendo').dataset.apptId;
+  try{
+    const ops=[db.collection('queue').doc(queueId).delete()];
+    if(appointmentId){
+      ops.push(db.collection('appointments').doc(appointmentId).update({estado:'finalizada'}));
+    }
+    await Promise.all(ops);
+    mostrarToast('Turno finalizado');
+  }catch(e){ mostrarToast('Error','error'); }
+};
+window.finalizarDeCola=async function(id,apptId){
+  try{
+    const ops=[db.collection('queue').doc(id).delete()];
+    if(apptId) ops.push(db.collection('appointments').doc(apptId).update({estado:'finalizada'}));
+    await Promise.all(ops);
+    mostrarToast('Cliente finalizado');
+  }catch(e){ mostrarToast('Error','error'); }
+};
 
 let mesStats=new Date();
-function inicializarEstadisticas(){ cargarEstadisticas(); }
-window.cambiarMes=function(delta){ mesStats.setMonth(mesStats.getMonth()+delta); cargarEstadisticas(); };
-async function cargarEstadisticas(){
-  document.getElementById('mes-label').textContent=mesesC[mesStats.getMonth()]+' '+mesStats.getFullYear();
-  try{
-    const anio=mesStats.getFullYear(), mes=String(mesStats.getMonth()+1).padStart(2,'0');
-    const p1=`${anio}-${mes}-01`, p2=`${anio}-${mes}-${new Date(anio,mesStats.getMonth()+1,0).getDate()}`;
-    const snap=await db.collection('appointments').get();
-    let citas=[]; snap.forEach(d=>{ const data=d.data(); citas.push({...data,fecha:data.day||data.date||data.fecha}); });
-    // Filtrar por mes en JS
+let statsUnsubscribe=null;
+
+function inicializarEstadisticas(){ suscribirEstadisticas(); }
+
+window.cambiarMes=function(delta){
+  mesStats.setMonth(mesStats.getMonth()+delta);
+  // Reactivar suscripción con el nuevo mes
+  suscribirEstadisticas();
+};
+
+function suscribirEstadisticas(){
+  // Cancelar suscripción anterior si existe
+  if(statsUnsubscribe){ statsUnsubscribe(); statsUnsubscribe=null; }
+
+  const anio=mesStats.getFullYear(), mes=String(mesStats.getMonth()+1).padStart(2,'0');
+  const p1=`${anio}-${mes}-01`, p2=`${anio}-${mes}-${new Date(anio,mesStats.getMonth()+1,0).getDate()}`;
+
+  document.getElementById('mes-label').textContent=mesesC[mesStats.getMonth()]+' '+anio;
+  document.getElementById('ranking-lista').innerHTML='<div class="spinner"></div>';
+
+  // onSnapshot — se actualiza automáticamente cuando cambia cualquier cita
+  statsUnsubscribe=db.collection('appointments').onSnapshot(snap=>{
+    let citas=[];
+    snap.forEach(d=>{
+      const data=d.data();
+      const fecha=data.day||data.date||data.fecha||'';
+      citas.push({...data, fecha});
+    });
+
+    // Filtrar por mes seleccionado
     citas=citas.filter(c=>c.fecha&&c.fecha>=p1&&c.fecha<=p2);
-    const total=citas.length, confirmadas=citas.filter(c=>c.estado==='confirmada').length;
-    const canceladas=citas.filter(c=>c.estado==='cancelada').length, pendientes=citas.filter(c=>!c.estado||c.estado==='pendiente').length;
+
+    const total=citas.length;
+    const confirmadas=citas.filter(c=>c.estado==='confirmada').length;
+    const canceladas=citas.filter(c=>c.estado==='cancelada').length;
+    const pendientes=citas.filter(c=>!c.estado||c.estado==='pendiente').length;
+    const finalizadas=citas.filter(c=>c.estado==='finalizada').length;
+
     document.getElementById('stat-total').textContent=total;
     document.getElementById('stat-confirmadas').textContent=confirmadas;
     document.getElementById('stat-canceladas').textContent=canceladas;
     document.getElementById('stat-pendientes').textContent=pendientes;
-    document.getElementById('stat-monto').textContent='—';
+    document.getElementById('stat-monto').textContent=finalizadas>0?finalizadas+' finalizadas':'—';
+
+    // Ranking servicios
     const conteo={};
-    citas.forEach(c=>{ const s=c.service||c.serviceName; if(s) conteo[s]=(conteo[s]||0)+1; });
+    citas.forEach(c=>{
+      const s=c.service||c.serviceName||c.servicio;
+      if(s&&s!=='—') conteo[s]=(conteo[s]||0)+1;
+    });
     const ranking=Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
     const max=ranking[0]?.[1]||1;
     document.getElementById('ranking-lista').innerHTML=!ranking.length
       ?'<p style="color:var(--gris);font-size:12px">Sin datos para este mes.</p>'
-      :ranking.map(([nombre,count],i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div style="flex:1;font-size:13px;font-weight:300;color:var(--blanco)">${nombre}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div><div style="font-size:13px;color:var(--rosa);min-width:24px;text-align:right;font-family:'Cormorant Garamond',serif">${count}</div></div>`).join('');
-  }catch(e){ document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris);font-size:12px">Error al cargar.</p>'; }
+      :ranking.map(([nombre,count],i)=>`
+        <div class="rank-item">
+          <div class="rank-num">${i+1}</div>
+          <div style="flex:1;font-size:13px;font-weight:300;color:var(--blanco)">${nombre}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
+          <div style="font-size:13px;color:var(--rosa);min-width:24px;text-align:right;font-family:'Cormorant Garamond',serif">${count}</div>
+        </div>`).join('');
+  }, err=>{
+    document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris);font-size:12px">Error al cargar.</p>';
+    console.error('Stats error:',err);
+  });
 }
 
 const TN_HORARIO = { inicio: 8, fin: 18 };
