@@ -478,6 +478,7 @@ onAuthStateChanged(auth, user => {
     inicializarDisponibilidad();
     inicializarServicios();
     inicializarEstadisticas();
+    cargarEspera();
   } else {
     document.getElementById('login-section').style.display='flex';
     document.getElementById('admin-section').style.display='none';
@@ -503,11 +504,9 @@ window.irScreen = function(id){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
-  if(id==='espera')    cargarEspera();
   if(id==='stats')     suscribirEstadisticas();
   if(id==='historial') renderHistorial();
-  // Cancelar suscripciones al salir
-  if(id!=='espera'&&esperaUnsubscribe){ esperaUnsubscribe(); esperaUnsubscribe=null; }
+  // Solo cancelar stats al salir (espera corre siempre en background)
   if(id!=='stats'&&statsUnsubscribe){ statsUnsubscribe(); statsUnsubscribe=null; }
 };
 
@@ -667,7 +666,7 @@ let esperaUnsubscribe=null;
 function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
 function cargarEspera(){
-  if(esperaUnsubscribe){ esperaUnsubscribe(); esperaUnsubscribe=null; }
+  if(esperaUnsubscribe) return; // ya activo, no recrear
   esperaUnsubscribe=onSnapshot(
     query(collection(db,'citas'),where('fecha','==',hoyStr())),
     snap=>{
