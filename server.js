@@ -11,17 +11,23 @@ app.use(express.static(path.join(__dirname), {
   }
 }));
 
-app.get('/cliente',    (req, res) => res.redirect('/cliente/'));
-app.get('/cliente/',   (req, res) => res.sendFile(path.join(__dirname, 'cliente', 'index.html')));
+// ── TN Esteticista ──
+app.get('/tn',             (req, res) => res.redirect('/tn/'));
+app.get('/tn/',            (req, res) => res.sendFile(path.join(__dirname, 'tn', 'index.html')));
+app.get('/tn/admin',       (req, res) => res.redirect('/tn/admin/'));
+app.get('/tn/admin/',      (req, res) => res.sendFile(path.join(__dirname, 'tn', 'admin', 'index.html')));
+app.get('/tn/sala-espera', (req, res) => res.sendFile(path.join(__dirname, 'tn', 'sala-espera.html')));
 
-app.get('/admin-app',  (req, res) => res.redirect('/admin-app/'));
-app.get('/admin-app/', (req, res) => res.sendFile(path.join(__dirname, 'admin-app', 'index.html')));
+// ── Salón de Belleza ──
+app.get('/cliente',        (req, res) => res.redirect('/cliente/'));
+app.get('/cliente/',       (req, res) => res.sendFile(path.join(__dirname, 'cliente', 'index.html')));
+app.get('/admin-app',      (req, res) => res.redirect('/admin-app/'));
+app.get('/admin-app/',     (req, res) => res.sendFile(path.join(__dirname, 'admin-app', 'index.html')));
+app.get('/admin',          (req, res) => res.redirect('/admin/'));
+app.get('/admin/',         (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
+app.get('/sala-espera',    (req, res) => res.sendFile(path.join(__dirname, 'sala-espera.html')));
 
-app.get('/sala-espera', (req, res) => res.sendFile(path.join(__dirname, 'sala-espera.html')));
-
-app.get('/admin',      (req, res) => res.redirect('/admin/'));
-app.get('/admin/',     (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
-
+// ── Principal ──
 app.get('*', (req, res) => {
   const ext = path.extname(req.path);
   if (ext && ext !== '.html') return res.status(404).send('Not found');
