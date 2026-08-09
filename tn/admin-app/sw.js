@@ -1,4 +1,4 @@
-const CACHE = 'tn-admin-v1';
+const CACHE = 'tn-admin-v2';
 self.addEventListener('install', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => self.skipWaiting()));
 });
