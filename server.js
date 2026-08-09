@@ -12,20 +12,21 @@ app.use(express.static(path.join(__dirname), {
 }));
 
 // ── TN Esteticista ──
-app.get('/tn',             (req, res) => res.redirect('/tn/'));
-app.get('/tn/',            (req, res) => res.sendFile(path.join(__dirname, 'tn', 'index.html')));
-app.get('/tn/admin',       (req, res) => res.redirect('/tn/admin/'));
-app.get('/tn/admin/',      (req, res) => res.sendFile(path.join(__dirname, 'tn', 'admin', 'index.html')));
-app.get('/tn/sala-espera', (req, res) => res.sendFile(path.join(__dirname, 'tn', 'sala-espera.html')));
+app.get('/tn',                (req, res) => res.redirect('/tn/cliente/'));
+app.get('/tn/cliente',        (req, res) => res.redirect('/tn/cliente/'));
+app.get('/tn/cliente/',       (req, res) => res.sendFile(path.join(__dirname, 'tn', 'cliente', 'index.html')));
+app.get('/tn/admin-app',      (req, res) => res.redirect('/tn/admin-app/'));
+app.get('/tn/admin-app/',     (req, res) => res.sendFile(path.join(__dirname, 'tn', 'admin-app', 'index.html')));
+app.get('/tn/sala-espera',    (req, res) => res.sendFile(path.join(__dirname, 'tn', 'sala-espera.html')));
 
 // ── Salón de Belleza ──
-app.get('/cliente',        (req, res) => res.redirect('/cliente/'));
-app.get('/cliente/',       (req, res) => res.sendFile(path.join(__dirname, 'cliente', 'index.html')));
-app.get('/admin-app',      (req, res) => res.redirect('/admin-app/'));
-app.get('/admin-app/',     (req, res) => res.sendFile(path.join(__dirname, 'admin-app', 'index.html')));
-app.get('/admin',          (req, res) => res.redirect('/admin/'));
-app.get('/admin/',         (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
-app.get('/sala-espera',    (req, res) => res.sendFile(path.join(__dirname, 'sala-espera.html')));
+app.get('/cliente',           (req, res) => res.redirect('/cliente/'));
+app.get('/cliente/',          (req, res) => res.sendFile(path.join(__dirname, 'cliente', 'index.html')));
+app.get('/admin-app',         (req, res) => res.redirect('/admin-app/'));
+app.get('/admin-app/',        (req, res) => res.sendFile(path.join(__dirname, 'admin-app', 'index.html')));
+app.get('/admin',             (req, res) => res.redirect('/admin/'));
+app.get('/admin/',            (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
+app.get('/sala-espera',       (req, res) => res.sendFile(path.join(__dirname, 'sala-espera.html')));
 
 // ── Principal ──
 app.get('*', (req, res) => {
