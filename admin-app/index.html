@@ -551,7 +551,7 @@ window.limpiarFecha=function(){
 function renderCitas(){
   const lista=document.getElementById('lista-citas');
   // Solo citas activas en la agenda
-  let citas=todasLasCitas.filter(c=>c.estado!=='cancelada'&&c.estado!=='finalizada');
+  let citas=todasLasCitas.filter(c=>c.estado!=='cancelada'&&c.estado!=='finalizada'&&c.estado!=='en_atencion');
   if(filtroActual!=='todas') citas=citas.filter(c=>c.estado===filtroActual);
   if(fechaFiltro) citas=citas.filter(c=>c.fecha===fechaFiltro);
   if(!citas.length){ lista.innerHTML='<div class="empty-state">No hay citas activas.</div>'; return; }
@@ -605,7 +605,7 @@ function renderCitaCard(c, historial=false){
     </div>
     ${!historial?`<div class="cita-acciones">
       ${c.estado==='pendiente'?`
-        <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','confirmada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✓ Confirmar</button>
+        <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','en_atencion','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✓ Confirmar</button>
         <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
       ${c.estado==='confirmada'?`
         <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada','','','','',0)">Finalizar</button>
@@ -634,13 +634,13 @@ window.abrirWhatsApp = function(tel, nombre, servicio, fecha, hora){
 window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora){
   try{
     await updateDoc(doc(db,'citas',id),{estado});
-    mostrarToast(estado==='confirmada'?'Cita confirmada':'Estado actualizado');
+    mostrarToast(estado==='en_atencion'?'Check-in realizado':'Estado actualizado');
   }catch(e){ mostrarToast('Error al actualizar','error'); return; }
 
   // Enviar correo si aplica (por separado para no bloquear si falla)
-  if((estado==='confirmada'||estado==='cancelada')&&correo){
+  if((estado==='en_atencion'||estado==='cancelada')&&correo){
     try{
-      const template=estado==='confirmada'?CONFIG.emailjs.templateId:CONFIG.emailjs.templateCancelacion;
+      const template=estado==='en_atencion'?CONFIG.emailjs.templateId:CONFIG.emailjs.templateCancelacion;
       const [a,m,d]=fecha.split('-');
       const fs=`${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${a}`;
       await emailjs.send(CONFIG.emailjs.serviceId,template,{
@@ -649,15 +649,15 @@ window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora)
         cliente_nombre:nombre||'Cliente',
         destinatario_nombre:nombre||'Cliente',
         correo_destinatario:correo,
-        estado:estado==='confirmada'?'confirmada ✓':'cancelada',
+        estado:estado==='en_atencion'?'confirmada ✓':'cancelada',
         servicio:servicio||'—',
         fecha:fs,
         hora:horaLabel(parseFloat(hora)),
         correo_cliente:correo,
         email:correo,
-        mensaje_extra:estado==='confirmada'?'Te esperamos.':'Lamentamos los inconvenientes.'
+        mensaje_extra:estado==='en_atencion'?'Te esperamos.':'Lamentamos los inconvenientes.'
       });
-      mostrarToast(estado==='confirmada'?'Confirmada — correo enviado':'Cancelada — correo enviado');
+      mostrarToast(estado==='en_atencion'?'Check-in — correo enviado':'Cancelada — correo enviado');
     }catch(e){ console.warn('Error emailjs:', e); mostrarToast('Estado actualizado (correo falló)'); }
   }
 };
@@ -846,7 +846,7 @@ function suscribirEstadisticas(){
     snap=>{
       let citas=[]; snap.forEach(d=>citas.push(d.data()));
       const total=citas.length;
-      const confirmadas=citas.filter(c=>c.estado==='confirmada'||c.estado==='finalizada').length;
+      const confirmadas=citas.filter(c=>c.estado==='confirmada'||c.estado==='en_atencion'||c.estado==='finalizada').length;
       const canceladas=citas.filter(c=>c.estado==='cancelada').length;
       const pendientes=citas.filter(c=>c.estado==='pendiente').length;
       const pct=total>0?Math.round(confirmadas/total*100):0;
