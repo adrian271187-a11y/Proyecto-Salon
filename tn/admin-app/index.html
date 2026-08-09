@@ -544,10 +544,16 @@ window.inicializarCitasRealtime=function(){
     snap.forEach(doc=>{
       const d=doc.data();
       const dia=d.day||d.date||d.fecha;
-      const startVal=typeof d.start==='number'?d.start:SLOT_LABELS.indexOf(d.start);
-      todasLasCitas.push({id:doc.id,fecha:dia,start:startVal,hora:horaLabel(startVal),
-        service:d.service||d.serviceName||'—',name:d.name||d.nombre||'—',
-        tel:d.tel||d.telefono||'—',correo:d.correo||'',estado:d.estado||'pendiente'});
+      // start puede ser string ("9:00") o índice numérico
+      const startRaw=d.start||d.hora||'';
+      const startIdx=typeof startRaw==='number'?startRaw:SLOT_LABELS.indexOf(startRaw);
+      const horaStr=typeof startRaw==='string'&&startRaw.includes(':')?startRaw:horaLabel(startIdx);
+      todasLasCitas.push({id:doc.id,fecha:dia,start:startIdx>=0?startIdx:0,hora:horaStr,
+        service:d.service||d.serviceName||d.servicio||'—',
+        name:d.name||d.nombre||'—',
+        tel:d.tel||d.telefono||'—',
+        correo:d.correo||'',
+        estado:d.estado||'pendiente'});
     });
     todasLasCitas.sort((a,b)=>a.fecha===b.fecha?a.start-b.start:(a.fecha<b.fecha?-1:1));
     renderCitas(); renderHistorial();
@@ -683,8 +689,10 @@ async function cargarEstadisticas(){
   try{
     const anio=mesStats.getFullYear(), mes=String(mesStats.getMonth()+1).padStart(2,'0');
     const p1=`${anio}-${mes}-01`, p2=`${anio}-${mes}-${new Date(anio,mesStats.getMonth()+1,0).getDate()}`;
-    const snap=await db.collection('appointments').where('day','>=',p1).where('day','<=',p2).get();
-    let citas=[]; snap.forEach(d=>{ const data=d.data(); citas.push({...data,fecha:data.day||data.date}); });
+    const snap=await db.collection('appointments').get();
+    let citas=[]; snap.forEach(d=>{ const data=d.data(); citas.push({...data,fecha:data.day||data.date||data.fecha}); });
+    // Filtrar por mes en JS
+    citas=citas.filter(c=>c.fecha&&c.fecha>=p1&&c.fecha<=p2);
     const total=citas.length, confirmadas=citas.filter(c=>c.estado==='confirmada').length;
     const canceladas=citas.filter(c=>c.estado==='cancelada').length, pendientes=citas.filter(c=>!c.estado||c.estado==='pendiente').length;
     document.getElementById('stat-total').textContent=total;
