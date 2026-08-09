@@ -727,7 +727,6 @@ window.cambiarMes=function(delta){
 };
 
 function suscribirEstadisticas(){
-  // Cancelar suscripción anterior si existe
   if(statsUnsubscribe){ statsUnsubscribe(); statsUnsubscribe=null; }
 
   const anio=mesStats.getFullYear(), mes=String(mesStats.getMonth()+1).padStart(2,'0');
@@ -736,50 +735,77 @@ function suscribirEstadisticas(){
   document.getElementById('mes-label').textContent=mesesC[mesStats.getMonth()]+' '+anio;
   document.getElementById('ranking-lista').innerHTML='<div class="spinner"></div>';
 
-  // onSnapshot — se actualiza automáticamente cuando cambia cualquier cita
-  statsUnsubscribe=db.collection('appointments').onSnapshot(snap=>{
-    let citas=[];
-    snap.forEach(d=>{
+  // Cargar precios de servicios primero
+  db.collection('servicios').get().then(svcSnap=>{
+    const precioMap={};
+    svcSnap.forEach(d=>{
       const data=d.data();
-      const fecha=data.day||data.date||data.fecha||'';
-      citas.push({...data, fecha});
+      const nombre=data.nombre||data.name||'';
+      const precio=data.precio||data.price||0;
+      if(nombre) precioMap[nombre]=precio;
     });
 
-    // Filtrar por mes seleccionado
-    citas=citas.filter(c=>c.fecha&&c.fecha>=p1&&c.fecha<=p2);
+    // onSnapshot de citas — se actualiza en tiempo real
+    statsUnsubscribe=db.collection('appointments').onSnapshot(snap=>{
+      let citas=[];
+      snap.forEach(d=>{
+        const data=d.data();
+        const fecha=data.day||data.date||data.fecha||'';
+        citas.push({...data, fecha});
+      });
 
-    const total=citas.length;
-    const confirmadas=citas.filter(c=>c.estado==='confirmada').length;
-    const canceladas=citas.filter(c=>c.estado==='cancelada').length;
-    const pendientes=citas.filter(c=>!c.estado||c.estado==='pendiente').length;
-    const finalizadas=citas.filter(c=>c.estado==='finalizada').length;
+      citas=citas.filter(c=>c.fecha&&c.fecha>=p1&&c.fecha<=p2);
 
-    document.getElementById('stat-total').textContent=total;
-    document.getElementById('stat-confirmadas').textContent=confirmadas;
-    document.getElementById('stat-canceladas').textContent=canceladas;
-    document.getElementById('stat-pendientes').textContent=pendientes;
-    document.getElementById('stat-monto').textContent=finalizadas>0?finalizadas+' finalizadas':'—';
+      const total=citas.length;
+      const confirmadas=citas.filter(c=>c.estado==='confirmada').length;
+      const canceladas=citas.filter(c=>c.estado==='cancelada').length;
+      const pendientes=citas.filter(c=>!c.estado||c.estado==='pendiente').length;
+      const finalizadas=citas.filter(c=>c.estado==='finalizada').length;
 
-    // Ranking servicios
-    const conteo={};
-    citas.forEach(c=>{
-      const s=c.service||c.serviceName||c.servicio;
-      if(s&&s!=='—') conteo[s]=(conteo[s]||0)+1;
+      // Calcular ventas: sumar precio de citas confirmadas + finalizadas
+      const citasAtendidas=citas.filter(c=>c.estado==='confirmada'||c.estado==='finalizada');
+      let totalVentas=0;
+      citasAtendidas.forEach(c=>{
+        const nombreSvc=c.serviceName||c.servicio||c.service||'';
+        const precio=precioMap[nombreSvc]||0;
+        totalVentas+=precio;
+      });
+      const ventasStr=totalVentas>0?'₡'+totalVentas.toLocaleString('es-CR'):'₡0';
+
+      document.getElementById('stat-total').textContent=total;
+      document.getElementById('stat-confirmadas').textContent=confirmadas;
+      document.getElementById('stat-canceladas').textContent=canceladas;
+      document.getElementById('stat-pendientes').textContent=pendientes;
+      document.getElementById('stat-monto').textContent=ventasStr;
+
+      // Ranking servicios
+      const conteo={};
+      citas.forEach(c=>{
+        const s=c.serviceName||c.servicio||c.service;
+        if(s&&s!=='—') conteo[s]=(conteo[s]||0)+1;
+      });
+      const ranking=Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      const max=ranking[0]?.[1]||1;
+      document.getElementById('ranking-lista').innerHTML=!ranking.length
+        ?'<p style="color:var(--gris);font-size:12px">Sin datos para este mes.</p>'
+        :ranking.map(([nombre,count],i)=>{
+          const totalSvc=precioMap[nombre]?'₡'+(precioMap[nombre]*count).toLocaleString('es-CR'):'';
+          return`<div class="rank-item">
+            <div class="rank-num">${i+1}</div>
+            <div style="flex:1;font-size:13px;font-weight:300;color:var(--blanco)">${nombre}</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
+            <div style="text-align:right;min-width:50px">
+              <div style="font-size:13px;color:var(--rosa);font-family:'Cormorant Garamond',serif">${count}</div>
+              ${totalSvc?`<div style="font-size:10px;color:var(--gris);letter-spacing:0.04em">${totalSvc}</div>`:''}
+            </div>
+          </div>`;
+        }).join('');
+    }, err=>{
+      document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris);font-size:12px">Error al cargar.</p>';
+      console.error('Stats error:',err);
     });
-    const ranking=Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const max=ranking[0]?.[1]||1;
-    document.getElementById('ranking-lista').innerHTML=!ranking.length
-      ?'<p style="color:var(--gris);font-size:12px">Sin datos para este mes.</p>'
-      :ranking.map(([nombre,count],i)=>`
-        <div class="rank-item">
-          <div class="rank-num">${i+1}</div>
-          <div style="flex:1;font-size:13px;font-weight:300;color:var(--blanco)">${nombre}</div>
-          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
-          <div style="font-size:13px;color:var(--rosa);min-width:24px;text-align:right;font-family:'Cormorant Garamond',serif">${count}</div>
-        </div>`).join('');
-  }, err=>{
-    document.getElementById('ranking-lista').innerHTML='<p style="color:var(--gris);font-size:12px">Error al cargar.</p>';
-    console.error('Stats error:',err);
+  }).catch(err=>{
+    console.error('Error cargando servicios para stats:',err);
   });
 }
 
