@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TN Esteticista</title>
+<link rel="manifest" href="/tn/manifest.json">
+<meta name="theme-color" content="#B4A8A0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TN Esteticista">
+<link rel="apple-touch-icon" href="/tn/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root{--bg:#E9CAC7;--panel:#FBF9F7;--panel2:#F4EEEC;--ink:#2C2C2A;--pink:#D4537E;--dark:#A83D5D;--muted:#5F5E5A;--line:rgba(44,44,42,0.14);}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Work Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+.header{text-align:center;padding:28px 16px 16px;background:linear-gradient(135deg,#E9CAC7,#F3DDDA 50%,#C9CCD1);}
+.logo{width:80px;height:80px;border-radius:50%;border:3px solid rgba(180,162,151,0.5);object-fit:cover;margin-bottom:10px;}
+h1{font-family:'Cormorant Garamond',serif;font-size:1.8rem;margin:4px 0 2px;}
+.eyebrow{font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.tabs{display:flex;justify-content:center;gap:8px;padding:12px 16px;}
+.tab-btn{padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:0.85rem;cursor:pointer;}
+.tab-btn.active{background:var(--pink);color:#fff;border-color:var(--pink);font-weight:600;}
+.screen{display:none;padding:0 14px 50px;max-width:480px;margin:0 auto;}
+.screen.active{display:block;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin-bottom:14px;}
+h2{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin:0 0 14px;}
+label{display:block;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px;}
+input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-family:'Work Sans',sans-serif;font-size:0.95rem;color:var(--ink);outline:none;}
+.btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;background:var(--pink);color:#fff;font-family:'Work Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;margin-top:14px;}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.btn.sec{background:transparent;border:1px solid var(--line);color:var(--muted);margin-top:8px;}
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.svc-card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;}
+.svc-card:hover{border-color:var(--pink);background:#fdf0f3;}
+.svc-name{font-size:0.88rem;font-weight:600;margin-bottom:2px;}
+.svc-price{font-size:0.78rem;color:var(--muted);}
+.svc-cat{font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#B4B2A9;border-bottom:1px solid var(--line);padding-bottom:4px;margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.06em;}
+.cal-mnav{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cal-mlabel{font-family:'Cormorant Garamond',serif;font-size:1.1rem;min-width:140px;text-align:center;}
+.cal-arrow{background:var(--panel2);border:1px solid var(--line);color:var(--ink);width:28px;height:28px;border-radius:50%;cursor:pointer;}
+.cal-month{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-mheader{text-align:center;font-size:0.68rem;color:var(--muted);}
+.cal-mday{min-height:34px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.78rem;}
+.cal-mday.empty{background:transparent;border-color:transparent;}
+.cal-mday.today{border-color:#B4B2A9;}
+.cal-mday.sel{border-color:var(--pink);background:#fdf0f3;font-weight:700;}
+.cal-mday.ok{cursor:pointer;}
+.cal-mday.ok:hover{border-color:#B4B2A9;}
+.cal-mday.dis{opacity:0.3;cursor:not-allowed;}
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.slot{padding:8px 4px;text-align:center;background:var(--panel2);border:1px solid var(--line);border-radius:8px;font-size:0.8rem;cursor:pointer;}
+.slot.sel{background:var(--pink);color:#fff;border-color:var(--pink);font-weight:600;}
+.slot.taken{opacity:0.3;cursor:not-allowed;}
+.summary-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:0.9rem;}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.gallery-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer;}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,0.82);display:none;align-items:center;justify-content:center;z-index:50;padding:24px;}
+.lb.open{display:flex;}
+.lb img{max-width:100%;max-height:88vh;border-radius:10px;}
+.turno-box{text-align:center;padding:20px 0;}
+.turno-box .lbl{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.turno-box .nm{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;margin:8px 0;}
+.queue-list{list-style:none;padding:0;margin:10px 0 0;}
+.queue-list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:0.9rem;}
+.qnum{width:26px;height:26px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:0.7rem;}
+.social{display:flex;justify-content:center;gap:16px;margin:14px 0;}
+.note{font-size:0.78rem;color:var(--muted);margin-top:8px;}
+.install-bar{background:linear-gradient(135deg,#D4537E,#A83D5D);color:#fff;border-radius:14px;padding:14px 16px;margin:0 14px 14px;display:none;align-items:center;gap:12px;}
+.install-bar p{margin:0;font-size:0.85rem;flex:1;}
+.btn-inst{background:#fff;color:var(--dark);font-weight:700;border:none;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:0.82rem;}
+.ios-banner{background:linear-gradient(135deg,#D4537E,#A83D5D);color:#fff;border-radius:14px;padding:14px 16px;margin:0 14px 14px;display:none;flex-direction:column;gap:8px;}
+.ios-banner p{margin:0;font-size:0.85rem;line-height:1.5;}
+.ios-close{background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;align-self:flex-end;padding:0;line-height:1;}
+.install-section{background:var(--panel);border-radius:16px;margin:0 14px 14px;padding:16px 18px;text-align:center;border:1px solid var(--line);}
+.install-section h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;margin:0 0 12px;color:var(--ink);}
+.install-btns{display:flex;gap:10px;justify-content:center;}
+.install-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel2);cursor:pointer;font-family:'Work Sans',sans-serif;font-size:0.85rem;font-weight:600;color:var(--ink);}
+.install-btn:hover{border-color:var(--pink);}
+.install-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;z-index:200;}
+.install-modal.open{display:flex;}
+.ibox{background:var(--panel);border-radius:20px 20px 0 0;padding:22px 20px 40px;width:100%;max-width:480px;}
+.ibox h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin:0 0 14px;text-align:center;}
+.ibox p{font-size:0.87rem;color:var(--muted);margin:10px 0;line-height:1.6;}
+.ibox strong{color:var(--ink);}
+.iclose{float:right;background:none;border:none;font-size:1.3rem;color:var(--muted);cursor:pointer;margin:-4px -2px 0 0;}
+.snum{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pink);color:#fff;font-size:0.7rem;font-weight:700;margin-right:5px;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="header">
+  <img class="logo" src="/tn/logo.jpg" onerror="this.style.display='none'" alt="TN Esteticista">
+  <div class="eyebrow">Escanea &middot; Reserva &middot; Rel&aacute;jate</div>
+  <h1>TN Esteticista</h1>
+</div>
+<div class="tabs">
+  <button class="tab-btn active" data-tab="cliente">Reservar cita</button>
+  <button class="tab-btn" data-tab="galeria">Galer&iacute;a</button>
+  <button class="tab-btn" data-tab="espera">Mi turno</button>
+</div>
+<div class="install-section">
+<h3>&#128242; Instala la app en tu celular</h3>
+<div class="install-btns">
+<button class="install-btn" onclick="showModal('modal-android')">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="#3DDC84" xmlns="http://www.w3.org/2000/svg"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C7.15 3.28 6 5.01 6 7h12c0-1.99-1.15-3.72-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/></svg>
+Android
+</button>
+<button class="install-btn" onclick="showModal('modal-ios')">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="#555" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+iPhone / iPad
+</button>
+</div>
+</div>
+
+<div class="install-modal" id="modal-android" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="ibox">
+<button class="iclose" onclick="document.getElementById('modal-android').classList.remove('open')">&#10005;</button>
+<h3>&#129504; Instalar en Android</h3>
+<p><span class="snum">1</span>Abre esta p&aacute;gina en <strong>Chrome</strong></p>
+<p><span class="snum">2</span>Toca el men&uacute; <strong>&#8942;</strong> (tres puntos, arriba a la derecha)</p>
+<p><span class="snum">3</span>Selecciona <strong>&ldquo;Instalar app&rdquo;</strong> o <strong>&ldquo;A&ntilde;adir a pantalla de inicio&rdquo;</strong></p>
+<p><span class="snum">4</span>Toca <strong>&ldquo;Instalar&rdquo;</strong> para confirmar &#10003;</p>
+</div>
+</div>
+
+<div class="install-modal" id="modal-ios" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="ibox">
+<button class="iclose" onclick="document.getElementById('modal-ios').classList.remove('open')">&#10005;</button>
+<h3>&#63743; Instalar en iPhone / iPad</h3>
+<p><span class="snum">1</span>Abre esta p&aacute;gina en <strong>Safari</strong> (no Chrome)</p>
+<p><span class="snum">2</span>Toca el bot&oacute;n <strong>Compartir</strong> &#11014; en la barra inferior</p>
+<p><span class="snum">3</span>Desliza y toca <strong>&ldquo;A&ntilde;adir a pantalla de inicio&rdquo;</strong></p>
+<p><span class="snum">4</span>Toca <strong>&ldquo;A&ntilde;adir&rdquo;</strong> en la esquina superior derecha &#10003;</p>
+</div>
+</div>
+
+<div class="screen active" id="screen-cliente">
+  <div id="step-svc">
+    <div class="card"><h2>1. Elige tu servicio</h2><div id="svc-grid"></div></div>
+  </div>
+  <div id="step-cal" style="display:none">
+    <div class="card">
+      <h2>2. Fecha y hora</h2>
+      <div class="cal-mnav">
+        <button class="cal-arrow" id="prev-mes">&lt;</button>
+        <span class="cal-mlabel" id="mes-label"></span>
+        <button class="cal-arrow" id="next-mes">&gt;</button>
+      </div>
+      <div class="cal-month" id="cal-grid"></div>
+      <div class="time-grid" id="time-grid"></div>
+      <button class="btn sec" id="back-svc" style="margin-top:14px">&larr; Cambiar servicio</button>
+    </div>
+  </div>
+  <div id="step-form" style="display:none">
+    <div class="card">
+      <div class="summary-row"><span>Servicio</span><strong id="r-svc"></strong></div>
+      <div class="summary-row"><span>Fecha</span><strong id="r-fecha"></strong></div>
+      <div class="summary-row"><span>Hora</span><strong id="r-hora"></strong></div>
+    </div>
+    <div class="card">
+      <h2>3. Tus datos</h2>
+      <label>Nombre</label><input id="in-nombre" placeholder="Ana Rodr&iacute;guez">
+      <label>Tel&eacute;fono</label><input id="in-tel" placeholder="6000-0000">
+      <label>Correo</label><input id="in-correo" type="email" placeholder="ana@correo.com">
+      <button class="btn" id="btn-confirmar">Confirmar cita</button>
+      <button class="btn sec" id="back-cal">&larr; Cambiar horario</button>
+    </div>
+  </div>
+  <div id="step-ok" style="display:none">
+    <div class="card" style="text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">&#10003;</div>
+      <h2 id="ok-nombre" style="margin:8px 0 4px"></h2>
+      <p class="note" id="ok-detalle" style="font-size:0.9rem;color:var(--ink);"></p>
+      <p class="note">Tu cita est&aacute; pendiente de confirmaci&oacute;n. Tatiana te avisar&aacute; por WhatsApp o correo.</p>
+      <button class="btn" id="btn-otra" style="margin-top:16px">Reservar otra cita</button>
+    </div>
+  </div>
+  <div class="social">
+    <a href="https://instagram.com/esteticista_tatiana_nunez" target="_blank" aria-label="Instagram" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);box-shadow:0 3px 10px rgba(0,0,0,0.22);">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
+    <a href="https://wa.me/50664054605" target="_blank" aria-label="WhatsApp" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#25D366;box-shadow:0 3px 10px rgba(0,0,0,0.22);">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>¿Necesitas cancelar una cita?</h2>
+    <label>Teléfono con el que reservaste</label>
+    <input id="cancel-tel" placeholder="Ej. 6000-0000">
+    <button class="btn sec" id="btn-buscar-cancelar" style="margin-top:10px">Buscar mis citas</button>
+    <div id="resultados-cancelar" style="margin-top:12px"></div>
+  </div>
+</div>
+<div class="screen" id="screen-galeria">
+  <div class="card"><h2>Galer&iacute;a</h2><div class="gallery-grid" id="gal-grid"></div></div>
+</div>
+<div class="screen" id="screen-espera">
+  <div class="card">
+    <div class="turno-box">
+      <div class="lbl">Turno actual</div>
+      <div class="nm" id="turno-actual">&mdash;</div>
+    </div>
+    <h3>Siguiente</h3>
+    <ul class="queue-list" id="queue-list"></ul>
+    <p class="note" style="text-align:center">Tiempo estimado: <strong id="tiempo">&mdash;</strong></p>
+  </div>
+  <p class="note" style="text-align:center;padding:0 14px;">Esta pantalla se actualiza en tiempo real.</p>
+</div>
+<div class="lb" id="lb"><img id="lb-img" src="" alt=""></div>
+<script>
+const FB={apiKey:"AIzaSyBoX8GvuaWEQvEYkT8PBQObCi6FSKIB8UM",authDomain:"jireh-spa-f27b3.firebaseapp.com",projectId:"jireh-spa-f27b3",storageBucket:"jireh-spa-f27b3.appspot.com",messagingSenderId:"895355336849",appId:"1:895355336849:web:1a6c5192bf3f3f80bde730"};
+firebase.initializeApp(FB);
+const db=firebase.firestore();
+emailjs.init({publicKey:'TP2wpzYa9TFR2mjxU'});
+const SVC=[
+  {id:'facial-basico',name:'Limpieza facial b\u00e1sica',price:8000,slots:1,cat:'\ud83c\udf3f Faciales'},
+  {id:'punta-diamante',name:'Punta de diamante',price:15000,slots:1,cat:'\ud83c\udf3f Faciales'},
+  {id:'limpieza-profunda',name:'Limpieza profunda',price:20000,slots:2,cat:'\ud83c\udf3f Faciales'},
+  {id:'punta-radio',name:'Punta de diamante + Radiofrecuencia',price:23500,slots:2,cat:'\ud83c\udf3f Faciales'},
+  {id:'radiofrecuencia',name:'Radiofrecuencia',price:20000,slots:2,cat:'\ud83c\udf3f Faciales'},
+  {id:'reductivo',name:'Paquete reductivo',price:185000,slots:4,cat:'\ud83d\udc86 Masajes'},
+  {id:'anticelulitis',name:'Paquete anticelul\u00edtico',price:185000,slots:4,cat:'\ud83d\udc86 Masajes'},
+  {id:'relajante',name:'Masaje relajante completo',price:20000,slots:2,cat:'\ud83d\udc86 Masajes'},
+  {id:'descontracturante',name:'Masaje descontracturante',price:21000,slots:2,cat:'\ud83d\udc86 Masajes'},
+  {id:'descarga',name:'Descarga muscular',price:23000,slots:2,cat:'\ud83d\udc86 Masajes'},
+  {id:'piernas',name:'Masaje de piernas',price:13500,slots:1,cat:'\ud83d\udc86 Masajes'},
+  {id:'espalda',name:'Masaje de espalda',price:13500,slots:1,cat:'\ud83d\udc86 Masajes'},
+  {id:'post-op',name:'Masaje post operatorio',price:25000,slots:2,cat:'\ud83d\udc86 Masajes'},
+  {id:'drenaje',name:'Drenaje linf\u00e1tico',price:15000,slots:2,cat:'\ud83d\udc86 Masajes'},
+  {id:'limpieza-espalda',name:'Limpieza de espalda',price:18500,slots:2,cat:'\ud83d\udc86 Masajes'}
+];
+const IMGS=['foto1.jpeg','foto2.jpeg','foto3.jpeg','foto4.jpeg'];
+const BASE='/tn/';
+const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let bk={svc:null,date:null,hora:null},calOff=0,appts={};
+const SLOTS=[];for(let h=8;h<18;h++){SLOTS.push(h+':00');SLOTS.push(h+':30');}
+function fISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+const HOY=new Date(),HOY_S=fISO(HOY);
+function fFecha(s){const[y,m,d]=s.split('-').map(Number);const t=new Date(y,m-1,d).toLocaleDateString('es-CR',{weekday:'long',day:'numeric',month:'long'});return t.charAt(0).toUpperCase()+t.slice(1);}
+function show(id,v){document.getElementById(id).style.display=v;}
+function renderSVC(){
+  const cats=[...new Set(SVC.map(s=>s.cat))];
+  let h='';
+  cats.forEach(cat=>{
+    h+='<div class="svc-cat">'+cat+'</div><div class="svc-grid">';
+    SVC.filter(s=>s.cat===cat).forEach(s=>{
+      h+='<div class="svc-card" onclick="pickSVC(\''+s.id+'\')"><div class="svc-name">'+s.name+'</div><div class="svc-price">&#8353;'+s.price.toLocaleString()+'</div></div>';
+    });
+    h+='</div>';
+  });
+  document.getElementById('svc-grid').innerHTML=h;
+}
+function pickSVC(id){bk.svc=SVC.find(s=>s.id===id);show('step-svc','none');show('step-cal','');renderCal();}
+function renderCal(){
+  const base=new Date(HOY.getFullYear(),HOY.getMonth()+calOff,1);
+  document.getElementById('mes-label').textContent=MESES[base.getMonth()]+' '+base.getFullYear();
+  const dim=new Date(base.getFullYear(),base.getMonth()+1,0).getDate();
+  let off=base.getDay()-1;if(off<0)off=6;
+  const total=Math.ceil((off+dim)/7)*7;
+  let h=['L','M','X','J','V','S','D'].map(n=>'<div class="cal-mheader">'+n+'</div>').join('');
+  for(let i=0;i<total;i++){
+    const do2=i-off+1;
+    const dt=new Date(base.getFullYear(),base.getMonth(),do2);
+    const ds=fISO(dt);
+    const ok=do2>=1&&do2<=dim;
+    const past=ds<HOY_S;
+    const cls=['cal-mday',!ok?'empty':'',ok&&!past?'ok':'',ok&&past?'dis':'',ds===bk.date?'sel':'',ds===HOY_S?'today':''].filter(Boolean).join(' ');
+    h+='<div class="'+cls+'"'+(ok&&!past?' onclick="pickDate(\''+ds+'\')"':'')+'>'+( ok?do2:'')+'</div>';
+  }
+  document.getElementById('cal-grid').innerHTML=h;
+  if(bk.date)renderSlots();
+}
+function pickDate(ds){bk.date=ds;bk.hora=null;renderCal();renderSlots();}
+function renderSlots(){
+  const taken={};
+  Object.values(appts).forEach(a=>{
+    if(a.date===bk.date){
+      const idx=SLOTS.indexOf(a.start);
+      for(let k=0;k<(bk.svc?bk.svc.slots:1);k++)if(idx+k>=0)taken[SLOTS[idx+k]]=true;
+    }
+  });
+  const s=bk.svc?bk.svc.slots:1;
+  let h='';
+  SLOTS.forEach((sl,i)=>{
+    let bl=false;for(let k=0;k<s;k++)if(taken[SLOTS[i+k]])bl=true;
+    h+='<div class="slot'+(bl?' taken':sl===bk.hora?' sel':'')+'"'+(bl?'':' onclick="pickSlot(\''+sl+'\')"')+'>'+sl+'</div>';
+  });
+  document.getElementById('time-grid').innerHTML=h;
+}
+function pickSlot(s){bk.hora=s;show('step-cal','none');show('step-form','');document.getElementById('r-svc').textContent=bk.svc.name;document.getElementById('r-fecha').textContent=fFecha(bk.date);document.getElementById('r-hora').textContent=bk.hora;}
+document.getElementById('prev-mes').onclick=()=>{calOff--;renderCal();};
+document.getElementById('next-mes').onclick=()=>{calOff++;renderCal();};
+document.getElementById('back-svc').onclick=()=>{show('step-cal','none');show('step-svc','');};
+document.getElementById('back-cal').onclick=()=>{show('step-form','none');show('step-cal','');};
+document.getElementById('btn-confirmar').onclick=async()=>{
+  const nombre=document.getElementById('in-nombre').value.trim();
+  const tel=document.getElementById('in-tel').value.trim();
+  const correo=document.getElementById('in-correo').value.trim();
+  if(!nombre||!tel||!correo){alert('Por favor llena todos los campos.');return;}
+  const btn=document.getElementById('btn-confirmar');btn.disabled=true;btn.textContent='Enviando...';
+  try{
+    await db.collection('appointments').add({name:nombre,nombre:nombre,tel,telefono:tel,correo,service:bk.svc.id,serviceName:bk.svc.name,servicio:bk.svc.name,date:bk.date,fecha:bk.date,start:bk.hora,hora:bk.hora,estado:'pendiente',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    // Aviso al administrador
+    try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'adrian22-11@hotmail.com',tipo:'Nueva cita pendiente de confirmación',cliente_nombre:nombre,cliente_tel:tel,service_name:bk.svc.name,appointment_date:fFecha(bk.date),appointment_time:bk.hora});}catch(e){}
+    try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'tatiananunez052@gmail.com',tipo:'Nueva cita pendiente de confirmación',cliente_nombre:nombre,cliente_tel:tel,service_name:bk.svc.name,appointment_date:fFecha(bk.date),appointment_time:bk.hora});}catch(e){}
+    show('step-form','none');show('step-ok','');
+    document.getElementById('ok-nombre').textContent='\u00a1Gracias, '+nombre+'!';
+    document.getElementById('ok-detalle').textContent=bk.svc.name+' \u2022 '+fFecha(bk.date)+' \u2022 '+bk.hora;
+  }catch(e){alert('Error al guardar. Int\u00e9ntalo de nuevo.');console.error(e);}
+  btn.disabled=false;btn.textContent='Confirmar cita';
+};
+document.getElementById('btn-otra').onclick=()=>{bk={svc:null,date:null,hora:null};['step-ok','step-form','step-cal'].forEach(id=>show(id,'none'));show('step-svc','');};
+function renderGal(){
+  const g=document.getElementById('gal-grid');
+  if(g.dataset.r)return;g.dataset.r='1';
+  IMGS.forEach(src=>{
+    const img=new Image();img.src=BASE+src;img.loading='lazy';
+    img.onerror=function(){this.style.display='none';};
+    img.onclick=()=>{document.getElementById('lb-img').src=BASE+src;document.getElementById('lb').classList.add('open');};
+    g.appendChild(img);
+  });
+}
+document.getElementById('lb').onclick=()=>document.getElementById('lb').classList.remove('open');
+db.collection('queue').orderBy('createdAt').onSnapshot(snap=>{
+  const q=[];snap.forEach(doc=>q.push(doc.data()));
+  document.getElementById('turno-actual').textContent=q.length?(q[0].name||'Turno 1'):'\u2014';
+  document.getElementById('queue-list').innerHTML=q.slice(1).map((p,i)=>'<li><div class="qnum">'+(i+2)+'</div>'+(p.name||'Cliente')+'</li>').join('');
+  document.getElementById('tiempo').textContent=q.length?'~'+(q.length*30)+' min':'\u2014';
+});
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+btn.dataset.tab).classList.add('active');
+  if(btn.dataset.tab==='galeria')renderGal();
+}));
+db.collection('appointments').onSnapshot(snap=>{appts={};snap.forEach(doc=>appts[doc.id]=doc.data());if(bk.date)renderSlots();});
+function showModal(id){document.getElementById(id).classList.add('open');}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._pwaDeferred=e;});
+window.addEventListener('appinstalled',()=>{document.querySelector('.install-section').style.display='none';});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/tn/sw.js').catch(()=>{});
+renderSVC();
+
+// ---------- Cancelar cita desde la app cliente ----------
+document.getElementById('btn-buscar-cancelar').addEventListener('click', async ()=>{
+  const tel = document.getElementById('cancel-tel').value.trim();
+  const resultados = document.getElementById('resultados-cancelar');
+  if(!tel){ resultados.innerHTML='<p class="note">Escribe tu teléfono.</p>'; return; }
+  resultados.innerHTML='<p class="note">Buscando...</p>';
+  const snap = await db.collection('appointments').where('tel','==',tel).get();
+  if(snap.empty){ resultados.innerHTML='<p class="note">No encontramos citas con ese teléfono.</p>'; return; }
+  resultados.innerHTML='';
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const svcNombre = d.serviceName || d.servicio || d.service || '—';
+    const fecha = d.fecha || d.date || d.day || '—';
+    const hora = d.hora || d.start || '—';
+    const row = document.createElement('div');
+    row.className = 'summary-row';
+    row.style.flexDirection = 'column';
+    row.style.gap = '6px';
+    row.innerHTML = '<span style="font-size:0.9rem"><strong>'+svcNombre+'</strong> · '+fecha+' '+hora+'</span>';
+    const btn = document.createElement('button');
+    btn.className = 'btn sec';
+    btn.textContent = 'Cancelar esta cita';
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('¿Seguro que deseas cancelar esta cita?')) return;
+      await db.collection('appointments').doc(doc.id).delete();
+      // Aviso al administrador
+      // Aviso al admin
+      try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'adrian22-11@hotmail.com',to_name:'Tatiana',tipo:'❌ Cita CANCELADA por el cliente',cliente_nombre:d.name||d.nombre||'—',cliente_tel:d.tel||'—',service_name:svcNombre,appointment_date:fecha,appointment_time:hora});}catch(e){}
+      try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'tatiananunez052@gmail.com',to_name:'Tatiana',tipo:'❌ Cita CANCELADA por el cliente',cliente_nombre:d.name||d.nombre||'—',cliente_tel:d.tel||'—',service_name:svcNombre,appointment_date:fecha,appointment_time:hora});}catch(e){}
+      // Correo al cliente
+      if(d.correo){try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:d.correo,to_name:d.name||d.nombre||'Cliente',tipo:'Tu cita ha sido cancelada',cliente_nombre:d.name||d.nombre||'—',cliente_tel:d.tel||'—',service_name:svcNombre,appointment_date:fecha,appointment_time:hora});}catch(e){}}
+      row.innerHTML='<p class="note" style="color:var(--pink)">Cita cancelada correctamente.</p>';
+    });
+    row.appendChild(btn);
+    resultados.appendChild(row);
+  });
+});
+</script>
+</body>
+</html>
