@@ -667,11 +667,13 @@ function hoyStr(){ const d=new Date(); return`${d.getFullYear()}-${String(d.getM
 
 function cargarEspera(){
   if(esperaUnsubscribe) return; // ya activo, no recrear
+  // Filtrar por estado, NO por fecha, para que el check-in funcione
+  // aunque la cita esté agendada para mañana u otro día
   esperaUnsubscribe=onSnapshot(
-    query(collection(db,'citas'),where('fecha','==',hoyStr())),
+    query(collection(db,'citas'),where('estado','in',['en_atencion','confirmada'])),
     snap=>{
       const citasHoy=[];
-      snap.forEach(d=>{ const data=d.data(); if(data.estado!=='cancelada') citasHoy.push({id:d.id,...data}); });
+      snap.forEach(d=>{ citasHoy.push({id:d.id,...d.data()}); });
       citasHoy.sort((a,b)=>a.hora-b.hora);
       renderEspera(citasHoy);
     },
@@ -726,7 +728,8 @@ async function renderCalDisp(tipo){
     const fecha=new Date(anio,m,d);
     const fs=`${anio}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const esPasado=fecha<hoy, esBloq=diasBloqueados.some(b=>b.fecha===fs), esHoy=fecha.getTime()===hoy.getTime();
-    let cls='cal-day'+(esPasado?' dis':esBloq?' bloq':'')+(esHoy?' hoy':'');
+    // Mostrar bloq aunque sea pasado, para que los domingos bloqueados se vean correctamente
+    let cls='cal-day'+(esPasado?' dis':'')+(esBloq?' bloq':'')+(esHoy?' hoy':'');
     const fn=tipo==='dias'?`toggleDia('${fs}')`:`selFechaHoras('${fs}')`;
     html+=`<div class="${cls}" ${!esPasado?`onclick="${fn}"`:''}>${d}</div>`;
   }
