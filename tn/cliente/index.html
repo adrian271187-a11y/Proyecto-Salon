@@ -410,6 +410,20 @@ const IMGS=['foto1.jpeg','foto2.jpeg','foto3.jpeg','foto4.jpeg'];
 const BASE='/tn/';
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 let bk={svc:null,date:null,hora:null},calOff=0,appts={};
+let diasBloq=[], horasBloq=[];
+
+async function cargarBloqueados(){
+  try{
+    const [snapDias, snapHoras] = await Promise.all([
+      db.collection('dias_bloqueados').get(),
+      db.collection('horas_bloqueadas').get()
+    ]);
+    diasBloq=[];
+    snapDias.forEach(d=>diasBloq.push(d.data().fecha));
+    horasBloq=[];
+    snapHoras.forEach(d=>horasBloq.push({fecha:d.data().fecha, hora:d.data().hora}));
+  }catch(e){ console.warn('Error cargando bloqueados:', e); }
+}
 const SLOTS=[];for(let h=8;h<18;h++){SLOTS.push(h+':00');SLOTS.push(h+':30');}
 function fISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const HOY=new Date(),HOY_S=fISO(HOY);
@@ -460,8 +474,16 @@ function renderCal(){
     const ds=fISO(dt);
     const ok=do2>=1&&do2<=dim;
     const past=ds<HOY_S;
-    const cls=['cal-mday',!ok?'empty':'',ok&&!past?'ok':'',ok&&past?'dis':'',ds===bk.date?'sel':'',ds===HOY_S?'today':''].filter(Boolean).join(' ');
-    h+='<div class="'+cls+'"'+(ok&&!past?' onclick="pickDate(\''+ds+'\')"':'')+'>'+( ok?do2:'')+'</div>';
+    const bloq=diasBloq.includes(ds);
+    const disabled=!ok||past||bloq;
+    const cls=['cal-mday',
+      !ok?'empty':'',
+      ok&&!past&&!bloq?'ok':'',
+      ok&&(past||bloq)?'dis':'',
+      ds===bk.date&&!bloq?'sel':'',
+      ds===HOY_S?'today':''
+    ].filter(Boolean).join(' ');
+    h+='<div class="'+cls+'"'+(!disabled?' onclick="pickDate(\''+ds+'\')"':'')+'>'+( ok?do2:'')+'</div>';
   }
   document.getElementById('cal-grid').innerHTML=h;
   if(bk.date)renderSlots();
@@ -477,11 +499,25 @@ function renderSlots(){
       for(let k=0;k<(bk.svc?bk.svc.slots:1);k++)if(idx+k>=0)taken[SLOTS[idx+k]]=true;
     }
   });
+  // Marcar horas bloqueadas por admin
+  const bloqHoy=horasBloq.filter(h=>h.fecha===bk.date).map(h=>h.hora);
   const s=bk.svc?bk.svc.slots:1;
   let h='';
   SLOTS.forEach((sl,i)=>{
-    let bl=false;for(let k=0;k<s;k++)if(taken[SLOTS[i+k]])bl=true;
-    h+='<div class="slot'+(bl?' taken':sl===bk.hora?' sel':'')+'"'+(bl?'':' onclick="pickSlot(\''+sl+'\')"')+'>'+sl+'</div>';
+    const horaNum=parseInt(sl.split(':')[0])+(sl.split(':')[1]==='30'?0.5:0);
+    let bl=false;
+    for(let k=0;k<s;k++)if(taken[SLOTS[i+k]])bl=true;
+    // Verificar si la hora o algún slot siguiente está bloqueado
+    const bloqAdmin=bloqHoy.some(bh=>{
+      for(let k=0;k<s;k++){
+        const slK=SLOTS[i+k];if(!slK)return false;
+        const hK=parseInt(slK.split(':')[0])+(slK.split(':')[1]==='30'?0.5:0);
+        if(hK===bh)return true;
+      }
+      return false;
+    });
+    const disabled=bl||bloqAdmin;
+    h+='<div class="slot'+(disabled?' taken':sl===bk.hora?' sel':'')+'"'+(disabled?'':' onclick="pickSlot(\''+sl+'\')"')+'>'+sl+'</div>';
   });
   document.getElementById('time-grid').innerHTML=h;
 }
@@ -490,6 +526,15 @@ function pickSlot(s){bk.hora=s;show('step-cal','none');show('step-form','');docu
 
 document.getElementById('prev-mes').onclick=()=>{calOff--;renderCal();};
 document.getElementById('next-mes').onclick=()=>{calOff++;renderCal();};
+
+// Recargar bloqueados cada vez que se abre el calendario para tener datos frescos
+const _origPickSVC = window.pickSVC;
+window.pickSVC = async function(id){
+  await cargarBloqueados();
+  bk.svc=SVC.find(s=>s.id===id);
+  show('step-svc','none');show('step-cal','');
+  renderCal();
+};
 document.getElementById('back-svc').onclick=()=>{show('step-cal','none');show('step-svc','');};
 document.getElementById('back-cal').onclick=()=>{show('step-form','none');show('step-cal','');};
 
@@ -500,7 +545,19 @@ document.getElementById('btn-confirmar').onclick=async()=>{
   if(!nombre||!tel||!correo){alert('Por favor llena todos los campos.');return;}
   const btn=document.getElementById('btn-confirmar');btn.disabled=true;btn.textContent='Enviando...';
   try{
-    await db.collection('appointments').add({name:nombre,nombre:nombre,tel,telefono:tel,correo,service:bk.svc.id,serviceName:bk.svc.name,servicio:bk.svc.name,date:bk.date,fecha:bk.date,start:bk.hora,hora:bk.hora,estado:'pendiente',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    await db.collection('appointments').add({
+      // Campos dobles para compatibilidad admin/cliente
+      name:nombre, nombre:nombre,
+      tel, telefono:tel,
+      correo,
+      service:bk.svc.id, serviceName:bk.svc.name, servicio:bk.svc.name,
+      // fecha guardada en los 3 campos que el admin busca
+      date:bk.date, fecha:bk.date, day:bk.date,
+      // hora guardada como string Y como índice numérico
+      start:bk.hora, hora:bk.hora,
+      estado:'pendiente',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
     try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'adrian22-11@hotmail.com',tipo:'Nueva cita pendiente de confirmación',cliente_nombre:nombre,cliente_tel:tel,service_name:bk.svc.name,appointment_date:fFecha(bk.date),appointment_time:bk.hora});}catch(e){}
     try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'tatiananunez052@gmail.com',tipo:'Nueva cita pendiente de confirmación',cliente_nombre:nombre,cliente_tel:tel,service_name:bk.svc.name,appointment_date:fFecha(bk.date),appointment_time:bk.hora});}catch(e){}
     show('step-form','none');show('step-ok','');
@@ -576,6 +633,7 @@ window.addEventListener('appinstalled', () => {
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/tn/cliente/sw.js').catch(()=>{});
 cargarServicios();
+cargarBloqueados();
 
 // Cancelar cita
 document.getElementById('btn-buscar-cancelar').addEventListener('click',async()=>{
@@ -601,7 +659,7 @@ document.getElementById('btn-buscar-cancelar').addEventListener('click',async()=
     btn.textContent='Cancelar esta cita';
     btn.addEventListener('click',async()=>{
       if(!confirm('¿Seguro que deseas cancelar esta cita?'))return;
-      await db.collection('appointments').doc(doc.id).delete();
+      await db.collection('appointments').doc(doc.id).update({estado:'cancelada'});
       try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'adrian22-11@hotmail.com',to_name:'Tatiana',tipo:'❌ Cita CANCELADA por el cliente',cliente_nombre:d.name||d.nombre||'—',cliente_tel:d.tel||'—',service_name:svcNombre,appointment_date:fecha,appointment_time:hora});}catch(e){}
       try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:'tatiananunez052@gmail.com',to_name:'Tatiana',tipo:'❌ Cita CANCELADA por el cliente',cliente_nombre:d.name||d.nombre||'—',cliente_tel:d.tel||'—',service_name:svcNombre,appointment_date:fecha,appointment_time:hora});}catch(e){}
       if(d.correo){try{await emailjs.send('service_pwktaba','template_y3zvu9a',{to_email:d.correo,to_name:d.name||d.nombre||'Cliente',tipo:'Tu cita ha sido cancelada',cliente_nombre:d.name||d.nombre||'—',cliente_tel:d.tel||'—',service_name:svcNombre,appointment_date:fecha,appointment_time:hora});}catch(e){}}
