@@ -202,7 +202,8 @@
     input:checked + .toggle-track { background: rgba(201,169,110,0.3); }
     input:checked + .toggle-track::before { transform: translateX(18px); background: var(--dorado); }
 
-    /* ── SPINNER / TOAST ── */
+    .btn-wa { background: rgba(37,211,102,0.12); color: #25D366; border: 0.5px solid rgba(37,211,102,0.35); padding: 7px 12px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-family: 'Jost', sans-serif; cursor: pointer; transition: all 0.2s; display:inline-flex;align-items:center;gap:5px; }
+    .btn-wa:hover { background: rgba(37,211,102,0.22); }
     .spinner { width: 24px; height: 24px; border: 1px solid rgba(201,169,110,0.15); border-top-color: var(--dorado); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
     #toast { position: fixed; bottom: calc(var(--safe-bot) + 60px); left: 50%; transform: translateX(-50%) translateY(80px); background: var(--negro3); border: 0.5px solid var(--borde); color: var(--blanco); padding: 12px 20px; font-size: 12px; z-index: 999; transition: transform 0.3s; white-space: nowrap; letter-spacing: 0.05em; }
@@ -582,6 +583,8 @@ function renderHistorial(){
 }
 
 function renderCitaCard(c, historial=false){
+  const tel = (c.cliente?.telefono||'').replace(/[\s\-\(\)]/g,'');
+  const telWa = tel ? (tel.startsWith('506')?tel:'506'+tel) : '';
   return `<div class="cita-card ${c.estado}">
     <div class="cita-card-top">
       <div class="cita-fecha-hora">
@@ -603,13 +606,27 @@ function renderCitaCard(c, historial=false){
         <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
       ${c.estado==='confirmada'?`
         <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada','','','','',0)">Finalizar</button>
-        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
+        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>
+        ${telWa?`<button class="btn-wa" onclick="abrirWhatsApp('${telWa}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">💬 WhatsApp</button>`:''}
+        `:''}
       ${c.estado==='en_atencion'?`
         <button class="btn btn-success btn-sm" onclick="cambiarEstado('${c.id}','finalizada','','','','',0)">✓ Finalizar</button>
         <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${c.id}','cancelada','${c.cliente?.correo||''}','${c.cliente?.nombre||''}','${c.servicio}','${c.fecha}',${c.hora})">✗ Cancelar</button>`:''}
     </div>`:''}
   </div>`;
 }
+
+window.abrirWhatsApp = function(tel, nombre, servicio, fecha, hora){
+  const [a,m,d] = fecha.split('-');
+  const fechaStr = `${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${a}`;
+  const horaStr = horaLabel(parseFloat(hora));
+  const msg = `Hola ${nombre} 👋, te confirmamos tu cita en *${CONFIG.negocio}*:\n\n` +
+    `📋 *Servicio:* ${servicio}\n` +
+    `📅 *Fecha:* ${fechaStr}\n` +
+    `🕐 *Hora:* ${horaStr}\n\n` +
+    `¡Te esperamos! Si necesitás cambiar o cancelar tu cita, avisanos con anticipación.`;
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+};
 
 window.cambiarEstado=async function(id,estado,correo,nombre,servicio,fecha,hora){
   try{
