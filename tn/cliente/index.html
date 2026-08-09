@@ -220,23 +220,24 @@ const FB={apiKey:"AIzaSyBoX8GvuaWEQvEYkT8PBQObCi6FSKIB8UM",authDomain:"jireh-spa
 firebase.initializeApp(FB);
 const db=firebase.firestore();
 emailjs.init({publicKey:'TP2wpzYa9TFR2mjxU'});
-const SVC=[
-  {id:'facial-basico',name:'Limpieza facial b\u00e1sica',price:8000,slots:1,cat:'\ud83c\udf3f Faciales'},
-  {id:'punta-diamante',name:'Punta de diamante',price:15000,slots:1,cat:'\ud83c\udf3f Faciales'},
-  {id:'limpieza-profunda',name:'Limpieza profunda',price:20000,slots:2,cat:'\ud83c\udf3f Faciales'},
-  {id:'punta-radio',name:'Punta de diamante + Radiofrecuencia',price:23500,slots:2,cat:'\ud83c\udf3f Faciales'},
-  {id:'radiofrecuencia',name:'Radiofrecuencia',price:20000,slots:2,cat:'\ud83c\udf3f Faciales'},
-  {id:'reductivo',name:'Paquete reductivo',price:185000,slots:4,cat:'\ud83d\udc86 Masajes'},
-  {id:'anticelulitis',name:'Paquete anticelul\u00edtico',price:185000,slots:4,cat:'\ud83d\udc86 Masajes'},
-  {id:'relajante',name:'Masaje relajante completo',price:20000,slots:2,cat:'\ud83d\udc86 Masajes'},
-  {id:'descontracturante',name:'Masaje descontracturante',price:21000,slots:2,cat:'\ud83d\udc86 Masajes'},
-  {id:'descarga',name:'Descarga muscular',price:23000,slots:2,cat:'\ud83d\udc86 Masajes'},
-  {id:'piernas',name:'Masaje de piernas',price:13500,slots:1,cat:'\ud83d\udc86 Masajes'},
-  {id:'espalda',name:'Masaje de espalda',price:13500,slots:1,cat:'\ud83d\udc86 Masajes'},
-  {id:'post-op',name:'Masaje post operatorio',price:25000,slots:2,cat:'\ud83d\udc86 Masajes'},
-  {id:'drenaje',name:'Drenaje linf\u00e1tico',price:15000,slots:2,cat:'\ud83d\udc86 Masajes'},
-  {id:'limpieza-espalda',name:'Limpieza de espalda',price:18500,slots:2,cat:'\ud83d\udc86 Masajes'}
+const SVC_FALLBACK=[
+  {id:'facial-basico',name:'Limpieza facial básica',price:8000,slots:1,cat:'🌿 Faciales'},
+  {id:'punta-diamante',name:'Punta de diamante',price:15000,slots:1,cat:'🌿 Faciales'},
+  {id:'limpieza-profunda',name:'Limpieza profunda',price:20000,slots:2,cat:'🌿 Faciales'},
+  {id:'punta-radio',name:'Punta de diamante + Radiofrecuencia',price:23500,slots:2,cat:'🌿 Faciales'},
+  {id:'radiofrecuencia',name:'Radiofrecuencia',price:20000,slots:2,cat:'🌿 Faciales'},
+  {id:'reductivo',name:'Paquete reductivo',price:185000,slots:4,cat:'💆 Masajes'},
+  {id:'anticelulitis',name:'Paquete anticelulítico',price:185000,slots:4,cat:'💆 Masajes'},
+  {id:'relajante',name:'Masaje relajante completo',price:20000,slots:2,cat:'💆 Masajes'},
+  {id:'descontracturante',name:'Masaje descontracturante',price:21000,slots:2,cat:'💆 Masajes'},
+  {id:'descarga',name:'Descarga muscular',price:23000,slots:2,cat:'💆 Masajes'},
+  {id:'piernas',name:'Masaje de piernas',price:13500,slots:1,cat:'💆 Masajes'},
+  {id:'espalda',name:'Masaje de espalda',price:13500,slots:1,cat:'💆 Masajes'},
+  {id:'post-op',name:'Masaje post operatorio',price:25000,slots:2,cat:'💆 Masajes'},
+  {id:'drenaje',name:'Drenaje linfático',price:15000,slots:2,cat:'💆 Masajes'},
+  {id:'limpieza-espalda',name:'Limpieza de espalda',price:18500,slots:2,cat:'💆 Masajes'}
 ];
+let SVC = [...SVC_FALLBACK];
 const IMGS=['foto1.jpeg','foto2.jpeg','foto3.jpeg','foto4.jpeg'];
 const BASE='/tn/';
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -246,6 +247,27 @@ function fISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0
 const HOY=new Date(),HOY_S=fISO(HOY);
 function fFecha(s){const[y,m,d]=s.split('-').map(Number);const t=new Date(y,m-1,d).toLocaleDateString('es-CR',{weekday:'long',day:'numeric',month:'long'});return t.charAt(0).toUpperCase()+t.slice(1);}
 function show(id,v){document.getElementById(id).style.display=v;}
+async function cargarServicios(){
+  try{
+    const snap=await db.collection('servicios').get();
+    if(!snap.empty){
+      SVC=[];
+      snap.forEach(doc=>{
+        const d=doc.data();
+        if(d.activo===false) return;
+        const catMap={facial:'🌿 Faciales',corporal:'💆 Masajes',unas:'💅 Uñas',otro:'✨ Otros'};
+        SVC.push({
+          id:doc.id,
+          name:d.nombre||d.name||'—',
+          price:d.precio||d.price||0,
+          slots:d.slots||Math.ceil((d.duracion||60)/30),
+          cat:catMap[d.categoria||'otro']||'✨ Otros'
+        });
+      });
+    }
+  }catch(e){ console.warn('Usando servicios locales:', e); }
+  renderSVC();
+}
 function renderSVC(){
   const cats=[...new Set(SVC.map(s=>s.cat))];
   let h='';
@@ -347,7 +369,7 @@ function showModal(id){document.getElementById(id).classList.add('open');}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._pwaDeferred=e;});
 window.addEventListener('appinstalled',()=>{document.querySelector('.install-section').style.display='none';});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/tn/cliente/sw.js').catch(()=>{});
-renderSVC();
+cargarServicios();
 
 // ---------- Cancelar cita desde la app cliente ----------
 document.getElementById('btn-buscar-cancelar').addEventListener('click', async ()=>{
