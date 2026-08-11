@@ -5,170 +5,141 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Admin · Kyomu Nails</title>
 <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#1C1C1E"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<meta name="theme-color" content="#1A1A1A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Kyomu Admin"/>
+<link rel="apple-touch-icon" href="../img/icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --carbon:      #1C1C1E;
-  --carbon-mid:  #2D2D2F;
-  --carbon-soft: #3A3A3C;
-  --grey-mid:    #6E6E73;
-  --grey-light:  #AEAEB2;
-  --smoke:       #F5F5F7;
-  --white:       #FFFFFF;
-  --rose:        #C9A4A7;
-  --rose-deep:   #A07879;
-  --rose-mist:   #F0E4E5;
-  --gold:        #C8A96E;
-  --gold-pale:   #E8D5A3;
-  --gold-dark:   #9A7A46;
-  --silver-line: rgba(174,174,178,0.2);
-  --green:       #27AE60;
-  --red:         #C0392B;
-  --orange:      #D97706;
-  --radius-lg:   16px; --radius-md:12px; --radius-sm:8px; --radius-pill:100px;
-  --shadow-card: 0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06);
+:root{
+  --negro:#1A1A1A;--gris-o:#252525;--gris-m:#333333;--gris-s:#444444;--gris-t:#888888;
+  --humo:#F0F0F0;--blanco:#FFFFFF;
+  --rose:#C9A4A7;--rose-d:#A07070;--rose-l:#F0E0E0;
+  --gold:#C8A96E;--gold-d:#9A7A46;--gold-l:#E8D5A3;
+  --linea:rgba(200,169,110,0.22);
+  --green:#27AE60;--red:#C0392B;
+  --r:14px;--rs:8px;--sh:0 4px 20px rgba(0,0,0,.4);--sh-s:0 2px 8px rgba(0,0,0,.3);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--smoke);color:var(--carbon);min-height:100vh;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--negro);color:var(--humo);min-height:100vh;-webkit-font-smoothing:antialiased}
 
 /* LOGIN */
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse at 50% 0%,#2A1820 0%,#141214 60%,#0E0E10 100%)}
-.login-card{background:linear-gradient(160deg,#241820 0%,var(--carbon-mid) 60%,#1E1820 100%);border-radius:24px;padding:36px 28px;width:100%;max-width:340px;border:1px solid rgba(212,168,168,0.2);text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.5),inset 0 1px 0 rgba(232,220,216,0.08)}
-.login-logo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid transparent;margin-bottom:14px;background:linear-gradient(#241820,#241820) padding-box,conic-gradient(from 0deg,#C8A96E,#D4A8A8,#E8E0D8,#C8A96E) border-box;box-shadow:0 0 20px rgba(212,168,168,0.2)}
-.login-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;letter-spacing:3px;margin-bottom:4px;background:linear-gradient(135deg,#E8D5A3 0%,#D4A8A8 30%,#E8E0D8 50%,#C8A96E 70%,#D4A8A8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.login-sub{color:var(--grey-mid);font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px}
-.login-input{width:100%;padding:12px 14px;background:var(--carbon-soft);border:1px solid var(--silver-line);border-radius:var(--radius-sm);color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;margin-bottom:10px}
-.login-input:focus{border-color:var(--rose)}
-.login-input::placeholder{color:var(--grey-mid)}
-.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--rose-deep) 0%,var(--rose) 50%,var(--gold) 100%);color:var(--white);border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:.5px}
-.login-err{color:#F87171;font-size:.8rem;margin-top:8px;display:none}
-.login-line{height:1px;background:linear-gradient(90deg,transparent,var(--rose),var(--gold),var(--rose),transparent);margin:16px 0}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--negro)}
+.login-card{background:var(--gris-o);border-radius:20px;padding:36px 28px;width:100%;max-width:340px;
+  box-shadow:var(--sh);text-align:center;border:1px solid var(--linea)}
+.llogo{width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:14px;box-shadow:0 0 16px rgba(200,169,110,.2)}
+.login-card h1{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.6rem;font-weight:700;letter-spacing:2px;margin-bottom:4px}
+.login-card p{color:var(--gris-t);font-size:.78rem;margin-bottom:24px;letter-spacing:1px;text-transform:uppercase}
+.login-card input{width:100%;padding:11px 14px;border:1px solid rgba(200,169,110,.2);border-radius:var(--rs);
+  font-size:.9rem;margin-bottom:10px;outline:none;font-family:'Lato',sans-serif;
+  background:var(--gris-m);color:var(--humo)}
+.login-card input::placeholder{color:var(--gris-s)}
+.login-card input:focus{border-color:var(--rose)}
+.login-card button{width:100%;padding:12px;background:linear-gradient(135deg,var(--rose-d),var(--rose));
+  color:var(--blanco);border:none;border-radius:var(--rs);font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif}
+#loginErr{color:#F1948A;font-size:.8rem;margin-top:8px;display:none}
 
-/* HEADER */
+/* MAIN */
 #mainApp{display:none}
-.site-header{
-  padding:14px 16px;display:flex;align-items:center;gap:12px;
-  border-bottom:1px solid rgba(212,168,168,0.15);
-  position:relative;overflow:hidden;
-  background:#141214;
-}
-.site-header::before{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(180deg,transparent 0px,transparent 2px,rgba(232,220,216,0.03) 2px,rgba(232,220,216,0.03) 3px),
-  linear-gradient(135deg,#1A1218 0%,#241820 30%,#221A1E 60%,#1A1218 100%);z-index:0}
-.site-header::after{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
-  background:linear-gradient(90deg,transparent,#D4A8A8,#E8D5A3,#D4A8A8,transparent);z-index:1}
-.site-header>*{position:relative;z-index:2}
-.header-logo-sm{width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rose)}
-.header-info h1{font-family:'Playfair Display',serif;color:var(--white);font-size:1rem;font-weight:600;letter-spacing:1px}
-.header-info p{color:var(--grey-light);font-size:.68rem;letter-spacing:.5px}
-.logout-btn{margin-left:auto;background:transparent;border:1px solid var(--silver-line);color:var(--grey-light);padding:6px 12px;border-radius:var(--radius-pill);cursor:pointer;font-size:.72rem;font-weight:500;font-family:'DM Sans',sans-serif}
-.logout-btn:hover{border-color:var(--rose);color:var(--rose)}
+header{background:linear-gradient(135deg,var(--gris-o),var(--gris-m));padding:14px 16px;
+  display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--linea)}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5px solid var(--gold)}
+header div h1{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.1rem;font-weight:600;letter-spacing:1px}
+header div p{color:var(--gris-t);font-size:.7rem}
+.logout{margin-left:auto;background:transparent;border:1px solid rgba(200,169,110,.25);
+  color:var(--gris-t);padding:6px 13px;border-radius:20px;cursor:pointer;
+  font-size:.72rem;font-weight:700;font-family:'Lato',sans-serif}
+.logout:hover{border-color:var(--rose);color:var(--rose)}
 
-/* NAV */
-.site-nav{background:linear-gradient(90deg,#1A1216 0%,#221820 50%,#1A1216 100%);display:flex;overflow-x:auto;border-bottom:1px solid rgba(201,164,167,0.15);position:sticky;top:0;z-index:100}
-.site-nav::-webkit-scrollbar{display:none}
-.nav-btn{flex-shrink:0;padding:12px 14px;border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:500;color:var(--grey-light);border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;letter-spacing:.8px;text-transform:uppercase}
-.nav-btn.active{color:var(--rose);border-bottom-color:var(--rose)}
+nav{background:var(--gris-o);display:flex;overflow-x:auto;border-bottom:1px solid var(--linea);position:sticky;top:0;z-index:100}
+nav::-webkit-scrollbar{display:none}
+nav button{flex-shrink:0;padding:12px 14px;border:none;background:none;cursor:pointer;
+  font-family:'Lato',sans-serif;font-size:.72rem;font-weight:700;color:var(--gris-t);
+  border-bottom:2px solid transparent;transition:.2s;white-space:nowrap;letter-spacing:.6px;text-transform:uppercase}
+nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 
-/* SECCIONES */
-.sec{display:none;padding:18px 14px;max-width:560px;margin:0 auto;padding-bottom:40px}
-.sec.active{display:block}
+.sec{display:none;padding:15px;max-width:580px;margin:0 auto;padding-bottom:40px}
+.sec.activa{display:block}
 
-/* CARDS */
-.card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:18px;margin-bottom:14px;border:1px solid rgba(0,0,0,.04)}
-.card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--carbon);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--silver-line);display:flex;align-items:center;gap:8px}
-.card-title .dot{width:5px;height:5px;border-radius:50%;background:var(--rose);flex-shrink:0}
+.card{background:var(--gris-o);border-radius:var(--r);box-shadow:var(--sh-s);
+  padding:18px;margin-bottom:14px;border:1px solid rgba(200,169,110,.12)}
+.card h2{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.1rem;
+  margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:8px}
 
 /* STATS */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.stat-box{background:linear-gradient(160deg,#1C1418 0%,#241C20 100%);border-radius:var(--radius-md);padding:16px;text-align:center;border:1px solid rgba(212,168,168,0.12);position:relative;overflow:hidden}
-.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,220,216,0.3),transparent)}
-.stat-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--white)}
-.stat-val.gold{color:var(--gold)}
-.stat-lbl{font-size:.68rem;font-weight:500;color:var(--grey-light);letter-spacing:.8px;text-transform:uppercase;margin-top:4px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-box{background:var(--gris-m);border-radius:var(--rs);padding:15px;text-align:center;border:1px solid var(--linea)}
+.stat-box .val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--rose)}
+.stat-box .val.gold{color:var(--gold)}
+.stat-box .lbl{font-size:.68rem;color:var(--gris-t);font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
 
-/* CITA ITEM */
-.cita-item{background:var(--smoke);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;border:1px solid rgba(0,0,0,.05);border-left:3px solid var(--rose)}
-.ci-row1{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.ci-srv{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:600;color:var(--carbon)}
-.ci-hora{font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.5px}
-.ci-cliente{font-size:.78rem;color:var(--grey-mid);margin-bottom:8px}
-.ci-foot{display:flex;justify-content:space-between;align-items:center}
-.ci-precio{font-size:.82rem;font-weight:700;color:var(--green)}
-.badge{display:inline-block;padding:3px 9px;border-radius:var(--radius-pill);font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
-.badge-pendiente{background:#FEF9C3;color:#713F12}
-.badge-confirmada{background:#ECFDF5;color:#065F46}
-.badge-en_atencion{background:var(--rose-mist);color:var(--rose-deep)}
-.badge-finalizada{background:#F0F9FF;color:#0369A1}
-.badge-cancelada{background:#FEF2F2;color:#991B1B}
-.ci-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+/* CITA */
+.cita-item{background:var(--gris-m);border-radius:var(--rs);padding:14px;margin-bottom:10px;
+  border:1px solid rgba(200,169,110,.1);border-left:3px solid var(--rose-d)}
+.ci-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.ci-srv{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold-l)}
+.ci-hora{font-size:.8rem;font-weight:700;color:var(--gold)}
+.ci-cliente{font-size:.8rem;color:var(--gris-t);margin-bottom:6px}
+.ci-precio{font-size:.8rem;color:#6FCF97;font-weight:700}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-pendiente{background:rgba(255,200,0,.1);color:#F0C040}
+.badge-confirmada{background:rgba(39,174,96,.1);color:#6FCF97}
+.badge-en_atencion{background:rgba(201,164,167,.15);color:var(--rose)}
+.badge-finalizada{background:rgba(52,152,219,.1);color:#7EC8E3}
+.badge-cancelada{background:rgba(192,57,43,.1);color:#F1948A}
+.ci-acc{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 
 /* BOTONES */
-.btn{padding:8px 14px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:600;transition:all .15s;letter-spacing:.2px}
-.btn-dark{background:var(--carbon);color:var(--white)}
-.btn-dark:hover{background:var(--carbon-soft)}
-.btn-gold{background:linear-gradient(135deg,var(--rose-deep) 0%,var(--rose) 50%,var(--gold) 100%);color:var(--white)}
-.btn-green{background:var(--green);color:var(--white)}
-.btn-red{background:var(--red);color:var(--white)}
-.btn-wa{background:#25D366;color:var(--white)}
-.btn-outline{background:transparent;border:1px solid rgba(0,0,0,.12);color:var(--grey-mid)}
-.btn-full{width:100%;padding:11px;font-size:.85rem}
+.btn{padding:8px 13px;border:none;border-radius:var(--rs);cursor:pointer;
+  font-family:'Lato',sans-serif;font-size:.76rem;font-weight:700;transition:.2s}
+.btn-rose{background:var(--rose-d);color:#fff}
+.btn-gold{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:var(--negro)}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-wa{background:#25D366;color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--rose-d);color:var(--rose)}
+.btn-full{width:100%;padding:11px;font-size:.86rem;margin-top:6px}
 
-/* FORMS */
+/* FORM */
 .fg{margin-bottom:12px}
-.flabel{display:block;font-size:.68rem;font-weight:600;color:var(--grey-mid);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
-.finput{width:100%;padding:10px 12px;border:1px solid rgba(0,0,0,.1);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--carbon);background:var(--smoke);outline:none;transition:all .2s}
-.finput:focus{border-color:var(--rose);background:var(--white)}
-textarea.finput{resize:vertical;min-height:60px}
+label{display:block;font-size:.7rem;font-weight:700;color:var(--gris-t);margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px}
+input,select,textarea{width:100%;padding:9px 12px;border:1px solid rgba(200,169,110,.18);border-radius:var(--rs);
+  font-family:'Lato',sans-serif;font-size:.86rem;color:var(--humo);background:var(--gris-m);outline:none;transition:.2s}
+input::placeholder,textarea::placeholder{color:var(--gris-s)}
+input:focus,select:focus,textarea:focus{border-color:var(--rose)}
+textarea{resize:vertical;min-height:58px}
+.row2{display:flex;gap:8px;align-items:flex-end}
+.row2 .fg{flex:1;margin-bottom:0}
 
-/* SALA ESPERA */
-.espera-card{background:linear-gradient(135deg,#2A1820 0%,var(--carbon-soft) 100%);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(201,164,167,0.2)}
-.espera-name{font-family:'Playfair Display',serif;color:var(--white);font-size:1rem;font-weight:600}
-.espera-srv{color:var(--grey-light);font-size:.78rem;margin-top:3px}
-.espera-badge{background:var(--gold);color:var(--carbon);padding:4px 10px;border-radius:var(--radius-pill);font-size:.68rem;font-weight:700;text-align:center}
-
-/* FILTRO */
+/* FILTROS */
 .filtro-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center}
-.filtro-bar .finput{flex:1}
-.filtro-bar .btn{padding:10px 14px}
+.filtro-bar input[type=date]{flex:1;padding:9px 12px}
+.filtro-bar button{padding:9px 13px;background:var(--rose-d);color:#fff;border:none;
+  border-radius:var(--rs);cursor:pointer;font-size:.8rem;font-weight:700;font-family:'Lato',sans-serif}
 
-/* HIST FILTROS */
-.hist-pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.hist-pills button{padding:6px 14px;border-radius:var(--radius-pill);border:1px solid rgba(0,0,0,.1);background:var(--white);cursor:pointer;font-size:.73rem;font-weight:600;color:var(--grey-mid);font-family:'DM Sans',sans-serif}
-.hist-pills button.active{background:var(--carbon);color:var(--white);border-color:var(--carbon)}
+.hist-filtros{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.hist-filtros button{padding:6px 12px;border-radius:20px;border:1px solid rgba(200,169,110,.2);
+  background:var(--gris-m);cursor:pointer;font-size:.75rem;font-weight:700;color:var(--gris-t);font-family:'Lato',sans-serif}
+.hist-filtros button.active{background:var(--rose-d);color:#fff;border-color:var(--rose-d)}
 
-/* BLOQUEOS */
-.bloq-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--silver-line)}
-.bloq-row:last-child{border-bottom:none}
-.bloq-fecha{font-size:.85rem;font-weight:500}
-
-/* SRV ITEM */
-.srv-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--silver-line)}
-.srv-row:last-child{border-bottom:none}
-.srv-name{font-size:.85rem;font-weight:500}
-.srv-detail{font-size:.72rem;color:var(--grey-mid);margin-top:2px}
-.srv-price{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:600;color:var(--gold)}
+/* BLOQUEADOS / SRV */
+.fila{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(200,169,110,.1)}
+.fila:last-child{border-bottom:none}
 
 /* ALERT */
-.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:.82rem;font-weight:500;margin-bottom:12px;display:none}
+.alert{padding:10px 13px;border-radius:var(--rs);margin-bottom:12px;font-size:.83rem;font-weight:600;display:none}
 .alert.show{display:block}
-.alert-ok{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
-.alert-err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.alert-ok{background:rgba(39,174,96,.12);color:#6FCF97;border:1px solid rgba(39,174,96,.25)}
+.alert-err{background:rgba(192,57,43,.12);color:#F1948A;border:1px solid rgba(192,57,43,.25)}
 
 /* SPINNER */
-.spinner{text-align:center;padding:24px}
-.spinner::after{content:'';display:inline-block;width:24px;height:24px;border:2px solid var(--rose-mist);border-top-color:var(--rose);border-radius:50%;animation:spin .7s linear infinite}
+.spinner{text-align:center;padding:20px}
+.spinner::after{content:"";display:inline-block;width:24px;height:24px;border:2px solid rgba(200,169,110,.15);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* EMPTY */
-.empty{text-align:center;padding:28px;color:var(--grey-mid)}
-.empty-icon{font-size:2.2rem;margin-bottom:8px}
-.empty-text{font-size:.82rem}
-
-/* DOUBLE INPUT ROW */
-.row2{display:flex;gap:8px;align-items:flex-end}
-.row2 .fg{flex:1;margin-bottom:0}
+.empty{text-align:center;padding:28px;color:var(--gris-t)}
+.empty .icon{font-size:2.2rem;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -176,43 +147,38 @@ textarea.finput{resize:vertical;min-height:60px}
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-card">
-    <img class="login-logo" src="../img/logo.jpeg" alt="KN" onerror="this.style.display='none'"/>
-    <div class="login-title">KYOMU NAILS</div>
-    <div class="login-sub">Panel Administrativo</div>
-    <div class="login-line"></div>
-    <input class="login-input" type="text" id="loginUser" placeholder="Usuario" autocomplete="username"/>
-    <input class="login-input" type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password"/>
-    <button class="login-btn" onclick="doLogin()">Ingresar</button>
-    <div class="login-err" id="loginErr">Credenciales incorrectas</div>
+    <img src="../img/logo.jpeg" alt="KN" class="llogo" onerror="this.style.display='none'"/>
+    <h1>Kyomu Nails</h1>
+    <p>Panel Administrativo</p>
+    <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username"/>
+    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password"/>
+    <button onclick="doLogin()">Ingresar</button>
+    <div id="loginErr">Usuario o contraseña incorrectos</div>
   </div>
 </div>
 
 <!-- MAIN -->
 <div id="mainApp">
-  <header class="site-header">
-    <img class="header-logo-sm" src="../img/logo.jpeg" alt="KN" onerror="this.style.display='none'"/>
-    <div class="header-info">
-      <h1>KYOMU NAILS</h1>
-      <p>Admin · <span id="adminUser"></span></p>
-    </div>
-    <button class="logout-btn" onclick="doLogout()">Salir</button>
+  <header>
+    <img src="../img/logo.jpeg" alt="KN" onerror="this.style.display='none'"/>
+    <div><h1>Kyomu Nails</h1><p>Admin · <span id="adminNom"></span></p></div>
+    <button class="logout" onclick="doLogout()">Salir</button>
   </header>
-
-  <nav class="site-nav">
-    <button class="nav-btn active" onclick="showSec('agenda',this)">Agenda</button>
-    <button class="nav-btn" onclick="showSec('espera',this)">Espera</button>
-    <button class="nav-btn" onclick="showSec('historial',this)">Historial</button>
-    <button class="nav-btn" onclick="showSec('stats',this)">Stats</button>
-    <button class="nav-btn" onclick="showSec('servicios',this)">Servicios</button>
-    <button class="nav-btn" onclick="showSec('bloqueados',this)">Bloqueados</button>
+  <nav>
+    <button class="active" onclick="irA('agenda',this)">Agenda</button>
+    <button onclick="irA('espera',this)">Espera</button>
+    <button onclick="irA('historial',this)">Historial</button>
+    <button onclick="irA('stats',this)">Stats</button>
+    <button onclick="irA('servicios',this)">Servicios</button>
+    <button onclick="irA('bloqueados',this)">Bloqueados</button>
   </nav>
 
   <!-- AGENDA -->
-  <div class="sec active" id="sec-agenda">
+  <div class="sec activa" id="sec-agenda">
     <div class="filtro-bar">
-      <input class="finput" type="date" id="filtroFecha"/>
-      <button class="btn btn-dark" onclick="cargarAgenda()">Ver</button>
-      <button class="btn btn-gold" onclick="setHoy()">Hoy</button>
+      <input type="date" id="filtroFecha"/>
+      <button onclick="cargarAgenda()">Ver</button>
+      <button onclick="setHoy()" style="background:var(--gold-d)">Hoy</button>
     </div>
     <div id="alertaAgenda" class="alert"></div>
     <div id="listaAgenda"><div class="spinner"></div></div>
@@ -221,7 +187,7 @@ textarea.finput{resize:vertical;min-height:60px}
   <!-- ESPERA -->
   <div class="sec" id="sec-espera">
     <div class="card">
-      <div class="card-title"><span class="dot"></span>En atención ahora</div>
+      <h2>⏳ En atención ahora</h2>
       <div id="listaEspera"><div class="spinner"></div></div>
     </div>
   </div>
@@ -229,14 +195,14 @@ textarea.finput{resize:vertical;min-height:60px}
   <!-- HISTORIAL -->
   <div class="sec" id="sec-historial">
     <div class="filtro-bar">
-      <input class="finput" type="date" id="histDesde" placeholder="Desde"/>
-      <input class="finput" type="date" id="histHasta" placeholder="Hasta"/>
-      <button class="btn btn-dark" onclick="cargarHistorial()">Filtrar</button>
+      <input type="date" id="histDesde"/>
+      <input type="date" id="histHasta" style="flex:1"/>
+      <button onclick="cargarHistorial()">Filtrar</button>
     </div>
-    <div class="hist-pills">
-      <button class="active" onclick="filtrarHist('todas',this)">Todas</button>
-      <button onclick="filtrarHist('finalizada',this)">Finalizadas</button>
-      <button onclick="filtrarHist('cancelada',this)">Canceladas</button>
+    <div class="hist-filtros">
+      <button class="active" onclick="filtrarH('todas',this)">Todas</button>
+      <button onclick="filtrarH('finalizada',this)">Finalizadas</button>
+      <button onclick="filtrarH('cancelada',this)">Canceladas</button>
     </div>
     <div id="listaHistorial"><div class="spinner"></div></div>
   </div>
@@ -244,23 +210,23 @@ textarea.finput{resize:vertical;min-height:60px}
   <!-- STATS -->
   <div class="sec" id="sec-stats">
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Mes actual</div>
-      <div class="stats-grid">
-        <div class="stat-box"><div class="stat-val" id="stTotal">0</div><div class="stat-lbl">Total citas</div></div>
-        <div class="stat-box"><div class="stat-val gold" id="stIng">₡0</div><div class="stat-lbl">Ingresos</div></div>
-        <div class="stat-box"><div class="stat-val" id="stFin">0</div><div class="stat-lbl">Finalizadas</div></div>
-        <div class="stat-box"><div class="stat-val" id="stCanc">0</div><div class="stat-lbl">Canceladas</div></div>
+      <h2>📊 Mes actual</h2>
+      <div class="stats-row">
+        <div class="stat-box"><div class="val" id="stTotal">0</div><div class="lbl">Total</div></div>
+        <div class="stat-box"><div class="val gold" id="stIng">₡0</div><div class="lbl">Ingresos</div></div>
+        <div class="stat-box"><div class="val" id="stFin">0</div><div class="lbl">Finalizadas</div></div>
+        <div class="stat-box"><div class="val" id="stCanc">0</div><div class="lbl">Canceladas</div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Hoy</div>
-      <div class="stats-grid">
-        <div class="stat-box"><div class="stat-val" id="stHoyT">0</div><div class="stat-lbl">Citas hoy</div></div>
-        <div class="stat-box"><div class="stat-val" id="stHoyF">0</div><div class="stat-lbl">Finalizadas</div></div>
+      <h2>📅 Hoy</h2>
+      <div class="stats-row">
+        <div class="stat-box"><div class="val" id="stHT">0</div><div class="lbl">Citas</div></div>
+        <div class="stat-box"><div class="val" id="stHF">0</div><div class="lbl">Finalizadas</div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Por servicio</div>
+      <h2>💅 Por servicio</h2>
       <div id="statsSrv"><div class="spinner"></div></div>
     </div>
   </div>
@@ -268,45 +234,45 @@ textarea.finput{resize:vertical;min-height:60px}
   <!-- SERVICIOS -->
   <div class="sec" id="sec-servicios">
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Agregar servicio</div>
+      <h2>➕ Nuevo servicio</h2>
       <div id="alertaServ" class="alert"></div>
-      <div class="fg"><label class="flabel">Nombre</label><input class="finput" type="text" id="srvNom" placeholder="Ej: Manicure semipermanente"/></div>
+      <div class="fg"><label>Nombre</label><input type="text" id="srvNom" placeholder="Ej: Manicure semipermanente"/></div>
       <div class="row2">
-        <div class="fg"><label class="flabel">Duración (min)</label><input class="finput" type="number" id="srvDur" placeholder="60" min="10" step="5"/></div>
-        <div class="fg"><label class="flabel">Precio (₡)</label><input class="finput" type="number" id="srvPrecio" placeholder="12000"/></div>
+        <div class="fg"><label>Duración (min)</label><input type="number" id="srvDur" placeholder="60" min="10" step="5"/></div>
+        <div class="fg"><label>Precio (₡)</label><input type="number" id="srvPrecio" placeholder="12000"/></div>
       </div>
-      <button class="btn btn-gold btn-full" style="margin-top:8px" onclick="guardarServicio()">Guardar servicio</button>
+      <button class="btn btn-rose btn-full" onclick="guardarSrv()">Guardar servicio</button>
     </div>
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Servicios activos</div>
-      <div id="listaServicios"><div class="spinner"></div></div>
+      <h2>💅 Servicios activos</h2>
+      <div id="listaSrv"><div class="spinner"></div></div>
     </div>
   </div>
 
   <!-- BLOQUEADOS -->
   <div class="sec" id="sec-bloqueados">
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Bloquear día</div>
+      <h2>🗓 Bloquear día</h2>
       <div id="alertaDisp" class="alert"></div>
-      <div class="row2">
-        <div class="fg"><label class="flabel">Fecha</label><input class="finput" type="date" id="diaBloquear"/></div>
-        <button class="btn btn-red" style="padding:10px 14px;height:40px" onclick="bloquearDia()">Bloquear</button>
+      <div class="row2" style="align-items:flex-end;margin-bottom:4px">
+        <div class="fg"><label>Fecha</label><input type="date" id="diaBlq"/></div>
+        <button class="btn btn-red" style="padding:9px 13px;margin-bottom:12px" onclick="bloquearDia()">Bloquear</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Bloquear hora</div>
-      <div class="row2">
-        <div class="fg"><label class="flabel">Fecha</label><input class="finput" type="date" id="horaFecha"/></div>
-        <div class="fg"><label class="flabel">Hora</label><input class="finput" type="time" id="horaHora" step="1800"/></div>
-        <button class="btn btn-red" style="padding:10px 14px;height:40px" onclick="bloquearHora()">Bloquear</button>
+      <h2>⏰ Bloquear hora</h2>
+      <div class="row2" style="align-items:flex-end;margin-bottom:4px">
+        <div class="fg"><label>Fecha</label><input type="date" id="horaFecha"/></div>
+        <div class="fg"><label>Hora</label><input type="time" id="horaHora" step="1800"/></div>
+        <button class="btn btn-red" style="padding:9px 13px;margin-bottom:12px" onclick="bloquearHora()">Bloquear</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Días bloqueados</div>
+      <h2>📋 Días bloqueados</h2>
       <div id="listaDias"><div class="spinner"></div></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="dot"></span>Horas bloqueadas</div>
+      <h2>⏰ Horas bloqueadas</h2>
       <div id="listaHoras"><div class="spinner"></div></div>
     </div>
   </div>
@@ -318,156 +284,137 @@ import { getFirestore, collection, addDoc, query, where, getDocs,
          doc, updateDoc, deleteDoc, onSnapshot, Timestamp, getDoc }
        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const FB={ apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nails.firebaseapp.com",
-  projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",messagingSenderId:"514396956826",
-  appId:"1:514396956826:web:9356c814010b2c730f9723" };
-const WA="50662472397";
-const ADMIN_U="Naty", ADMIN_P="Naty2026";
-
+const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nails.firebaseapp.com",
+  projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",
+  messagingSenderId:"514396956826",appId:"1:514396956826:web:9356c814010b2c730f9723"};
+const WA="50662472397",AU="Naty",AP="Naty2026";
 const db=getFirestore(initializeApp(FB));
-let salaUnsub=null, statsUnsub=null;
-let histCache=[], histFiltro='todas';
+let salaU=null,statsU=null,histCache=[],histF='todas';
 
-// ─── LOGIN ───
 window.doLogin=()=>{
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value.trim();
-  if(u===ADMIN_U&&p===ADMIN_P){
+  if(u===AU&&p===AP){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('mainApp').style.display='block';
-    document.getElementById('adminUser').textContent=u;
+    document.getElementById('adminNom').textContent=u;
     document.getElementById('loginErr').style.display='none';
-    setHoy(); cargarAgenda(); iniciarEspera(); iniciarStats();
-    cargarServicios(); cargarBloqueados();
-  } else document.getElementById('loginErr').style.display='block';
+    setHoy();cargarAgenda();iniciarEspera();iniciarStats();cargarSrv();cargarBloq();
+  }else document.getElementById('loginErr').style.display='block';
 };
 window.doLogout=()=>{
-  if(salaUnsub)salaUnsub(); if(statsUnsub)statsUnsub();
+  if(salaU)salaU();if(statsU)statsU();
   document.getElementById('mainApp').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('loginUser').value=''; document.getElementById('loginPass').value='';
+  document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
 };
-document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter')window.doLogin(); });
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
 
-// ─── TABS ───
-window.showSec=(id,btn)=>{
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sec-'+id).classList.add('active');
-  btn.classList.add('active');
+window.irA=(id,btn)=>{
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('activa'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('activa');btn.classList.add('active');
 };
-window.setHoy=()=>{ document.getElementById('filtroFecha').value=fstr(new Date()); };
+window.setHoy=()=>document.getElementById('filtroFecha').value=fstr(new Date());
 
-// ─── AGENDA ───
+// AGENDA
 window.cargarAgenda=async()=>{
-  const fecha=document.getElementById('filtroFecha').value; if(!fecha)return;
-  const el=document.getElementById('listaAgenda'); el.innerHTML='<div class="spinner"></div>';
+  const fecha=document.getElementById('filtroFecha').value;if(!fecha)return;
+  const el=document.getElementById('listaAgenda');el.innerHTML='<div class="spinner"></div>';
   const snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>!['cancelada','finalizada','en_atencion'].includes(c.estado))
     .sort((a,b)=>a.hora.localeCompare(b.hora));
-  if(!citas.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Sin citas para esta fecha</div></div>'; return; }
-  el.innerHTML=citas.map(c=>renderCita(c,'agenda')).join('');
+  if(!citas.length){el.innerHTML='<div class="empty"><div class="icon">📋</div><p>Sin citas para esta fecha</p></div>';return;}
+  el.innerHTML=citas.map(c=>citaHTML(c,'agenda')).join('');
 };
 
-function renderCita(c,ctx){
+function citaHTML(c,ctx){
   const acc=[];
   if(ctx==='agenda'){
-    if(c.estado==='pendiente') acc.push(`<button class="btn btn-green" onclick="cambiarEstado('${c.id}','confirmada')">Confirmar</button>`);
+    if(c.estado==='pendiente')acc.push(`<button class="btn btn-green" onclick="cambiarEstado('${c.id}','confirmada')">✅ Confirmar</button>`);
     if(c.estado==='confirmada'){
-      acc.push(`<button class="btn btn-dark" onclick="checkIn('${c.id}')">Check-in</button>`);
-      acc.push(`<button class="btn btn-wa" onclick="enviarWA('${c.id}','${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')">WhatsApp</button>`);
+      acc.push(`<button class="btn btn-rose" onclick="checkIn('${c.id}')">🚶 Check-in</button>`);
+      acc.push(`<button class="btn btn-wa" onclick="envWA('${c.id}','${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')">💬 WA</button>`);
     }
-    acc.push(`<button class="btn btn-red" onclick="cancelarCita('${c.id}')">Cancelar</button>`);
+    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')">✖ Cancelar</button>`);
   }
   if(ctx==='espera'){
-    acc.push(`<button class="btn btn-gold" onclick="finalizar('${c.id}')">Finalizar</button>`);
-    acc.push(`<button class="btn btn-red" onclick="cancelarCita('${c.id}')">Cancelar</button>`);
+    acc.push(`<button class="btn btn-gold" onclick="finalizar('${c.id}')">🏁 Finalizar</button>`);
+    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')">✖ Cancelar</button>`);
   }
   return `<div class="cita-item">
-    <div class="ci-row1"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora">${c.hora}</div></div>
+    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora">⏰ ${c.hora}</div></div>
     <div class="ci-cliente">👤 ${c.nombre||c.name||'—'} · 📞 ${c.telefono||c.tel||'—'}</div>
-    ${c.nota?`<div style="font-size:.75rem;color:var(--grey-mid);margin-bottom:6px;font-style:italic">📝 ${c.nota}</div>`:''}
-    <div class="ci-foot"><span class="badge badge-${c.estado}">${etq(c.estado)}</span><span class="ci-precio">₡${Number(c.precio||0).toLocaleString()}</span></div>
-    <div class="ci-actions">${acc.join('')}</div>
+    ${c.nota?`<div style="font-size:.75rem;color:var(--gris-t);margin-bottom:4px;font-style:italic">📝 ${c.nota}</div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
+      <span class="ci-precio">₡${Number(c.precio||0).toLocaleString()}</span>
+    </div>
+    <div class="ci-acc">${acc.join('')}</div>
   </div>`;
 }
 
-window.cambiarEstado=async(id,estado)=>{ await updateDoc(doc(db,'appointments',id),{estado}); cargarAgenda(); };
-
+window.cambiarEstado=async(id,e)=>{await updateDoc(doc(db,'appointments',id),{estado:e});cargarAgenda();};
 window.checkIn=async(id)=>{
-  const ref=doc(db,'appointments',id); const snap=await getDoc(ref); const c=snap.data();
+  const ref=doc(db,'appointments',id);const s=await getDoc(ref);const c=s.data();
   await updateDoc(ref,{estado:'en_atencion'});
   await addDoc(collection(db,'queue'),{name:c.nombre||c.name,service:c.serviceName||c.servicio,appointmentId:id,createdAt:Timestamp.now()});
   cargarAgenda();
 };
-
-window.cancelarCita=async(id)=>{
-  if(!confirm('¿Cancelar esta cita?'))return;
-  await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});
-  cargarAgenda(); cargarHistorial();
-};
-
+window.cancelar=async(id)=>{if(!confirm('¿Cancelar?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});cargarAgenda();cargarHistorial();};
 window.finalizar=async(id)=>{
   await updateDoc(doc(db,'appointments',id),{estado:'finalizada'});
-  const snap=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
-  for(const d of snap.docs) await deleteDoc(doc(db,'queue',d.id));
+  const s=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
+  for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
 };
-
-window.enviarWA=(id,tel,nombre,servicio,fecha,hora)=>{
-  const msg=`Hola ${nombre} 🌸, confirmamos tu cita en *Kyomu Nails*:\n💅 *${servicio}*\n📅 ${ffmt(fecha)} · ⏰ ${hora}\n\n¡Te esperamos!`;
+window.envWA=(id,tel,nombre,srv,fecha,hora)=>{
+  const msg=`Hola ${nombre} 🌸, confirmamos tu cita en *Kyomu Nails*:\n💅 *${srv}*\n📅 ${ffmt(fecha)} · ⏰ ${hora}\n\n¡Te esperamos!`;
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
 };
 
-// ─── SALA ESPERA ───
+// ESPERA
 function iniciarEspera(){
   const el=document.getElementById('listaEspera');
-  salaUnsub=onSnapshot(
-    query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),
-    snap=>{
-      const en=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.estado==='en_atencion').sort((a,b)=>a.hora.localeCompare(b.hora));
-      if(!en.length){ el.innerHTML='<div class="empty"><div class="empty-icon">✨</div><div class="empty-text">Sala vacía por ahora</div></div>'; return; }
-      el.innerHTML=en.map(c=>renderCita(c,'espera')).join('');
-    }
-  );
+  salaU=onSnapshot(query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),snap=>{
+    const en=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.estado==='en_atencion').sort((a,b)=>a.hora.localeCompare(b.hora));
+    if(!en.length){el.innerHTML='<div class="empty"><div class="icon">✨</div><p>Sala vacía</p></div>';return;}
+    el.innerHTML=en.map(c=>citaHTML(c,'espera')).join('');
+  });
 }
 
-// ─── HISTORIAL ───
+// HISTORIAL
 window.cargarHistorial=async()=>{
-  const desde=document.getElementById('histDesde').value;
-  const hasta=document.getElementById('histHasta').value;
+  const desde=document.getElementById('histDesde').value,hasta=document.getElementById('histHasta').value;
   document.getElementById('listaHistorial').innerHTML='<div class="spinner"></div>';
   const snap=await getDocs(query(collection(db,'appointments'),where('estado','in',['finalizada','cancelada'])));
   histCache=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>{ let ok=true; if(desde)ok=ok&&c.fecha>=desde; if(hasta)ok=ok&&c.fecha<=hasta; return ok; })
+    .filter(c=>{let ok=true;if(desde)ok=ok&&c.fecha>=desde;if(hasta)ok=ok&&c.fecha<=hasta;return ok;})
     .sort((a,b)=>b.fecha.localeCompare(a.fecha)||b.hora.localeCompare(a.hora));
   renderHist();
 };
-
 function renderHist(){
   const el=document.getElementById('listaHistorial');
-  let data=histFiltro==='todas'?histCache:histCache.filter(c=>c.estado===histFiltro);
-  if(!data.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">Sin registros</div></div>'; return; }
+  let data=histF==='todas'?histCache:histCache.filter(c=>c.estado===histF);
+  if(!data.length){el.innerHTML='<div class="empty"><div class="icon">📁</div><p>Sin registros</p></div>';return;}
   el.innerHTML=data.map(c=>`
     <div class="cita-item" style="border-left-color:${c.estado==='finalizada'?'var(--green)':'var(--red)'}">
-      <div class="ci-row1"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora">${ffmt(c.fecha)}</div></div>
+      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora">📅 ${ffmt(c.fecha)}</div></div>
       <div class="ci-cliente">👤 ${c.nombre||c.name||'—'} · 📞 ${c.telefono||c.tel||'—'}</div>
-      <div class="ci-foot"><span class="badge badge-${c.estado}">${etq(c.estado)}</span><span class="ci-precio">₡${Number(c.precio||0).toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
+        <span class="ci-precio">₡${Number(c.precio||0).toLocaleString()}</span>
+      </div>
     </div>`).join('');
 }
+window.filtrarH=(f,btn)=>{histF=f;document.querySelectorAll('.hist-filtros button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHist();};
 
-window.filtrarHist=(f,btn)=>{
-  histFiltro=f;
-  document.querySelectorAll('.hist-pills button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); renderHist();
-};
-
-// ─── STATS ───
+// STATS
 function iniciarStats(){
-  const hoy=new Date(); const primStr=fstr(new Date(hoy.getFullYear(),hoy.getMonth(),1)); const hoyStr=fstr(hoy);
-  statsUnsub=onSnapshot(collection(db,'appointments'),snap=>{
+  const hoy=new Date(),prim=fstr(new Date(hoy.getFullYear(),hoy.getMonth(),1)),hoyStr=fstr(hoy);
+  statsU=onSnapshot(collection(db,'appointments'),snap=>{
     const all=snap.docs.map(d=>({id:d.id,...d.data()}));
-    const mes=all.filter(c=>c.fecha>=primStr&&c.fecha<=hoyStr);
+    const mes=all.filter(c=>c.fecha>=prim&&c.fecha<=hoyStr);
     const hoyC=all.filter(c=>c.fecha===hoyStr);
     const fin=mes.filter(c=>c.estado==='finalizada');
     const ing=fin.reduce((s,c)=>s+Number(c.precio||0),0);
@@ -475,84 +422,77 @@ function iniciarStats(){
     document.getElementById('stFin').textContent=fin.length;
     document.getElementById('stCanc').textContent=mes.filter(c=>c.estado==='cancelada').length;
     document.getElementById('stIng').textContent='₡'+ing.toLocaleString();
-    document.getElementById('stHoyT').textContent=hoyC.length;
-    document.getElementById('stHoyF').textContent=hoyC.filter(c=>c.estado==='finalizada').length;
+    document.getElementById('stHT').textContent=hoyC.length;
+    document.getElementById('stHF').textContent=hoyC.filter(c=>c.estado==='finalizada').length;
     const mapa={};
-    fin.forEach(c=>{ const n=c.serviceName||c.servicio||'—'; if(!mapa[n])mapa[n]={cnt:0,ing:0}; mapa[n].cnt++; mapa[n].ing+=Number(c.precio||0); });
+    fin.forEach(c=>{const n=c.serviceName||c.servicio||'—';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
     const el=document.getElementById('statsSrv');
     const entries=Object.entries(mapa).sort((a,b)=>b[1].cnt-a[1].cnt);
-    if(!entries.length){ el.innerHTML='<div class="empty-text" style="color:var(--grey-mid);font-size:.82rem">Sin datos aún</div>'; return; }
+    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos aún</p>';return;}
     el.innerHTML=entries.map(([n,v])=>`
-      <div class="srv-row">
-        <div><div class="srv-name">${n}</div><div class="srv-detail">${v.cnt} cita${v.cnt!==1?'s':''}</div></div>
-        <div class="srv-price">₡${v.ing.toLocaleString()}</div>
+      <div class="fila">
+        <div><div style="font-size:.85rem;font-weight:700;color:var(--humo)">${n}</div><div style="font-size:.72rem;color:var(--gris-t)">${v.cnt} cita${v.cnt!==1?'s':''}</div></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold)">₡${v.ing.toLocaleString()}</div>
       </div>`).join('');
   });
 }
 
-// ─── SERVICIOS ───
-window.cargarServicios=async()=>{
+// SERVICIOS
+window.cargarSrv=async()=>{
   const snap=await getDocs(collection(db,'servicios'));
   const srvs=snap.docs.map(d=>({id:d.id,...d.data()}));
-  const el=document.getElementById('listaServicios');
-  if(!srvs.length){ el.innerHTML='<div class="empty"><div class="empty-icon">💅</div><div class="empty-text">Sin servicios aún</div></div>'; return; }
+  const el=document.getElementById('listaSrv');
+  if(!srvs.length){el.innerHTML='<div class="empty"><div class="icon">💅</div><p>Sin servicios</p></div>';return;}
   el.innerHTML=srvs.map(s=>`
-    <div class="srv-row">
-      <div><div class="srv-name">${s.nombre}</div><div class="srv-detail">${s.duracion} min</div></div>
-      <div style="display:flex;align-items:center;gap:10px"><div class="srv-price">₡${Number(s.precio).toLocaleString()}</div>
-      <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')">✕</button></div>
+    <div class="fila">
+      <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div><div style="font-size:.74rem;color:var(--gris-t)">⏱ ${s.duracion} min · ₡${Number(s.precio).toLocaleString()}</div></div>
+      <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')">✖</button>
     </div>`).join('');
 };
-
-window.guardarServicio=async()=>{
+window.guardarSrv=async()=>{
   const n=document.getElementById('srvNom').value.trim();
   const d=parseInt(document.getElementById('srvDur').value);
   const p=parseInt(document.getElementById('srvPrecio').value);
-  if(!n||!d||!p){ showAlert('alertaServ','Completá todos los campos','err'); return; }
+  if(!n||!d||!p){mAlerta('alertaServ','Completá todos los campos','err');return;}
   await addDoc(collection(db,'servicios'),{nombre:n,duracion:d,precio:p});
   ['srvNom','srvDur','srvPrecio'].forEach(id=>document.getElementById(id).value='');
-  showAlert('alertaServ','Servicio guardado','ok'); cargarServicios();
+  mAlerta('alertaServ','✅ Servicio guardado','ok');cargarSrv();
 };
+window.eliminarSrv=async(id)=>{if(!confirm('¿Eliminar?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
 
-window.eliminarSrv=async(id)=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'servicios',id)); cargarServicios(); };
-
-// ─── BLOQUEADOS ───
-window.cargarBloqueados=async()=>{
+// BLOQUEADOS
+window.cargarBloq=async()=>{
   const[ds,hs]=await Promise.all([getDocs(collection(db,'dias_bloqueados')),getDocs(collection(db,'horas_bloqueadas'))]);
   const dias=ds.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
   const dEl=document.getElementById('listaDias');
-  dEl.innerHTML=!dias.length?'<div class="empty"><div class="empty-text">Sin días bloqueados</div></div>':
-    dias.map(d=>`<div class="bloq-row"><span class="bloq-fecha">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px" onclick="desbloquearDia('${d.id}')">Desbloquear</button></div>`).join('');
+  dEl.innerHTML=!dias.length?'<div class="empty"><p>Sin días bloqueados</p></div>':
+    dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}')">Desbloquear</button></div>`).join('');
   const hEl=document.getElementById('listaHoras');
-  hEl.innerHTML=!horas.length?'<div class="empty"><div class="empty-text">Sin horas bloqueadas</div></div>':
-    horas.map(h=>`<div class="bloq-row"><span class="bloq-fecha">${ffmt(h.fecha)} · ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px" onclick="desbloquearHora('${h.id}')">Quitar</button></div>`).join('');
+  hEl.innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
+    horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(h.fecha)} · ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
 };
-
 window.bloquearDia=async()=>{
-  const f=document.getElementById('diaBloquear').value;
-  if(!f){ showAlert('alertaDisp','Elegí una fecha','err'); return; }
+  const f=document.getElementById('diaBlq').value;
+  if(!f){mAlerta('alertaDisp','Elegí una fecha','err');return;}
   await addDoc(collection(db,'dias_bloqueados'),{fecha:f});
-  showAlert('alertaDisp','Día bloqueado','ok'); document.getElementById('diaBloquear').value=''; cargarBloqueados();
+  mAlerta('alertaDisp','✅ Día bloqueado','ok');document.getElementById('diaBlq').value='';cargarBloq();
 };
-
 window.bloquearHora=async()=>{
-  const f=document.getElementById('horaFecha').value; const h=document.getElementById('horaHora').value;
-  if(!f||!h){ showAlert('alertaDisp','Completá fecha y hora','err'); return; }
+  const f=document.getElementById('horaFecha').value,h=document.getElementById('horaHora').value;
+  if(!f||!h){mAlerta('alertaDisp','Completá fecha y hora','err');return;}
   await addDoc(collection(db,'horas_bloqueadas'),{fecha:f,hora:h.substring(0,5)});
-  showAlert('alertaDisp','Hora bloqueada','ok'); document.getElementById('horaFecha').value=''; document.getElementById('horaHora').value=''; cargarBloqueados();
+  mAlerta('alertaDisp','✅ Hora bloqueada','ok');document.getElementById('horaFecha').value='';document.getElementById('horaHora').value='';cargarBloq();
 };
+window.desBloqD=async(id)=>{await deleteDoc(doc(db,'dias_bloqueados',id));cargarBloq();};
+window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
 
-window.desbloquearDia=async(id)=>{ await deleteDoc(doc(db,'dias_bloqueados',id)); cargarBloqueados(); };
-window.desbloquearHora=async(id)=>{ await deleteDoc(doc(db,'horas_bloqueadas',id)); cargarBloqueados(); };
+function fstr(d){return d.toISOString().split('T')[0];}
+function ffmt(f){const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return `${d} ${ms[parseInt(m)-1]} ${y}`;}
+function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atención',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
+function mAlerta(id,msg,tipo){const a=document.getElementById(id);a.textContent=msg;a.className='alert show alert-'+(tipo==='ok'?'ok':'err');setTimeout(()=>a.classList.remove('show'),4000);}
 
-// ─── HELPERS ───
-function fstr(d){ return d.toISOString().split('T')[0]; }
-function ffmt(f){ const[y,m,d]=f.split('-'); const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; return `${d} ${ms[parseInt(m)-1]} ${y}`; }
-function etq(e){ return {pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atención',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e; }
-function showAlert(id,msg,tipo){ const a=document.getElementById(id); a.textContent=msg; a.className='alert show alert-'+(tipo==='ok'?'ok':'err'); setTimeout(()=>a.classList.remove('show'),4000); }
-
-if('serviceWorker' in navigator) navigator.serviceWorker.register('../sw-admin.js');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('../sw-admin.js');
 </script>
 </body>
 </html>
