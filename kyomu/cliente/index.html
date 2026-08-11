@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kyomu Nails</title>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#1C1C1E"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Kyomu Nails"/>
+<link rel="apple-touch-icon" href="../img/icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════
+   KYOMU NAILS — Design System v2
+   Paleta: Carbón + Rosa palo + Dorado
+═══════════════════════════════════════ */
+:root {
+  --carbon:      #1C1C1E;
+  --carbon-mid:  #2D2D2F;
+  --carbon-soft: #3A3A3C;
+  --grey-mid:    #6E6E73;
+  --grey-light:  #AEAEB2;
+  --smoke:       #F5F5F7;
+  --white:       #FFFFFF;
+
+  --rose:        #C9A4A7;
+  --rose-deep:   #A07879;
+  --rose-mist:   #F0E4E5;
+
+  --gold:        #C8A96E;
+  --gold-pale:   #E8D5A3;
+  --gold-dark:   #9A7A46;
+
+  --silver-line: rgba(174,174,178,0.25);
+
+  /* Metálicos */
+  --metal-rose:   #D4A8A8;
+  --metal-silver: #C8CACE;
+  --metal-bright: #E8E0D8;
+  --brushed-1:    rgba(232,220,216,0.08);
+  --brushed-2:    rgba(212,168,168,0.12);
+  --brushed-3:    rgba(200,169,110,0.10);
+
+  --radius-lg:   20px;
+  --radius-md:   12px;
+  --radius-sm:   8px;
+  --radius-pill: 100px;
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-float:0 8px 32px rgba(0,0,0,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--smoke);
+  color: var(--carbon);
+  min-height: 100vh;
+  padding-bottom: 100px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ── */
+.site-header {
+  padding: 36px 20px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  /* Base oscura */
+  background: #141214;
+}
+/* Capa de metal cepillado — líneas ultrafinas horizontales */
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(232,220,216,0.04) 2px,
+      rgba(232,220,216,0.04) 3px
+    ),
+    linear-gradient(
+      135deg,
+      #1A1218 0%,
+      #241820 20%,
+      #2C1E24 35%,
+      #221A20 50%,
+      #1E1620 65%,
+      #261C22 80%,
+      #1A1218 100%
+    );
+  z-index: 0;
+}
+/* Reflejo central — como luz sobre metal pulido */
+.site-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 280px; height: 100%;
+  background: radial-gradient(
+    ellipse 60% 40% at 50% 0%,
+    rgba(212,168,168,0.18) 0%,
+    rgba(200,169,110,0.08) 40%,
+    transparent 70%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+.site-header > * { position: relative; z-index: 2; }
+.header-logo-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+/* Anillo exterior metálico */
+.header-logo-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 135deg,
+    #C8A96E 0deg,
+    #E8D5A3 60deg,
+    #D4A8A8 120deg,
+    #C8CACE 180deg,
+    #D4A8A8 240deg,
+    #C8A96E 300deg,
+    #E8D5A3 360deg
+  );
+  z-index: -1;
+  animation: rotateRing 8s linear infinite;
+}
+@keyframes rotateRing {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.header-logo {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #141214;
+  display: block;
+  box-shadow: 0 0 24px rgba(212,168,168,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+/* Línea decorativa — trazo de nail art */
+.header-logo-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: -12px; left: 50%;
+  transform: translateX(-50%);
+  width: 64px; height: 1.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--rose) 20%,
+    var(--metal-bright) 50%,
+    var(--gold) 80%,
+    transparent 100%
+  );
+}
+.header-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-top: 16px;
+  background: linear-gradient(
+    135deg,
+    #E8D5A3 0%,
+    #D4A8A8 30%,
+    #E8E0D8 50%,
+    #C8A96E 70%,
+    #D4A8A8 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 8px rgba(212,168,168,0.3));
+}
+.header-slogan {
+  color: var(--grey-light);
+  font-size: 0.72rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-weight: 300;
+}
+
+/* ── NAV ── */
+.site-nav {
+  background: linear-gradient(90deg, #1E1618 0%, #231A1C 50%, #1E1618 100%);
+  display: flex;
+  border-bottom: 1px solid rgba(201,164,167,0.2);
+  border-top: 1px solid rgba(232,213,163,0.15);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-btn {
+  flex: 1;
+  padding: 14px 6px;
+  border: none; background: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--grey-light);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.nav-btn.active {
+  color: var(--rose);
+  border-bottom-color: var(--rose);
+}
+
+/* ── SECCIONES ── */
+.tab { display: none; padding: 24px 16px; max-width: 480px; margin: 0 auto; }
+.tab.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--carbon);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--silver-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title .accent-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), var(--gold));
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(200,169,110,0.4);
+}
+
+/* ── STEP BADGE ── */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--rose-mist);
+  color: var(--rose-deep);
+  font-size: 0.68rem;
+  border: 1px solid rgba(160,120,121,0.2);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 12px;
+}
+
+/* ── SERVICIOS GRID ── */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.srv-card {
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: var(--white);
+  text-align: center;
+}
+.srv-card:hover { border-color: var(--rose); transform: translateY(-2px); box-shadow: var(--shadow-float); }
+.srv-card.selected {
+  border-color: var(--rose);
+  background: linear-gradient(135deg, var(--rose-deep) 0%, #7A5254 100%);
+}
+.srv-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--carbon);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.srv-card.selected .srv-name { color: var(--white); font-weight: 700; }
+.srv-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+.srv-dur {
+  font-size: 0.68rem;
+  color: var(--grey-mid);
+  margin-top: 3px;
+}
+.srv-card.selected .srv-dur { color: var(--grey-light); }
+
+/* ── CALENDARIO ── */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.cal-nav-btn {
+  width: 32px; height: 32px;
+  border: 1px solid var(--silver-line);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--grey-mid);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.cal-nav-btn:hover { border-color: var(--rose); color: var(--rose-deep); }
+.cal-month-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--carbon);
+}
+.cal-weekdays {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  margin-bottom: 6px;
+}
+.cal-wd {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--grey-mid);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--carbon);
+}
+.cal-cell.empty { cursor: default; }
+.cal-cell.past { color: var(--grey-light); cursor: not-allowed; }
+.cal-cell.blocked { color: var(--grey-light); cursor: not-allowed; background: var(--smoke); border-radius: 4px; }
+.cal-cell.available:hover { background: var(--rose-mist); color: var(--rose-deep); }
+.cal-cell.selected { background: var(--carbon); color: var(--white); }
+.cal-cell.today { outline: 1.5px solid var(--gold); outline-offset: -1px; }
+
+/* ── HORAS ── */
+.horas-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.hora-pill {
+  padding: 7px 14px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--carbon);
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.hora-pill:hover:not(.blocked) { border-color: var(--rose); color: var(--rose-deep); }
+.hora-pill.selected {
+  background: linear-gradient(135deg, var(--rose-deep), #7A5254 50%, var(--gold-dark));
+  color: var(--white); border-color: transparent;
+  box-shadow: 0 2px 10px rgba(160,120,121,0.35);
+}
+.hora-pill.blocked { color: var(--grey-light); border-color: rgba(0,0,0,0.05); cursor: not-allowed; text-decoration: line-through; }
+
+/* ── INPUTS ── */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--grey-mid);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--carbon);
+  background: var(--smoke);
+  outline: none;
+  transition: all 0.2s;
+}
+.form-input:focus { border-color: var(--rose); background: var(--white); box-shadow: 0 0 0 3px rgba(201,164,167,0.15); }
+textarea.form-input { resize: vertical; min-height: 72px; }
+
+/* ── RESUMEN CITA ── */
+.resumen-cita {
+  background: linear-gradient(135deg, var(--rose-deep) 0%, #5A3538 100%);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  color: var(--white);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  border: 1px solid rgba(201,164,167,0.3);
+}
+.resumen-cita .resumen-servicio {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--gold-pale);
+  margin-bottom: 4px;
+}
+
+/* ── PRECIO ── */
+.precio-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: none;
+  padding: 14px 16px;
+  margin: 14px 0;
+  background: linear-gradient(135deg, #1A1214, #241A1E);
+  border-radius: 10px;
+  border: 1px solid rgba(200,169,110,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.precio-row::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--rose), var(--gold), transparent);
+}
+.precio-label { font-size: 0.78rem; font-weight: 600; color: var(--grey-light); text-transform: uppercase; letter-spacing: 0.8px; }
+.precio-valor {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* ── BOTONES ── */
+.btn {
+  display: block; width: 100%;
+  padding: 13px 20px;
+  border: none; border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+  text-align: center;
+}
+.btn + .btn { margin-top: 8px; }
+.btn-dark { background: var(--carbon); color: var(--white); }
+.btn-dark:hover { background: var(--carbon-soft); }
+.btn-gold { background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose) 50%, var(--gold) 100%); color: var(--white); }
+.btn-gold:hover { opacity: 0.9; }
+.btn-outline { background: transparent; border: 1px solid rgba(0,0,0,0.12); color: var(--grey-mid); }
+.btn-outline:hover { border-color: var(--rose); color: var(--rose-deep); }
+.btn-danger { background: #C0392B; color: var(--white); }
+.btn-sm { width: auto; padding: 7px 14px; font-size: 0.75rem; }
+
+/* ── ALERTAS ── */
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.83rem;
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: none;
+}
+.alert.show { display: block; }
+.alert-ok { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+.alert-err { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+
+/* ── CITA CARD ── */
+.cita-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-card);
+}
+.cita-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.cita-servicio { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; color: var(--carbon); }
+.cita-hora { font-size: 0.75rem; font-weight: 700; color: var(--gold); letter-spacing: 0.5px; }
+.cita-meta { font-size: 0.78rem; color: var(--grey-mid); margin-bottom: 10px; }
+.estado-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.estado-pendiente { background: #FEF9C3; color: #713F12; }
+.estado-confirmada { background: #ECFDF5; color: #065F46; }
+.estado-en_atencion { background: var(--rose-mist); color: var(--rose-deep); }
+.cita-acciones { margin-top: 12px; display: flex; gap: 8px; }
+
+/* ── LISTA SERVICIOS INFO ── */
+.srv-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--silver-line);
+}
+.srv-info-row:last-child { border-bottom: none; }
+.srv-info-name { font-size: 0.88rem; font-weight: 500; color: var(--carbon); }
+.srv-info-dur { font-size: 0.72rem; color: var(--grey-mid); margin-top: 2px; }
+.srv-info-price { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--gold); }
+
+/* ── BUSCAR ── */
+.search-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.search-row .form-input { flex: 1; }
+.search-row .btn-dark { width: auto; padding: 0 18px; }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 32px 16px; color: var(--grey-mid); }
+.empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.empty-text { font-size: 0.85rem; }
+
+/* ── SPINNER ── */
+.spinner { text-align: center; padding: 24px; }
+.spinner::after {
+  content: '';
+  display: inline-block;
+  width: 26px; height: 26px;
+  border: 2px solid var(--rose-mist);
+  border-top-color: var(--rose);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── INSTALAR BANNER ── */
+.install-banner {
+  background: linear-gradient(90deg, var(--carbon) 0%, #2E1F21 100%);
+  margin: 0;
+  padding: 14px 20px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(201,164,167,0.2);
+}
+.install-banner.show { display: flex; }
+.install-banner p { color: var(--grey-light); font-size: 0.8rem; flex: 1; }
+.install-banner .btn-install {
+  background: var(--gold);
+  color: var(--carbon);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── IOS CARD ── */
+.ios-card { display: none; }
+.ios-steps { font-size: 0.82rem; color: var(--grey-mid); line-height: 2; }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--grey-light); font-size: 0.72rem;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin: 4px 0 16px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: var(--silver-line);
+}
+</style>
+</head>
+<body>
+
+<!-- Install Banner -->
+<div class="install-banner" id="installBanner">
+  <span style="font-size:1.5rem">💅</span>
+  <p>Instalá la app en tu celular</p>
+  <button class="btn-install" id="installBtn">Instalar</button>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-logo-wrap">
+    <img class="header-logo" src="../img/logo.jpeg" alt="Kyomu Nails"
+         onerror="this.style.display='none'"/>
+  </div>
+  <div class="header-name">KYOMU NAILS</div>
+  <div class="header-slogan">Arte en tus manos</div>
+</header>
+
+<!-- Nav -->
+<nav class="site-nav">
+  <button class="nav-btn active" onclick="switchTab('reservar',this)">Reservar</button>
+  <button class="nav-btn" onclick="switchTab('miscitas',this)">Mis Citas</button>
+  <button class="nav-btn" onclick="switchTab('servicios',this)">Servicios</button>
+</nav>
+
+<!-- ══ TAB: RESERVAR ══ -->
+<div class="tab active" id="tab-reservar">
+  <div id="alertaReserva" class="alert"></div>
+
+  <!-- PASO 1 -->
+  <div class="card" id="paso1">
+    <div class="step-badge"><span>01</span> Servicio</div>
+    <div class="card-title"><span class="accent-dot"></span>Elegí tu servicio</div>
+    <div class="servicios-grid" id="gridServicios">
+      <div class="spinner" style="grid-column:span 2"></div>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="card" id="paso2" style="display:none">
+    <div class="step-badge"><span>02</span> Fecha</div>
+    <div class="card-title"><span class="accent-dot"></span>Elegí la fecha</div>
+    <div class="cal-header">
+      <button class="cal-nav-btn" onclick="cambiarMes(-1)">‹</button>
+      <span class="cal-month-label" id="mesLabel"></span>
+      <button class="cal-nav-btn" onclick="cambiarMes(1)">›</button>
+    </div>
+    <div class="cal-weekdays">
+      <span class="cal-wd">Do</span><span class="cal-wd">Lu</span><span class="cal-wd">Ma</span>
+      <span class="cal-wd">Mi</span><span class="cal-wd">Ju</span><span class="cal-wd">Vi</span><span class="cal-wd">Sá</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="card" id="paso3" style="display:none">
+    <div class="step-badge"><span>03</span> Hora</div>
+    <div class="card-title"><span class="accent-dot"></span>Elegí la hora</div>
+    <div class="horas-grid" id="horasGrid"></div>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="card" id="paso4" style="display:none">
+    <div class="step-badge"><span>04</span> Confirmar</div>
+    <div class="card-title"><span class="accent-dot"></span>Tus datos</div>
+    <div class="resumen-cita" id="resumenCita">
+      <div class="resumen-servicio" id="rsServicio"></div>
+      <div id="rsFecha"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nombre completo</label>
+      <input class="form-input" type="text" id="nombre" placeholder="Tu nombre completo" autocomplete="name"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Teléfono</label>
+      <input class="form-input" type="tel" id="tel" placeholder="8888-8888" autocomplete="tel"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Correo <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
+      <input class="form-input" type="email" id="correo" placeholder="tu@correo.com" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nota <span style="font-weight:300;text-transform:none;letter-spacing:0">(diseño, color, preferencia)</span></label>
+      <textarea class="form-input" id="nota" placeholder="Ej: Quiero nail art floral en tono nude..."></textarea>
+    </div>
+    <div class="precio-row">
+      <span class="precio-label">Total</span>
+      <span class="precio-valor" id="precioMostrar">₡0</span>
+    </div>
+    <button class="btn btn-gold" onclick="confirmarCita()">Confirmar reserva</button>
+    <button class="btn btn-outline" onclick="resetReserva()">Empezar de nuevo</button>
+  </div>
+</div>
+
+<!-- ══ TAB: MIS CITAS ══ -->
+<div class="tab" id="tab-miscitas">
+  <div class="card">
+    <div class="card-title"><span class="accent-dot"></span>Buscar mis citas</div>
+    <div class="search-row">
+      <input class="form-input" type="tel" id="buscarTel" placeholder="Tu número de teléfono"/>
+      <button class="btn btn-dark" onclick="buscarCitas()" style="width:auto;padding:0 18px">Buscar</button>
+    </div>
+    <div id="spinnerCitas" class="spinner" style="display:none"></div>
+    <div id="listaCitas"></div>
+  </div>
+</div>
+
+<!-- ══ TAB: SERVICIOS ══ -->
+<div class="tab" id="tab-servicios">
+  <div class="card">
+    <div class="card-title"><span class="accent-dot"></span>Nuestros servicios</div>
+    <div id="infoServicios"><div class="spinner"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="accent-dot"></span>Contacto</div>
+    <p style="font-size:0.85rem;color:var(--grey-mid);margin-bottom:14px;line-height:1.6">
+      ¿Tenés preguntas? Escribinos por WhatsApp y te respondemos a la brevedad.
+    </p>
+    <button class="btn btn-dark" onclick="abrirWhatsApp()">Escribir por WhatsApp</button>
+  </div>
+  <div class="card ios-card" id="cardIOS">
+    <div class="card-title"><span class="accent-dot"></span>Instalar app en iPhone</div>
+    <div class="ios-steps">
+      <div>1. Tocá el botón <strong>Compartir</strong> (□↑)</div>
+      <div>2. Elegí <strong>"Agregar a pantalla de inicio"</strong></div>
+      <div>3. Tocá <strong>"Agregar"</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where,
+         getDocs, doc, updateDoc, Timestamp }
+       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FB = {
+  apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",
+  authDomain:"kyomu-nails.firebaseapp.com", projectId:"kyomu-nails",
+  storageBucket:"kyomu-nails.firebasestorage.app",
+  messagingSenderId:"514396956826", appId:"1:514396956826:web:9356c814010b2c730f9723"
+};
+const WA     = "50662472397";
+const EMAIJS = { svc:"service_pwktaba", tplA:"template_y3zvu9a", tplC:"template_jm35zux", pk:"wbu7jftXOgmyV__Vc" };
+const H_INI  = 9, H_FIN = 19, INTV = 30;
+
+const db = getFirestore(initializeApp(FB));
+
+let servicios = [], servicioSel = null;
+let fechaSel = null, horaSel = null;
+let diasBloq = [], horasBloq = [];
+let calY = new Date().getFullYear(), calM = new Date().getMonth();
+let deferredPrompt = null;
+
+// PWA
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+document.getElementById('installBtn').onclick = () => {
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+  document.getElementById('installBanner').classList.remove('show');
+};
+if (/iPad|iPhone|iPod/.test(navigator.userAgent))
+  document.getElementById('cardIOS').style.display = 'block';
+
+// TABS
+window.switchTab = (id, btn) => {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+};
+
+// SERVICIOS
+async function loadServices() {
+  const snap = await getDocs(collection(db, 'servicios'));
+  servicios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderGrid(); renderInfo();
+}
+
+function renderGrid() {
+  const g = document.getElementById('gridServicios');
+  if (!servicios.length) { g.innerHTML = '<p style="grid-column:span 2;color:var(--grey-mid);font-size:.85rem">Sin servicios cargados aún.</p>'; return; }
+  g.innerHTML = servicios.map(s => `
+    <div class="srv-card" id="srv-${s.id}" onclick="selSrv('${s.id}')">
+      <div class="srv-name">${s.nombre}</div>
+      <div class="srv-price">₡${Number(s.precio).toLocaleString()}</div>
+      <div class="srv-dur">${s.duracion} min</div>
+    </div>`).join('');
+}
+
+function renderInfo() {
+  const c = document.getElementById('infoServicios');
+  if (!servicios.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">💅</div><div class="empty-text">Cargando...</div></div>'; return; }
+  c.innerHTML = servicios.map(s => `
+    <div class="srv-info-row">
+      <div><div class="srv-info-name">${s.nombre}</div><div class="srv-info-dur">${s.duracion} min</div></div>
+      <div class="srv-info-price">₡${Number(s.precio).toLocaleString()}</div>
+    </div>`).join('');
+}
+
+window.selSrv = async id => {
+  servicioSel = servicios.find(s => s.id === id);
+  document.querySelectorAll('.srv-card').forEach(el => el.classList.remove('selected'));
+  document.getElementById('srv-' + id).classList.add('selected');
+  await loadBlocked();
+  document.getElementById('paso2').style.display = 'block';
+  renderCal();
+  document.getElementById('paso2').scrollIntoView({ behavior: 'smooth' });
+};
+
+// BLOQUEADOS
+async function loadBlocked() {
+  const [db2, hb] = await Promise.all([getDocs(collection(db, 'dias_bloqueados')), getDocs(collection(db, 'horas_bloqueadas'))]);
+  diasBloq  = db2.docs.map(d => d.data().fecha);
+  horasBloq = hb.docs.map(d => d.data());
+}
+
+// CALENDARIO
+function renderCal() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const label = new Date(calY, calM, 1).toLocaleString('es', { month: 'long', year: 'numeric' });
+  document.getElementById('mesLabel').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+  const grid = document.getElementById('calGrid'); grid.innerHTML = '';
+  const first = new Date(calY, calM, 1).getDay();
+  const days  = new Date(calY, calM + 1, 0).getDate();
+  for (let i = 0; i < first; i++) { const d = document.createElement('div'); d.className = 'cal-cell empty'; grid.appendChild(d); }
+  for (let d = 1; d <= days; d++) {
+    const fecha = new Date(calY, calM, d); const fs = fstr(fecha);
+    const el = document.createElement('div'); el.textContent = d;
+    let cls = 'cal-cell';
+    if (fecha < hoy) cls += ' past';
+    else if (diasBloq.includes(fs)) cls += ' blocked';
+    else { cls += ' available'; el.onclick = () => selFecha(fs, el); }
+    if (fs === fstr(hoy)) cls += ' today';
+    if (fechaSel === fs) cls += ' selected';
+    el.className = cls; grid.appendChild(el);
+  }
+}
+
+window.cambiarMes = d => {
+  calM += d;
+  if (calM < 0) { calM = 11; calY--; }
+  if (calM > 11) { calM = 0; calY++; }
+  renderCal();
+};
+
+async function selFecha(f, el) {
+  fechaSel = f; horaSel = null;
+  document.querySelectorAll('.cal-cell.selected').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  await loadHoras(f);
+  document.getElementById('paso3').style.display = 'block';
+  document.getElementById('paso3').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function loadHoras(fecha) {
+  const g = document.getElementById('horasGrid'); g.innerHTML = '';
+  const snap = await getDocs(query(collection(db, 'appointments'), where('fecha', '==', fecha), where('estado', '!=', 'cancelada')));
+  const ocupadas  = snap.docs.map(d => d.data().hora);
+  const bloqHoy   = horasBloq.filter(h => h.fecha === fecha || !h.fecha).map(h => h.hora);
+  genHoras().forEach(h => {
+    const btn = document.createElement('button');
+    btn.className = 'hora-pill'; btn.textContent = h;
+    if (ocupadas.includes(h) || bloqHoy.includes(h)) { btn.classList.add('blocked'); btn.disabled = true; }
+    else btn.onclick = () => selHora(h, btn);
+    g.appendChild(btn);
+  });
+}
+
+function genHoras() {
+  const r = [];
+  for (let m = H_INI * 60; m < H_FIN * 60; m += INTV) {
+    const h = Math.floor(m / 60), min = m % 60;
+    r.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);
+  }
+  return r;
+}
+
+function selHora(h, btn) {
+  horaSel = h;
+  document.querySelectorAll('.hora-pill.selected').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('rsServicio').textContent = servicioSel.nombre;
+  document.getElementById('rsFecha').textContent = `📅 ${ffmt(fechaSel)}  ·  ⏰ ${horaSel}`;
+  document.getElementById('precioMostrar').textContent = `₡${Number(servicioSel.precio).toLocaleString()}`;
+  document.getElementById('paso4').style.display = 'block';
+  document.getElementById('paso4').scrollIntoView({ behavior: 'smooth' });
+}
+
+// CONFIRMAR
+window.confirmarCita = async () => {
+  const nombre = document.getElementById('nombre').value.trim();
+  const tel    = document.getElementById('tel').value.trim();
+  const correo = document.getElementById('correo').value.trim();
+  const nota   = document.getElementById('nota').value.trim();
+  if (!nombre || !tel) { showAlert('Completá nombre y teléfono.', 'err'); return; }
+  if (!servicioSel || !fechaSel || !horaSel) { showAlert('Seleccioná servicio, fecha y hora.', 'err'); return; }
+  const btn = document.querySelector('#paso4 .btn-gold');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  try {
+    await addDoc(collection(db, 'appointments'), {
+      name: nombre, nombre, tel, telefono: tel, correo, nota,
+      service: servicioSel.id, serviceName: servicioSel.nombre,
+      servicio: servicioSel.nombre, duracion: servicioSel.duracion,
+      precio: servicioSel.precio, fecha: fechaSel, hora: horaSel,
+      estado: 'pendiente', createdAt: Timestamp.now()
+    });
+    try {
+      await emailjs.init(EMAIJS.pk);
+      await emailjs.send(EMAIJS.svc, EMAIJS.tplA, {
+        to_email: 'Enviossaloncr@Gmail.com', salon: 'Kyomu Nails',
+        cliente: nombre, telefono: tel, correo_cliente: correo || '—',
+        servicio: servicioSel.nombre, fecha: ffmt(fechaSel), hora: horaSel, nota: nota || '—'
+      });
+      if (correo) await emailjs.send(EMAIJS.svc, EMAIJS.tplC, {
+        to_email: correo, salon: 'Kyomu Nails',
+        cliente: nombre, servicio: servicioSel.nombre, fecha: ffmt(fechaSel), hora: horaSel
+      });
+    } catch (e) { console.warn('EmailJS:', e); }
+    showAlert('¡Reserva enviada! Te contactamos para confirmar.', 'ok');
+    resetReserva();
+  } catch (e) { showAlert('Error al guardar. Intentá de nuevo.', 'err'); console.error(e); }
+  finally { btn.disabled = false; btn.textContent = 'Confirmar reserva'; }
+};
+
+window.resetReserva = () => {
+  servicioSel = null; fechaSel = null; horaSel = null;
+  document.querySelectorAll('.srv-card.selected').forEach(e => e.classList.remove('selected'));
+  ['paso2','paso3','paso4'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['nombre','tel','correo','nota'].forEach(id => document.getElementById(id).value = '');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// MIS CITAS
+window.buscarCitas = async () => {
+  const tel = document.getElementById('buscarTel').value.trim();
+  if (!tel) return;
+  document.getElementById('spinnerCitas').style.display = 'block';
+  document.getElementById('listaCitas').innerHTML = '';
+  const hoy = fstr(new Date());
+  const snap = await getDocs(query(collection(db, 'appointments'), where('tel', '==', tel)));
+  document.getElementById('spinnerCitas').style.display = 'none';
+  const activas = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    .filter(c => c.estado !== 'cancelada' && c.estado !== 'finalizada' && c.fecha >= hoy)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora));
+  if (!activas.length) {
+    document.getElementById('listaCitas').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Sin citas activas para ese número.</div></div>';
+    return;
+  }
+  document.getElementById('listaCitas').innerHTML = activas.map(c => `
+    <div class="cita-card">
+      <div class="cita-top">
+        <div class="cita-servicio">${c.serviceName || c.servicio || '—'}</div>
+        <div class="cita-hora">${c.hora}</div>
+      </div>
+      <div class="cita-meta">📅 ${ffmt(c.fecha)}</div>
+      <span class="estado-badge estado-${c.estado}">${etq(c.estado)}</span>
+      ${c.estado !== 'en_atencion' ? `<div class="cita-acciones"><button class="btn btn-danger btn-sm" onclick="cancelarCita('${c.id}')">Cancelar cita</button></div>` : ''}
+    </div>`).join('');
+};
+
+window.cancelarCita = async id => {
+  if (!confirm('¿Cancelar esta cita?')) return;
+  await updateDoc(doc(db, 'appointments', id), { estado: 'cancelada' });
+  buscarCitas();
+};
+
+window.abrirWhatsApp = () => window.open(`https://wa.me/${WA}`, '_blank');
+
+// HELPERS
+function showAlert(msg, tipo) {
+  const a = document.getElementById('alertaReserva');
+  a.textContent = msg; a.className = 'alert show alert-' + (tipo === 'ok' ? 'ok' : 'err');
+  setTimeout(() => a.classList.remove('show'), 5000);
+}
+function fstr(d) { return d.toISOString().split('T')[0]; }
+function ffmt(f) {
+  const [y,m,d] = f.split('-');
+  const ms = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${d} ${ms[parseInt(m)-1]} ${y}`;
+}
+function etq(e) { return { pendiente:'Pendiente', confirmada:'Confirmada', en_atencion:'En atención', finalizada:'Finalizada', cancelada:'Cancelada' }[e] || e; }
+
+// INIT
+loadServices();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw-cliente.js');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</body>
+</html>
