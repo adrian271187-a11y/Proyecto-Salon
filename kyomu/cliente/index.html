@@ -444,7 +444,7 @@ window.buscarCitas=async()=>{
     </div>`).join('');
 };
 window.cancelarCita=async(id)=>{if(!confirm('¿Cancelar esta cita?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});buscarCitas();};
-window.abrirWhatsApp=()=>window.open(`https://wa.me/${WA}`,'_blank');
+window.abrirWhatsApp=()=>{const msg=encodeURIComponent('Hola Naty 💅 un gusto saludarte, me interesa saber más sobre tus servicios. ¿Me podés dar información?');window.open(`https://wa.me/${WA}?text=${msg}`,'_blank');};
 
 function alerta(msg,tipo){
   const a=document.getElementById('alertaReserva');a.textContent=msg;
