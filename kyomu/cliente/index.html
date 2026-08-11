@@ -456,7 +456,6 @@ function ffmt(f){const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','Ma
 function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atención',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
 
 cargarServicios();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('../sw-cliente.js');
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </body>
