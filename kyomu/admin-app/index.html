@@ -572,7 +572,6 @@ function ffmt(f){const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','Ma
 function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atención',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
 function mAlerta(id,msg,tipo){const a=document.getElementById(id);a.textContent=msg;a.className='alert show alert-'+(tipo==='ok'?'ok':'err');setTimeout(()=>a.classList.remove('show'),4000);}
 
-if('serviceWorker' in navigator)navigator.serviceWorker.register('../sw-admin.js');
 </script>
 </body>
 </html>
