@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <meta name="apple-mobile-web-app-title" content="Kyomu Nails"/>
 <link rel="apple-touch-icon" href="../img/icon-192.png"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.0/css/all.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -445,7 +445,7 @@ window.buscarCitas=async()=>{
     </div>`).join('');
 };
 window.cancelarCita=async(id)=>{if(!confirm('¿Cancelar esta cita?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});buscarCitas();};
-window.abrir<i class="fa-brands fa-whatsapp"></i> WhatsApp=()=>window.open(`https://wa.me/${WA}`,'_blank');
+window.abrirWhatsApp=()=>{const msg=encodeURIComponent('Hola Naty, un gusto saludarte. Me interesa saber mas sobre tus servicios, me podrias dar informacion?');window.open(`https://wa.me/${WA}?text=${msg}`,'_blank');};
 
 function alerta(msg,tipo){
   const a=document.getElementById('alertaReserva');a.textContent=msg;
