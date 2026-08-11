@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Etiqueta QR · Kyomu Nails</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--rose:#C9A4A7;--rose-dark:#9E7070;--gold:#C8A96E;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:#f0f0f0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+
+/* Controles (solo pantalla) */
+.controles{margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.controles button{padding:10px 20px;border:none;border-radius:20px;cursor:pointer;font-weight:700;font-size:.85rem}
+.btn-print{background:linear-gradient(135deg,var(--rose-dark),var(--rose));color:#fff}
+.btn-secundario{background:#fff;color:var(--rose-dark);border:1.5px solid var(--rose)}
+.controles select{padding:9px 14px;border:1.5px solid var(--rose);border-radius:20px;font-size:.85rem;color:var(--rose-dark);font-weight:700;background:#fff}
+
+/* ETIQUETA */
+.etiqueta-wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+.etiqueta{
+  background:#fff;border-radius:16px;
+  box-shadow:0 4px 20px rgba(180,120,120,.2);
+  border:1.5px solid var(--rose);
+  padding:18px 14px;
+  text-align:center;
+  width:200px;
+}
+.etiqueta .logo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rose);margin-bottom:8px}
+.etiqueta h2{font-family:'Cormorant Garamond',serif;color:var(--rose-dark);font-size:1rem;margin-bottom:2px}
+.etiqueta .slogan{font-size:.65rem;color:#888;margin-bottom:10px;letter-spacing:.5px}
+.etiqueta .qr-inner{background:#fff;border:1px solid var(--rose);border-radius:10px;padding:10px;display:inline-block;margin-bottom:8px}
+.etiqueta .scan-txt{font-size:.65rem;color:var(--rose-dark);font-weight:700;letter-spacing:.5px}
+.etiqueta .linea{height:1px;background:linear-gradient(90deg,transparent,var(--rose),transparent);margin:8px 0}
+.etiqueta .url-txt{font-size:.58rem;color:#999;word-break:break-all}
+
+/* PRINT */
+@media print{
+  body{background:#fff;padding:0;display:block}
+  .controles{display:none}
+  .etiqueta-wrap{gap:8px}
+  .etiqueta{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="controles">
+  <select id="cantSel" onchange="renderEtiquetas()">
+    <option value="1">1 etiqueta</option>
+    <option value="2">2 etiquetas</option>
+    <option value="4" selected>4 etiquetas</option>
+    <option value="6">6 etiquetas</option>
+    <option value="9">9 etiquetas</option>
+  </select>
+  <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+  <button class="btn-secundario" onclick="window.location.href='sala-espera.html'">← Sala espera</button>
+</div>
+
+<div class="etiqueta-wrap" id="etiquetaWrap"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const APP_URL = window.location.origin + '/kyomu/cliente/';
+
+function crearEtiqueta(idx){
+  const div = document.createElement('div');
+  div.className = 'etiqueta';
+  div.innerHTML = `
+    <img src="img/logo.jpeg" alt="KN" class="logo" onerror="this.style.display='none'"/>
+    <h2>Kyomu Nails</h2>
+    <div class="slogan">Arte en tus manos</div>
+    <div class="qr-inner" id="qr-${idx}"></div>
+    <div class="scan-txt">📷 Escaneá para reservar</div>
+    <div class="linea"></div>
+    <div class="url-txt">${APP_URL}</div>
+  `;
+  return div;
+}
+
+function renderEtiquetas(){
+  const wrap = document.getElementById('etiquetaWrap');
+  wrap.innerHTML = '';
+  const cant = parseInt(document.getElementById('cantSel').value);
+  for(let i=0;i<cant;i++){
+    const et = crearEtiqueta(i);
+    wrap.appendChild(et);
+    setTimeout(()=>{
+      new QRCode(document.getElementById('qr-'+i),{
+        text:APP_URL, width:110, height:110,
+        colorDark:'#9E7070', colorLight:'#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }, i*50);
+  }
+}
+
+renderEtiquetas();
+</script>
+</body>
+</html>

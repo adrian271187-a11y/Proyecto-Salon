@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QR · Kyomu Nails</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--rose:#C9A4A7;--rose-dark:#9E7070;--gold:#C8A96E;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:linear-gradient(135deg,#F2DEDE,#fff,#E8D5A3);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.container{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;box-shadow:0 10px 40px rgba(180,120,120,.2);max-width:340px;width:100%;border:1px solid var(--rose)}
+.logo{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid var(--rose);margin-bottom:12px}
+h1{font-family:'Cormorant Garamond',serif;color:var(--rose-dark);font-size:1.5rem;margin-bottom:4px}
+p{color:#888;font-size:.82rem;margin-bottom:20px}
+.qr-box{background:#fff;border:2px solid var(--rose);border-radius:16px;padding:16px;display:inline-block;margin-bottom:16px}
+.url{font-size:.72rem;color:var(--rose-dark);margin-bottom:16px;font-weight:700;word-break:break-all}
+.btn{display:inline-block;padding:10px 24px;background:linear-gradient(135deg,var(--rose-dark),var(--rose));color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:.82rem;font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="container">
+  <img src="img/logo.jpeg" alt="Kyomu Nails" class="logo" onerror="this.style.display='none'"/>
+  <h1>Kyomu Nails</h1>
+  <p>Escaneá para reservar tu cita</p>
+  <div class="qr-box" id="qrBox"></div>
+  <div class="url" id="qrUrl"></div>
+  <button class="btn" onclick="window.print()">🖨️ Imprimir QR</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const url = window.location.origin + '/kyomu/cliente/';
+document.getElementById('qrUrl').textContent = url;
+new QRCode(document.getElementById('qrBox'),{
+  text: url, width:180, height:180,
+  colorDark:'#9E7070', colorLight:'#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
+</script>
+</body>
+</html>

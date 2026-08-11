@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sala de Espera · Kyomu Nails</title>
+<meta name="theme-color" content="#1C1C1E"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --carbon:#1C1C1E; --carbon-mid:#2D2D2F; --carbon-soft:#3A3A3C;
+  --grey-mid:#6E6E73; --grey-light:#AEAEB2;
+  --smoke:#F5F5F7; --white:#FFFFFF;
+  --rose:#C9A4A7; --rose-deep:#A07879; --rose-mist:#F0E4E5;
+  --gold:#C8A96E; --gold-pale:#E8D5A3; --gold-dark:#9A7A46;
+  --silver-line:rgba(174,174,178,0.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#0E0C0E;color:var(--white);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+.page-header{
+  padding:40px 24px 32px;text-align:center;
+  border-bottom:1px solid rgba(212,168,168,0.15);
+  position:relative;overflow:hidden;background:#0E0C0E;
+}
+/* Metal cepillado horizontal */
+.page-header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(180deg,transparent 0px,transparent 3px,rgba(232,220,216,0.025) 3px,rgba(232,220,216,0.025) 4px),
+    linear-gradient(135deg,#180E14 0%,#221420 20%,#2A1C24 40%,#1E1620 60%,#241A22 80%,#180E14 100%);
+  z-index:0;
+}
+/* Reflejo especular central — rosé gold desde arriba */
+.page-header::after{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:420px;height:100%;
+  background:radial-gradient(ellipse 70% 50% at 50% -10%,
+    rgba(212,168,168,0.22) 0%,
+    rgba(200,169,110,0.10) 35%,
+    rgba(232,220,216,0.04) 60%,
+    transparent 80%
+  );
+  z-index:1;pointer-events:none;
+}
+.page-header>*{position:relative;z-index:2;}
+.logo-ring{display:inline-block;position:relative;margin-bottom:14px;}
+.logo-ring::before{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  background:conic-gradient(from 0deg,#C8A96E 0deg,#E8D5A3 60deg,#D4A8A8 120deg,#E8E0D8 180deg,#D4A8A8 240deg,#C8A96E 300deg,#E8D5A3 360deg);
+  animation:spinRing 8s linear infinite;z-index:0;
+}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+.logo-img{width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;
+  border:3px solid #0E0C0E;position:relative;z-index:1;
+  box-shadow:0 0 28px rgba(212,168,168,0.3);
+}
+/* Trazo dorado — firma del diseño */
+.logo-ring::after{content:'';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);width:80px;height:1.5px;background:linear-gradient(90deg,transparent,#D4A8A8,#E8E0D8,#C8A96E,#E8E0D8,#D4A8A8,transparent)}
+.salon-name{
+  font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;letter-spacing:5px;margin-top:18px;
+  background:linear-gradient(135deg,#E8D5A3 0%,#D4A8A8 25%,#E8E0D8 50%,#D4A8A8 75%,#C8A96E 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 2px 12px rgba(212,168,168,0.35));
+}
+.salon-sub{font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--grey-light);font-weight:300;margin-top:6px}
+
+/* LIVE INDICATOR */
+.live-bar{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;background:linear-gradient(90deg,#141014,#1E1420,#141014);border-bottom:1px solid rgba(212,168,168,0.12);position:relative;}
+.live-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,220,216,0.2),transparent)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#34D399;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.live-text{font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--grey-light)}
+
+/* MAIN */
+main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;background:linear-gradient(135deg,#0E0C0E 0%,#121018 100%)}
+@media(max-width:600px){main{grid-template-columns:1fr}}
+
+/* TURNO PANEL */
+.turno-panel{padding:28px 20px;border-right:1px solid rgba(201,164,167,0.2)}
+@media(max-width:600px){.turno-panel{border-right:none;border-bottom:1px solid var(--silver-line)}}
+.panel-label{font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--grey-mid);margin-bottom:16px}
+
+/* TURNO CARD */
+.turno-card{
+  border-radius:16px;padding:18px;margin-bottom:12px;
+  border:1px solid rgba(212,168,168,0.15);border-left:2px solid transparent;
+  animation:slideDown .35s ease;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#1E1420 0%,#281C22 50%,#1E1820 100%);
+}
+.turno-card::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,#C8A96E,#D4A8A8,#C8A96E);
+}
+.turno-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,220,216,0.15),transparent);
+}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.t-nombre{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:600;color:var(--white);margin-bottom:4px}
+.t-servicio{font-size:.78rem;color:var(--grey-light);margin-bottom:8px}
+.t-hora{display:inline-flex;align-items:center;gap:5px;background:rgba(201,164,167,0.15);padding:4px 10px;border-radius:100px;font-size:.72rem;font-weight:600;color:var(--rose)}
+
+/* VACIO */
+.panel-empty{text-align:center;padding:40px 10px;color:var(--grey-mid)}
+.empty-icon{font-size:2.5rem;margin-bottom:10px}
+.empty-label{font-size:.85rem;color:var(--grey-mid)}
+
+/* QR PANEL */
+.qr-panel{padding:28px 20px;text-align:center}
+.qr-panel .panel-label{text-align:center}
+.qr-frame{background:var(--white);border-radius:16px;padding:18px;display:inline-block;margin-bottom:16px}
+.scan-cta{font-size:.78rem;color:var(--grey-light);line-height:1.6;margin-bottom:20px}
+.scan-cta strong{color:var(--gold-pale)}
+
+/* PASOS */
+.pasos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.paso{background:linear-gradient(160deg,#1C1420 0%,#201C22 100%);border-radius:12px;padding:12px 10px;text-align:center;border:1px solid rgba(212,168,168,0.12);position:relative;overflow:hidden;}
+.paso::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,220,216,0.2),transparent)}
+.paso-ico{font-size:1.2rem;margin-bottom:5px}
+.paso-txt{font-size:.68rem;color:var(--grey-light);line-height:1.4}
+
+/* FOOTER */
+footer{padding:14px;text-align:center;border-top:1px solid rgba(212,168,168,0.12);font-size:.68rem;color:var(--grey-mid);letter-spacing:.5px;background:#0E0C0E}
+footer span{color:var(--rose)}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="logo-ring">
+    <img class="logo-img" src="img/logo.jpeg" alt="Kyomu Nails" onerror="this.style.display='none'"/>
+  </div>
+  <div class="salon-name">KYOMU NAILS</div>
+  <div class="salon-sub">Arte en tus manos</div>
+</header>
+
+<div class="live-bar">
+  <div class="live-dot"></div>
+  <span class="live-text">Actualizando en tiempo real</span>
+</div>
+
+<main>
+  <!-- Panel turnos -->
+  <div class="turno-panel">
+    <div class="panel-label">En atención ahora</div>
+    <div id="turnos"><div class="panel-empty"><div class="empty-icon">✨</div><div class="empty-label">Cargando...</div></div></div>
+  </div>
+
+  <!-- Panel QR -->
+  <div class="qr-panel">
+    <div class="panel-label">Reservá tu cita</div>
+    <div class="qr-frame">
+      <svg viewBox="0 0 180 180" width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+        <rect width="180" height="180" fill="white"/>
+        <!-- Marco TL -->
+        <rect x="10" y="10" width="54" height="54" rx="5" fill="none" stroke="#1C1C1E" stroke-width="6"/>
+        <rect x="22" y="22" width="30" height="30" rx="3" fill="#C8A96E"/>
+        <!-- Marco TR -->
+        <rect x="116" y="10" width="54" height="54" rx="5" fill="none" stroke="#1C1C1E" stroke-width="6"/>
+        <rect x="128" y="22" width="30" height="30" rx="3" fill="#C8A96E"/>
+        <!-- Marco BL -->
+        <rect x="10" y="116" width="54" height="54" rx="5" fill="none" stroke="#1C1C1E" stroke-width="6"/>
+        <rect x="22" y="128" width="30" height="30" rx="3" fill="#C8A96E"/>
+        <!-- Datos centro -->
+        <g fill="#1C1C1E">
+          <rect x="82" y="10" width="8" height="8"/><rect x="94" y="10" width="8" height="8"/>
+          <rect x="82" y="22" width="8" height="8"/><rect x="108" y="22" width="8" height="8"/>
+          <rect x="82" y="34" width="22" height="8"/>
+          <rect x="10" y="82" width="8" height="8"/><rect x="22" y="82" width="8" height="8"/>
+          <rect x="34" y="82" width="8" height="22"/><rect x="10" y="94" width="18" height="8"/>
+          <rect x="82" y="82" width="8" height="8"/><rect x="94" y="82" width="8" height="8"/>
+          <rect x="108" y="82" width="8" height="8"/><rect x="82" y="94" width="22" height="8"/>
+          <rect x="116" y="82" width="8" height="22"/><rect x="128" y="82" width="8" height="8"/>
+          <rect x="142" y="82" width="8" height="8"/><rect x="156" y="82" width="14" height="8"/>
+          <rect x="128" y="94" width="18" height="8"/><rect x="156" y="94" width="14" height="8"/>
+          <rect x="82" y="116" width="8" height="8"/><rect x="82" y="128" width="22" height="8"/>
+          <rect x="82" y="142" width="8" height="8"/><rect x="94" y="138" width="8" height="14"/>
+          <rect x="116" y="116" width="8" height="8"/><rect x="128" y="116" width="36" height="8"/>
+          <rect x="128" y="128" width="8" height="8"/><rect x="148" y="128" width="18" height="8"/>
+          <rect x="128" y="142" width="22" height="8"/><rect x="158" y="138" width="8" height="14"/>
+        </g>
+        <!-- KN dorado centro -->
+        <text x="90" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#C8A96E" font-weight="bold">KN</text>
+      </svg>
+    </div>
+    <p class="scan-cta">Escaneá el código con tu cámara<br/>y <strong>agendá tu cita</strong> desde el celular</p>
+    <div class="pasos">
+      <div class="paso"><div class="paso-ico">📷</div><div class="paso-txt">Abrí la cámara</div></div>
+      <div class="paso"><div class="paso-ico">🔗</div><div class="paso-txt">Escaneá el QR</div></div>
+      <div class="paso"><div class="paso-ico">📋</div><div class="paso-txt">Elegí servicio y hora</div></div>
+      <div class="paso"><div class="paso-ico">✅</div><div class="paso-txt">¡Confirmás tu cita!</div></div>
+    </div>
+  </div>
+</main>
+
+<footer>Kyomu Nails © 2026 · <span>Arte en tus manos</span> 🌸</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, query, where, onSnapshot }
+       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db=getFirestore(initializeApp({
+  apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nails.firebaseapp.com",
+  projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",messagingSenderId:"514396956826",
+  appId:"1:514396956826:web:9356c814010b2c730f9723"
+}));
+
+onSnapshot(
+  query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),
+  snap=>{
+    const en=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.estado==='en_atencion')
+      .sort((a,b)=>a.hora.localeCompare(b.hora));
+    const el=document.getElementById('turnos');
+    if(!en.length){
+      el.innerHTML='<div class="panel-empty"><div class="empty-icon">✨</div><div class="empty-label">Todo tranquilo por ahora</div></div>';
+      return;
+    }
+    el.innerHTML=en.map(c=>`
+      <div class="turno-card">
+        <div class="t-nombre">${c.nombre||c.name||'Cliente'}</div>
+        <div class="t-servicio">${c.serviceName||c.servicio||'—'}</div>
+        <div class="t-hora">⏰ ${c.hora}</div>
+      </div>`).join('');
+  }
+);
+</script>
+</body>
+</html>
