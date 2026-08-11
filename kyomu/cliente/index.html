@@ -6,10 +6,11 @@
 <title>Kyomu Nails</title>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#1A1A1A"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <meta name="apple-mobile-web-app-title" content="Kyomu Nails"/>
 <link rel="apple-touch-icon" href="../img/icon-192.png"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -211,11 +212,11 @@ textarea{resize:vertical;min-height:68px}
 <div class="sec activa" id="tab-reservar">
   <div id="alertaReserva" class="alert"></div>
   <div class="card" id="paso1">
-    <h2>💅 Elegí tu servicio</h2>
+    <h2><i class="fa-solid fa-scissors"></i> Elegi tu servicio</h2>
     <div class="srv-grid" id="gridServicios"><div class="spinner"></div></div>
   </div>
   <div class="card" id="paso2" style="display:none">
-    <h2>📅 Elegí la fecha</h2>
+    <h2><i class="fa-regular fa-calendar"></i> Elegi la fecha</h2>
     <div class="cal-nav">
       <button onclick="cambiarMes(-1)">‹</button>
       <span id="mesLabel"></span>
@@ -227,11 +228,11 @@ textarea{resize:vertical;min-height:68px}
     <div class="cal-grid" id="calGrid"></div>
   </div>
   <div class="card" id="paso3" style="display:none">
-    <h2>⏰ Elegí la hora</h2>
+    <h2><i class="fa-regular fa-clock"></i> Elegi la hora</h2>
     <div class="horas-grid" id="horasGrid"></div>
   </div>
   <div class="card" id="paso4" style="display:none">
-    <h2>👤 Tus datos</h2>
+    <h2><i class="fa-regular fa-user"></i> Tus datos</h2>
     <div class="resumen" id="resumenCita"></div>
     <div class="fg"><label>Nombre completo</label><input type="text" id="nombre" placeholder="Tu nombre" autocomplete="name"/></div>
     <div class="fg"><label>Teléfono</label><input type="tel" id="tel" placeholder="Ej: 8888-8888" autocomplete="tel"/></div>
@@ -249,7 +250,7 @@ textarea{resize:vertical;min-height:68px}
 <!-- MIS CITAS -->
 <div class="sec" id="tab-miscitas">
   <div class="card">
-    <h2>🔍 Buscar mis citas</h2>
+    <h2><i class="fa-solid fa-magnifying-glass"></i> Buscar mis citas</h2>
     <div class="buscar-box">
       <input type="tel" id="buscarTel" placeholder="Tu número de teléfono"/>
       <button onclick="buscarCitas()">Buscar</button>
@@ -262,20 +263,20 @@ textarea{resize:vertical;min-height:68px}
 <!-- SERVICIOS -->
 <div class="sec" id="tab-servicios">
   <div class="card">
-    <h2>💅 Nuestros Servicios</h2>
+    <h2><i class="fa-solid fa-scissors"></i> Nuestros Servicios</h2>
     <div id="infoServicios"><div class="spinner"></div></div>
   </div>
   <div class="card">
-    <h2>💬 Contacto</h2>
-    <p style="font-size:.85rem;color:var(--gris-t);line-height:1.7;margin-bottom:12px">¿Tenés preguntas? Escribinos por WhatsApp.</p>
-    <button class="btn btn-gold" onclick="abrirWhatsApp()">WhatsApp</button>
+    <h2><i class="fa-brands fa-whatsapp"></i> Contacto</h2>
+    <p style="font-size:.85rem;color:var(--gris-t);line-height:1.7;margin-bottom:12px">¿Tenés preguntas? Escribinos por <i class="fa-brands fa-whatsapp"></i> WhatsApp.</p>
+    <button class="btn btn-gold" onclick="abrir<i class="fa-brands fa-whatsapp"></i> WhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
   </div>
   <div class="card" id="cardIOS" style="display:none">
-    <h2>📱 Instalar en iPhone</h2>
+    <h2><i class="fa-brands fa-apple"></i> Instalar en iPhone</h2>
     <div class="ios-pasos">
-      <div>1️⃣ Tocá el botón <strong style="color:var(--gold-l)">Compartir</strong></div>
-      <div>2️⃣ Elegí <strong style="color:var(--gold-l)">"Agregar a pantalla de inicio"</strong></div>
-      <div>3️⃣ Tocá <strong style="color:var(--gold-l)">"Agregar"</strong></div>
+      <div>1. Tocá el botón <strong style="color:var(--gold-l)">Compartir</strong></div>
+      <div>2. Elegí <strong style="color:var(--gold-l)">"Agregar a pantalla de inicio"</strong></div>
+      <div>3. Tocá <strong style="color:var(--gold-l)">"Agregar"</strong></div>
     </div>
   </div>
 </div>
@@ -380,7 +381,7 @@ async function selFecha(f,el){
 function selHora(h,btn){
   horaSel=h;
   document.querySelectorAll('.hora-btn.sel').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');
-  document.getElementById('resumenCita').textContent=`💅 ${servicioSel.nombre} — 📅 ${ffmt(fechaSel)} · ⏰ ${h}`;
+  document.getElementById('resumenCita').textContent=`${servicioSel.nombre} — Fecha: ${ffmt(fechaSel)} · Hora: ${h}`;
   document.getElementById('precioMostrar').textContent=`₡${Number(servicioSel.precio).toLocaleString()}`;
   document.getElementById('paso4').style.display='block';
   document.getElementById('paso4').scrollIntoView({behavior:'smooth'});
@@ -434,7 +435,7 @@ window.buscarCitas=async()=>{
   const activas=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>c.estado!=='cancelada'&&c.estado!=='finalizada'&&c.fecha>=hoy)
     .sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
-  if(!activas.length){document.getElementById('listaCitas').innerHTML='<div class="empty"><div class="icon">📋</div><p>Sin citas activas para ese número</p></div>';return;}
+  if(!activas.length){document.getElementById('listaCitas').innerHTML='<div class="empty"><div class="icon"></i></div><p>Sin citas activas para ese número</p></div>';return;}
   document.getElementById('listaCitas').innerHTML=activas.map(c=>`
     <div class="cita-card">
       <div class="cita-srv">${c.serviceName||c.servicio||'—'}</div>
@@ -444,7 +445,7 @@ window.buscarCitas=async()=>{
     </div>`).join('');
 };
 window.cancelarCita=async(id)=>{if(!confirm('¿Cancelar esta cita?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});buscarCitas();};
-window.abrirWhatsApp=()=>{const msg=encodeURIComponent('Hola Naty 💅 un gusto saludarte, me interesa saber más sobre tus servicios. ¿Me podés dar información?');window.open(`https://wa.me/${WA}?text=${msg}`,'_blank');};
+window.abrir<i class="fa-brands fa-whatsapp"></i> WhatsApp=()=>window.open(`https://wa.me/${WA}`,'_blank');
 
 function alerta(msg,tipo){
   const a=document.getElementById('alertaReserva');a.textContent=msg;
