@@ -6,10 +6,11 @@
 <title>Admin · Kyomu Nails</title>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#1A1A1A"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="Kyomu Admin"/>
 <link rel="apple-touch-icon" href="../img/icon-192.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 :root{
   --negro:#1A1A1A;--gris-o:#252525;--gris-m:#333333;--gris-s:#444444;--gris-t:#888888;
@@ -91,14 +92,14 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 
 /* BOTONES */
 .btn{padding:8px 13px;border:none;border-radius:var(--rs);cursor:pointer;
-  font-family:'Lato',sans-serif;font-size:.76rem;font-weight:700;transition:.2s}
+  font-family:'Lato',sans-serif;font-size:.76rem;font-weight:700;transition:.2s;display:inline-flex;align-items:center;gap:5px}
 .btn-rose{background:var(--rose-d);color:#fff}
 .btn-gold{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:var(--negro)}
 .btn-green{background:var(--green);color:#fff}
 .btn-red{background:var(--red);color:#fff}
 .btn-wa{background:#25D366;color:#fff}
 .btn-outline{background:transparent;border:1px solid var(--rose-d);color:var(--rose)}
-.btn-full{width:100%;padding:11px;font-size:.86rem;margin-top:6px}
+.btn-full{width:100%;padding:11px;font-size:.86rem;margin-top:6px;justify-content:center}
 
 /* FORM */
 .fg{margin-bottom:12px}
@@ -141,7 +142,7 @@ textarea{resize:vertical;min-height:58px}
 .empty{text-align:center;padding:28px;color:var(--gris-t)}
 .empty .icon{font-size:2.2rem;margin-bottom:8px}
 
-/* CALENDARIO MULTI-DÍA */
+/* CALENDARIO MULTI-DIA */
 .cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .cal-nav button{background:transparent;border:1px solid rgba(200,169,110,.25);color:var(--gold);
   border-radius:var(--rs);padding:4px 11px;cursor:pointer;font-size:.82rem;font-family:'Lato',sans-serif}
@@ -170,9 +171,9 @@ textarea{resize:vertical;min-height:58px}
     <h1>Kyomu Nails</h1>
     <p>Panel Administrativo</p>
     <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username"/>
-    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password"/>
+    <input type="password" id="loginPass" placeholder="Contrasena" autocomplete="current-password"/>
     <button onclick="doLogin()">Ingresar</button>
-    <div id="loginErr">Usuario o contraseña incorrectos</div>
+    <div id="loginErr">Usuario o contrasena incorrectos</div>
   </div>
 </div>
 
@@ -206,7 +207,7 @@ textarea{resize:vertical;min-height:58px}
   <!-- ESPERA -->
   <div class="sec" id="sec-espera">
     <div class="card">
-      <h2>⏳ En atención ahora</h2>
+      <h2><i class="fa-regular fa-clock"></i> En atencion ahora</h2>
       <div id="listaEspera"><div class="spinner"></div></div>
     </div>
   </div>
@@ -229,23 +230,23 @@ textarea{resize:vertical;min-height:58px}
   <!-- STATS -->
   <div class="sec" id="sec-stats">
     <div class="card">
-      <h2>📊 Mes actual</h2>
+      <h2><i class="fa-solid fa-chart-bar"></i> Mes actual</h2>
       <div class="stats-row">
         <div class="stat-box"><div class="val" id="stTotal">0</div><div class="lbl">Total</div></div>
-        <div class="stat-box"><div class="val gold" id="stIng">₡0</div><div class="lbl">Ingresos</div></div>
+        <div class="stat-box"><div class="val gold" id="stIng">0</div><div class="lbl">Ingresos</div></div>
         <div class="stat-box"><div class="val" id="stFin">0</div><div class="lbl">Finalizadas</div></div>
         <div class="stat-box"><div class="val" id="stCanc">0</div><div class="lbl">Canceladas</div></div>
       </div>
     </div>
     <div class="card">
-      <h2>📅 Hoy</h2>
+      <h2><i class="fa-regular fa-calendar-day"></i> Hoy</h2>
       <div class="stats-row">
         <div class="stat-box"><div class="val" id="stHT">0</div><div class="lbl">Citas</div></div>
         <div class="stat-box"><div class="val" id="stHF">0</div><div class="lbl">Finalizadas</div></div>
       </div>
     </div>
     <div class="card">
-      <h2>💅 Por servicio</h2>
+      <h2><i class="fa-solid fa-scissors"></i> Por servicio</h2>
       <div id="statsSrv"><div class="spinner"></div></div>
     </div>
   </div>
@@ -253,17 +254,17 @@ textarea{resize:vertical;min-height:58px}
   <!-- SERVICIOS -->
   <div class="sec" id="sec-servicios">
     <div class="card">
-      <h2>➕ Nuevo servicio</h2>
+      <h2><i class="fa-solid fa-plus"></i> Nuevo servicio</h2>
       <div id="alertaServ" class="alert"></div>
       <div class="fg"><label>Nombre</label><input type="text" id="srvNom" placeholder="Ej: Manicure semipermanente"/></div>
       <div class="row2">
-        <div class="fg"><label>Duración (min)</label><input type="number" id="srvDur" placeholder="60" min="10" step="5"/></div>
-        <div class="fg"><label>Precio (₡)</label><input type="number" id="srvPrecio" placeholder="12000"/></div>
+        <div class="fg"><label>Duracion (min)</label><input type="number" id="srvDur" placeholder="60" min="10" step="5"/></div>
+        <div class="fg"><label>Precio</label><input type="number" id="srvPrecio" placeholder="12000"/></div>
       </div>
       <button class="btn btn-rose btn-full" onclick="guardarSrv()">Guardar servicio</button>
     </div>
     <div class="card">
-      <h2>💅 Servicios activos</h2>
+      <h2><i class="fa-solid fa-scissors"></i> Servicios activos</h2>
       <div id="listaSrv"><div class="spinner"></div></div>
     </div>
   </div>
@@ -271,16 +272,16 @@ textarea{resize:vertical;min-height:58px}
   <!-- BLOQUEADOS -->
   <div class="sec" id="sec-bloqueados">
     <div class="card">
-      <h2>🗓 Bloquear días</h2>
+      <h2><i class="fa-regular fa-calendar-xmark"></i> Bloquear dias</h2>
       <div id="alertaDisp" class="alert"></div>
-      <div class="fg"><label>Seleccioná uno o varios días</label>
+      <div class="fg"><label>Selecciona uno o varios dias</label>
         <div id="calGrid" style="margin-top:6px"></div>
       </div>
       <div id="diasSeleccionados" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:24px"></div>
-      <button class="btn btn-red btn-full" onclick="bloquearDias()">🔒 Bloquear seleccionados</button>
+      <button class="btn btn-red btn-full" onclick="bloquearDias()"><i class="fa-solid fa-lock"></i> Bloquear seleccionados</button>
     </div>
     <div class="card">
-      <h2>⏰ Bloquear hora</h2>
+      <h2><i class="fa-regular fa-clock"></i> Bloquear hora</h2>
       <div class="row2" style="align-items:flex-end;margin-bottom:4px">
         <div class="fg"><label>Fecha</label><input type="date" id="horaFecha"/></div>
         <div class="fg"><label>Hora</label><input type="time" id="horaHora" step="1800"/></div>
@@ -288,11 +289,11 @@ textarea{resize:vertical;min-height:58px}
       </div>
     </div>
     <div class="card">
-      <h2>📋 Días bloqueados</h2>
+      <h2><i class="fa-regular fa-calendar-xmark"></i> Dias bloqueados</h2>
       <div id="listaDias"><div class="spinner"></div></div>
     </div>
     <div class="card">
-      <h2>⏰ Horas bloqueadas</h2>
+      <h2><i class="fa-regular fa-clock"></i> Horas bloqueadas</h2>
       <div id="listaHoras"><div class="spinner"></div></div>
     </div>
   </div>
@@ -345,31 +346,31 @@ window.cargarAgenda=async()=>{
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>!['cancelada','finalizada','en_atencion'].includes(c.estado))
     .sort((a,b)=>a.hora.localeCompare(b.hora));
-  if(!citas.length){el.innerHTML='<div class="empty"><div class="icon">📋</div><p>Sin citas para esta fecha</p></div>';return;}
+  if(!citas.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas para esta fecha</p></div>';return;}
   el.innerHTML=citas.map(c=>citaHTML(c,'agenda')).join('');
 };
 
 function citaHTML(c,ctx){
   const acc=[];
   if(ctx==='agenda'){
-    if(c.estado==='pendiente')acc.push(`<button class="btn btn-green" onclick="cambiarEstado('${c.id}','confirmada')">✅ Confirmar</button>`);
+    if(c.estado==='pendiente')acc.push(`<button class="btn btn-green" onclick="cambiarEstado('${c.id}','confirmada')"><i class="fa-solid fa-check"></i> Confirmar</button>`);
     if(c.estado==='confirmada'){
-      acc.push(`<button class="btn btn-rose" onclick="checkIn('${c.id}')">🚶 Check-in</button>`);
-      acc.push(`<button class="btn btn-wa" onclick="envWA('${c.id}','${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')">💬 WA</button>`);
+      acc.push(`<button class="btn btn-rose" onclick="checkIn('${c.id}')"><i class="fa-solid fa-right-to-bracket"></i> Check-in</button>`);
+      acc.push(`<button class="btn btn-wa" onclick="envWA('${c.id}','${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')"><i class="fa-brands fa-whatsapp"></i> WA</button>`);
     }
-    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')">✖ Cancelar</button>`);
+    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
   }
   if(ctx==='espera'){
-    acc.push(`<button class="btn btn-gold" onclick="finalizar('${c.id}')">🏁 Finalizar</button>`);
-    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')">✖ Cancelar</button>`);
+    acc.push(`<button class="btn btn-gold" onclick="finalizar('${c.id}')"><i class="fa-solid fa-flag-checkered"></i> Finalizar</button>`);
+    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
   }
   return `<div class="cita-item">
-    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora">⏰ ${c.hora}</div></div>
-    <div class="ci-cliente">👤 ${c.nombre||c.name||'—'} · 📞 ${c.telefono||c.tel||'—'}</div>
-    ${c.nota?`<div style="font-size:.75rem;color:var(--gris-t);margin-bottom:4px;font-style:italic">📝 ${c.nota}</div>`:''}
+    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora"><i class="fa-regular fa-clock"></i> ${c.hora}</div></div>
+    <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'—'} · <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'—'}</div>
+    ${c.nota?`<div style="font-size:.75rem;color:var(--gris-t);margin-bottom:4px;font-style:italic"><i class="fa-regular fa-note-sticky"></i> ${c.nota}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center">
       <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
-      <span class="ci-precio">₡${Number(c.precio||0).toLocaleString()}</span>
+      <span class="ci-precio">&#8353;${Number(c.precio||0).toLocaleString()}</span>
     </div>
     <div class="ci-acc">${acc.join('')}</div>
   </div>`;
@@ -382,14 +383,14 @@ window.checkIn=async(id)=>{
   await addDoc(collection(db,'queue'),{name:c.nombre||c.name,service:c.serviceName||c.servicio,appointmentId:id,createdAt:Timestamp.now()});
   cargarAgenda();
 };
-window.cancelar=async(id)=>{if(!confirm('¿Cancelar?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});cargarAgenda();cargarHistorial();};
+window.cancelar=async(id)=>{if(!confirm('Cancelar?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});cargarAgenda();cargarHistorial();};
 window.finalizar=async(id)=>{
   await updateDoc(doc(db,'appointments',id),{estado:'finalizada'});
   const s=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
   for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
 };
 window.envWA=(id,tel,nombre,srv,fecha,hora)=>{
-  const msg=`Hola ${nombre} 🌸, confirmamos tu cita en *Kyomu Nails*:\n💅 *${srv}*\n📅 ${ffmt(fecha)} · ⏰ ${hora}\n\n¡Te esperamos!`;
+  const msg=`Hola ${nombre}, confirmamos tu cita en *Kyomu Nails*:\n- Servicio: *${srv}*\n- Fecha: ${ffmt(fecha)}\n- Hora: ${hora}\n\nTe esperamos!`;
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
 };
 
@@ -398,7 +399,7 @@ function iniciarEspera(){
   const el=document.getElementById('listaEspera');
   salaU=onSnapshot(query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),snap=>{
     const en=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.estado==='en_atencion').sort((a,b)=>a.hora.localeCompare(b.hora));
-    if(!en.length){el.innerHTML='<div class="empty"><div class="icon">✨</div><p>Sala vacía</p></div>';return;}
+    if(!en.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-face-smile"></i></div><p>Sala vacia</p></div>';return;}
     el.innerHTML=en.map(c=>citaHTML(c,'espera')).join('');
   });
 }
@@ -416,14 +417,14 @@ window.cargarHistorial=async()=>{
 function renderHist(){
   const el=document.getElementById('listaHistorial');
   let data=histF==='todas'?histCache:histCache.filter(c=>c.estado===histF);
-  if(!data.length){el.innerHTML='<div class="empty"><div class="icon">📁</div><p>Sin registros</p></div>';return;}
+  if(!data.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-folder-open"></i></div><p>Sin registros</p></div>';return;}
   el.innerHTML=data.map(c=>`
     <div class="cita-item" style="border-left-color:${c.estado==='finalizada'?'var(--green)':'var(--red)'}">
-      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora">📅 ${ffmt(c.fecha)}</div></div>
-      <div class="ci-cliente">👤 ${c.nombre||c.name||'—'} · 📞 ${c.telefono||c.tel||'—'}</div>
+      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora"><i class="fa-regular fa-calendar"></i> ${ffmt(c.fecha)}</div></div>
+      <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'—'} · <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'—'}</div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
-        <span class="ci-precio">₡${Number(c.precio||0).toLocaleString()}</span>
+        <span class="ci-precio">&#8353;${Number(c.precio||0).toLocaleString()}</span>
       </div>
     </div>`).join('');
 }
@@ -441,18 +442,18 @@ function iniciarStats(){
     document.getElementById('stTotal').textContent=mes.length;
     document.getElementById('stFin').textContent=fin.length;
     document.getElementById('stCanc').textContent=mes.filter(c=>c.estado==='cancelada').length;
-    document.getElementById('stIng').textContent='₡'+ing.toLocaleString();
+    document.getElementById('stIng').textContent='&#8353;'+ing.toLocaleString();
     document.getElementById('stHT').textContent=hoyC.length;
     document.getElementById('stHF').textContent=hoyC.filter(c=>c.estado==='finalizada').length;
     const mapa={};
     fin.forEach(c=>{const n=c.serviceName||c.servicio||'—';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
     const el=document.getElementById('statsSrv');
     const entries=Object.entries(mapa).sort((a,b)=>b[1].cnt-a[1].cnt);
-    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos aún</p>';return;}
+    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos aun</p>';return;}
     el.innerHTML=entries.map(([n,v])=>`
       <div class="fila">
         <div><div style="font-size:.85rem;font-weight:700;color:var(--humo)">${n}</div><div style="font-size:.72rem;color:var(--gris-t)">${v.cnt} cita${v.cnt!==1?'s':''}</div></div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold)">₡${v.ing.toLocaleString()}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold)">&#8353;${v.ing.toLocaleString()}</div>
       </div>`).join('');
   });
 }
@@ -462,25 +463,25 @@ window.cargarSrv=async()=>{
   const snap=await getDocs(collection(db,'servicios'));
   const srvs=snap.docs.map(d=>({id:d.id,...d.data()}));
   const el=document.getElementById('listaSrv');
-  if(!srvs.length){el.innerHTML='<div class="empty"><div class="icon">💅</div><p>Sin servicios</p></div>';return;}
+  if(!srvs.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-solid fa-scissors"></i></div><p>Sin servicios</p></div>';return;}
   el.innerHTML=srvs.map(s=>`
     <div class="fila">
-      <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div><div style="font-size:.74rem;color:var(--gris-t)">⏱ ${s.duracion} min · ₡${Number(s.precio).toLocaleString()}</div></div>
-      <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')">✖</button>
+      <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div><div style="font-size:.74rem;color:var(--gris-t)"><i class="fa-regular fa-clock"></i> ${s.duracion} min · &#8353;${Number(s.precio).toLocaleString()}</div></div>
+      <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')"><i class="fa-solid fa-xmark"></i></button>
     </div>`).join('');
 };
 window.guardarSrv=async()=>{
   const n=document.getElementById('srvNom').value.trim();
   const d=parseInt(document.getElementById('srvDur').value);
   const p=parseInt(document.getElementById('srvPrecio').value);
-  if(!n||!d||!p){mAlerta('alertaServ','Completá todos los campos','err');return;}
+  if(!n||!d||!p){mAlerta('alertaServ','Completa todos los campos','err');return;}
   await addDoc(collection(db,'servicios'),{nombre:n,duracion:d,precio:p});
   ['srvNom','srvDur','srvPrecio'].forEach(id=>document.getElementById(id).value='');
-  mAlerta('alertaServ','✅ Servicio guardado','ok');cargarSrv();
+  mAlerta('alertaServ','Servicio guardado','ok');cargarSrv();
 };
-window.eliminarSrv=async(id)=>{if(!confirm('¿Eliminar?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
+window.eliminarSrv=async(id)=>{if(!confirm('Eliminar?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
 
-// BLOQUEADOS — multi-día
+// BLOQUEADOS
 let calMes=new Date().getMonth(),calAnio=new Date().getFullYear();
 let diasSeleccionados=new Set();
 let diasBloqSet=new Set();
@@ -492,12 +493,12 @@ function renderCal(){
   const totalDias=new Date(calAnio,calMes+1,0).getDate();
   const grid=document.getElementById('calGrid');
   let html=`<div class="cal-nav">
-    <button onclick="calNav(-1)">‹</button>
+    <button onclick="calNav(-1)">&#8249;</button>
     <span>${meses[calMes]} ${calAnio}</span>
-    <button onclick="calNav(1)">›</button>
+    <button onclick="calNav(1)">&#8250;</button>
   </div>
   <div class="cal-dias-header">
-    <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
+    <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span>
   </div>
   <div class="cal-grid">`;
   for(let i=0;i<primerDia;i++)html+=`<div class="cal-dia vacio"></div>`;
@@ -530,18 +531,18 @@ window.toggleDia=(f)=>{
 };
 function renderTags(){
   const el=document.getElementById('diasSeleccionados');
-  if(!diasSeleccionados.size){el.innerHTML='<span style="font-size:.75rem;color:var(--gris-t)">Tocá los días que querés bloquear</span>';return;}
+  if(!diasSeleccionados.size){el.innerHTML='<span style="font-size:.75rem;color:var(--gris-t)">Toca los dias que queres bloquear</span>';return;}
   const sorted=[...diasSeleccionados].sort();
-  el.innerHTML=sorted.map(f=>`<div class="tag-dia">${ffmt(f)}<button onclick="toggleDia('${f}')">✕</button></div>`).join('');
+  el.innerHTML=sorted.map(f=>`<div class="tag-dia">${ffmt(f)}<button onclick="toggleDia('${f}')">x</button></div>`).join('');
 }
 window.bloquearDias=async()=>{
-  if(!diasSeleccionados.size){mAlerta('alertaDisp','Seleccioná al menos un día','err');return;}
+  if(!diasSeleccionados.size){mAlerta('alertaDisp','Selecciona al menos un dia','err');return;}
   const sorted=[...diasSeleccionados].sort();
   for(const f of sorted){
     if(!diasBloqSet.has(f))await addDoc(collection(db,'dias_bloqueados'),{fecha:f});
   }
   diasSeleccionados.clear();
-  mAlerta('alertaDisp',`✅ ${sorted.length} día${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}`, 'ok');
+  mAlerta('alertaDisp',`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}`, 'ok');
   cargarBloq();
 };
 
@@ -552,7 +553,7 @@ window.cargarBloq=async()=>{
   diasBloqSet=new Set(dias.map(d=>d.fecha));
   renderCal();
   const dEl=document.getElementById('listaDias');
-  dEl.innerHTML=!dias.length?'<div class="empty"><p>Sin días bloqueados</p></div>':
+  dEl.innerHTML=!dias.length?'<div class="empty"><p>Sin dias bloqueados</p></div>':
     dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
   const hEl=document.getElementById('listaHoras');
   hEl.innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
@@ -560,18 +561,17 @@ window.cargarBloq=async()=>{
 };
 window.bloquearHora=async()=>{
   const f=document.getElementById('horaFecha').value,h=document.getElementById('horaHora').value;
-  if(!f||!h){mAlerta('alertaDisp','Completá fecha y hora','err');return;}
+  if(!f||!h){mAlerta('alertaDisp','Completa fecha y hora','err');return;}
   await addDoc(collection(db,'horas_bloqueadas'),{fecha:f,hora:h.substring(0,5)});
-  mAlerta('alertaDisp','✅ Hora bloqueada','ok');document.getElementById('horaFecha').value='';document.getElementById('horaHora').value='';cargarBloq();
+  mAlerta('alertaDisp','Hora bloqueada','ok');document.getElementById('horaFecha').value='';document.getElementById('horaHora').value='';cargarBloq();
 };
 window.desBloqD=async(id,fecha)=>{await deleteDoc(doc(db,'dias_bloqueados',id));diasBloqSet.delete(fecha);cargarBloq();};
 window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
 
 function fstr(d){return d.toISOString().split('T')[0];}
 function ffmt(f){const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return `${d} ${ms[parseInt(m)-1]} ${y}`;}
-function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atención',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
+function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atencion',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
 function mAlerta(id,msg,tipo){const a=document.getElementById(id);a.textContent=msg;a.className='alert show alert-'+(tipo==='ok'?'ok':'err');setTimeout(()=>a.classList.remove('show'),4000);}
-
 </script>
 </body>
 </html>
