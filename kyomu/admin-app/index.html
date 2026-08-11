@@ -140,6 +140,25 @@ textarea{resize:vertical;min-height:58px}
 /* EMPTY */
 .empty{text-align:center;padding:28px;color:var(--gris-t)}
 .empty .icon{font-size:2.2rem;margin-bottom:8px}
+
+/* CALENDARIO MULTI-DÍA */
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-nav button{background:transparent;border:1px solid rgba(200,169,110,.25);color:var(--gold);
+  border-radius:var(--rs);padding:4px 11px;cursor:pointer;font-size:.82rem;font-family:'Lato',sans-serif}
+.cal-nav span{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold-l)}
+.cal-dias-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+.cal-dias-header span{text-align:center;font-size:.65rem;font-weight:700;color:var(--gris-t);text-transform:uppercase;padding:2px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dia{text-align:center;padding:7px 2px;border-radius:6px;font-size:.82rem;cursor:pointer;
+  background:var(--gris-m);color:var(--humo);border:1px solid transparent;transition:.15s;user-select:none}
+.cal-dia:hover:not(.vacio):not(.pasado){border-color:var(--rose-d);color:var(--rose)}
+.cal-dia.seleccionado{background:var(--rose-d);color:#fff;border-color:var(--rose-d)}
+.cal-dia.bloqueado{background:rgba(192,57,43,.15);color:#F1948A;border-color:rgba(192,57,43,.3);cursor:default}
+.cal-dia.vacio{background:transparent;border-color:transparent;cursor:default}
+.cal-dia.pasado{opacity:.35;cursor:default}
+.tag-dia{background:rgba(192,57,43,.18);color:#F1948A;border:1px solid rgba(192,57,43,.3);
+  border-radius:20px;padding:3px 10px;font-size:.74rem;font-weight:700;display:flex;align-items:center;gap:5px}
+.tag-dia button{background:none;border:none;color:#F1948A;cursor:pointer;font-size:.9rem;line-height:1;padding:0}
 </style>
 </head>
 <body>
@@ -252,12 +271,13 @@ textarea{resize:vertical;min-height:58px}
   <!-- BLOQUEADOS -->
   <div class="sec" id="sec-bloqueados">
     <div class="card">
-      <h2>🗓 Bloquear día</h2>
+      <h2>🗓 Bloquear días</h2>
       <div id="alertaDisp" class="alert"></div>
-      <div class="row2" style="align-items:flex-end;margin-bottom:4px">
-        <div class="fg"><label>Fecha</label><input type="date" id="diaBlq"/></div>
-        <button class="btn btn-red" style="padding:9px 13px;margin-bottom:12px" onclick="bloquearDia()">Bloquear</button>
+      <div class="fg"><label>Seleccioná uno o varios días</label>
+        <div id="calGrid" style="margin-top:6px"></div>
       </div>
+      <div id="diasSeleccionados" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:24px"></div>
+      <button class="btn btn-red btn-full" onclick="bloquearDias()">🔒 Bloquear seleccionados</button>
     </div>
     <div class="card">
       <h2>⏰ Bloquear hora</h2>
@@ -460,23 +480,83 @@ window.guardarSrv=async()=>{
 };
 window.eliminarSrv=async(id)=>{if(!confirm('¿Eliminar?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
 
-// BLOQUEADOS
+// BLOQUEADOS — multi-día
+let calMes=new Date().getMonth(),calAnio=new Date().getFullYear();
+let diasSeleccionados=new Set();
+let diasBloqSet=new Set();
+
+function renderCal(){
+  const hoy=fstr(new Date());
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const primerDia=new Date(calAnio,calMes,1).getDay();
+  const totalDias=new Date(calAnio,calMes+1,0).getDate();
+  const grid=document.getElementById('calGrid');
+  let html=`<div class="cal-nav">
+    <button onclick="calNav(-1)">‹</button>
+    <span>${meses[calMes]} ${calAnio}</span>
+    <button onclick="calNav(1)">›</button>
+  </div>
+  <div class="cal-dias-header">
+    <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
+  </div>
+  <div class="cal-grid">`;
+  for(let i=0;i<primerDia;i++)html+=`<div class="cal-dia vacio"></div>`;
+  for(let d=1;d<=totalDias;d++){
+    const f=`${calAnio}-${String(calMes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const esBloq=diasBloqSet.has(f);
+    const esSel=diasSeleccionados.has(f);
+    const esPasado=f<hoy;
+    let cls='cal-dia';
+    if(esBloq)cls+=' bloqueado';
+    else if(esPasado)cls+=' pasado';
+    else if(esSel)cls+=' seleccionado';
+    const click=(!esBloq&&!esPasado)?`onclick="toggleDia('${f}')"`:'' ;
+    html+=`<div class="${cls}" ${click}>${d}</div>`;
+  }
+  html+='</div>';
+  grid.innerHTML=html;
+  renderTags();
+}
+window.calNav=(dir)=>{
+  calMes+=dir;
+  if(calMes>11){calMes=0;calAnio++;}
+  if(calMes<0){calMes=11;calAnio--;}
+  renderCal();
+};
+window.toggleDia=(f)=>{
+  if(diasSeleccionados.has(f))diasSeleccionados.delete(f);
+  else diasSeleccionados.add(f);
+  renderCal();
+};
+function renderTags(){
+  const el=document.getElementById('diasSeleccionados');
+  if(!diasSeleccionados.size){el.innerHTML='<span style="font-size:.75rem;color:var(--gris-t)">Tocá los días que querés bloquear</span>';return;}
+  const sorted=[...diasSeleccionados].sort();
+  el.innerHTML=sorted.map(f=>`<div class="tag-dia">${ffmt(f)}<button onclick="toggleDia('${f}')">✕</button></div>`).join('');
+}
+window.bloquearDias=async()=>{
+  if(!diasSeleccionados.size){mAlerta('alertaDisp','Seleccioná al menos un día','err');return;}
+  const sorted=[...diasSeleccionados].sort();
+  for(const f of sorted){
+    if(!diasBloqSet.has(f))await addDoc(collection(db,'dias_bloqueados'),{fecha:f});
+  }
+  diasSeleccionados.clear();
+  mAlerta('alertaDisp',`✅ ${sorted.length} día${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}`, 'ok');
+  cargarBloq();
+};
+
 window.cargarBloq=async()=>{
   const[ds,hs]=await Promise.all([getDocs(collection(db,'dias_bloqueados')),getDocs(collection(db,'horas_bloqueadas'))]);
   const dias=ds.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
+  diasBloqSet=new Set(dias.map(d=>d.fecha));
+  renderCal();
   const dEl=document.getElementById('listaDias');
   dEl.innerHTML=!dias.length?'<div class="empty"><p>Sin días bloqueados</p></div>':
-    dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}')">Desbloquear</button></div>`).join('');
+    dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
   const hEl=document.getElementById('listaHoras');
   hEl.innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
     horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(h.fecha)} · ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
-};
-window.bloquearDia=async()=>{
-  const f=document.getElementById('diaBlq').value;
-  if(!f){mAlerta('alertaDisp','Elegí una fecha','err');return;}
-  await addDoc(collection(db,'dias_bloqueados'),{fecha:f});
-  mAlerta('alertaDisp','✅ Día bloqueado','ok');document.getElementById('diaBlq').value='';cargarBloq();
 };
 window.bloquearHora=async()=>{
   const f=document.getElementById('horaFecha').value,h=document.getElementById('horaHora').value;
@@ -484,7 +564,7 @@ window.bloquearHora=async()=>{
   await addDoc(collection(db,'horas_bloqueadas'),{fecha:f,hora:h.substring(0,5)});
   mAlerta('alertaDisp','✅ Hora bloqueada','ok');document.getElementById('horaFecha').value='';document.getElementById('horaHora').value='';cargarBloq();
 };
-window.desBloqD=async(id)=>{await deleteDoc(doc(db,'dias_bloqueados',id));cargarBloq();};
+window.desBloqD=async(id,fecha)=>{await deleteDoc(doc(db,'dias_bloqueados',id));diasBloqSet.delete(fecha);cargarBloq();};
 window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
 
 function fstr(d){return d.toISOString().split('T')[0];}
