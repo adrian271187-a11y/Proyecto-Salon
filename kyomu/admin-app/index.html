@@ -188,10 +188,14 @@ textarea{resize:vertical;min-height:58px}
     <div class="card">
       <h2><i class="fa-solid fa-chart-bar"></i> Mes actual</h2>
       <div class="stats-row">
-        <div class="stat-box"><div class="val" id="stTotal">0</div><div class="lbl">Total</div></div>
-        <div class="stat-box"><div class="val gold" id="stIng">&#8353;0</div><div class="lbl">Ingresos</div></div>
+        <div class="stat-box"><div class="val" id="stTotal">0</div><div class="lbl">Total citas</div></div>
+        <div class="stat-box"><div class="val gold" id="stIng">&#8353;0</div><div class="lbl">Cobrado</div></div>
         <div class="stat-box"><div class="val" id="stFin">0</div><div class="lbl">Finalizadas</div></div>
         <div class="stat-box"><div class="val" id="stCanc">0</div><div class="lbl">Canceladas</div></div>
+      </div>
+      <div style="background:var(--gris-m);border-radius:var(--rs);padding:12px 16px;border:1px solid var(--linea);display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+        <div style="font-size:.72rem;font-weight:700;color:var(--gris-t);text-transform:uppercase;letter-spacing:.5px"><i class="fa-regular fa-clock"></i> Por cobrar (pendientes + en atención)</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--rose)" id="stProy">&#8353;0</div>
       </div>
     </div>
     <div class="card">
@@ -327,7 +331,7 @@ window.irA=(id,btn)=>{
 };
 
 // ── AGENDA — onSnapshot en tiempo real ──
-let todasLasCitas=[],fechaFiltroAgenda=null,filtroHist='todas',fechaFiltroHist=null;
+let todasLasCitas=[],fechaFiltroAgenda=null,filtroHist='todas',fechaFiltroHist=null,fechaHastaHist=null;
 let citasUnsub=null,esperaUnsub=null,statsUnsub=null;
 
 function inicializarCitas(){
@@ -482,17 +486,16 @@ function inicializarEspera(){
 
 // ── HISTORIAL ──
 window.filtrarH=(f,btn)=>{filtroHist=f;document.querySelectorAll('.hist-filtros button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHistorial();};
-window.filtrarHistorial=()=>{fechaFiltroHist=document.getElementById('histDesde').value||null;renderHistorial();};
-window.limpiarHistorial=()=>{fechaFiltroHist=null;document.getElementById('histDesde').value='';document.getElementById('histHasta').value='';renderHistorial();};
+window.filtrarHistorial=()=>{fechaFiltroHist=document.getElementById('histDesde').value||null;fechaHastaHist=document.getElementById('histHasta').value||null;renderHistorial();};
+window.limpiarHistorial=()=>{fechaFiltroHist=null;fechaHastaHist=null;document.getElementById('histDesde').value='';document.getElementById('histHasta').value='';renderHistorial();};
 
 function renderHistorial(){
   const el=document.getElementById('listaHistorial');
   if(!el)return;
-  const hasta=document.getElementById('histHasta').value||null;
   let data=todasLasCitas.filter(c=>['finalizada','cancelada'].includes(c.estado));
   if(filtroHist!=='todas')data=data.filter(c=>c.estado===filtroHist);
   if(fechaFiltroHist)data=data.filter(c=>c.fecha>=fechaFiltroHist);
-  if(hasta)data=data.filter(c=>c.fecha<=hasta);
+  if(fechaHastaHist)data=data.filter(c=>c.fecha<=fechaHastaHist);
   data.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')||(b.hora||'').localeCompare(a.hora||''));
   if(!data.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-folder-open"></i></div><p>Sin registros</p></div>';return;}
   el.innerHTML=data.map(c=>`
@@ -507,26 +510,35 @@ function renderHistorial(){
 }
 
 // ── STATS — onSnapshot en tiempo real ──
+function precio(c){return parseFloat(String(c.precio||c.price||0).replace(/[^0-9.]/g,''))||0;}
 function inicializarStats(){
   if(statsUnsub)statsUnsub();
-  const hoy=new Date(),prim=fstr(new Date(hoy.getFullYear(),hoy.getMonth(),1)),hoyStr=fstr(hoy);
+  const hoy=new Date();
+  const prim=fstr(new Date(hoy.getFullYear(),hoy.getMonth(),1));
+  const ult=fstr(new Date(hoy.getFullYear(),hoy.getMonth()+1,0));
+  const hoyStr=fstr(hoy);
   statsUnsub=onSnapshot(collection(db,'appointments'),snap=>{
     const all=snap.docs.map(d=>({id:d.id,...d.data()}));
-    const mes=all.filter(c=>c.fecha>=prim&&c.fecha<=hoyStr);
+    // mes completo (1ro al último día del mes)
+    const mes=all.filter(c=>c.fecha&&c.fecha>=prim&&c.fecha<=ult);
     const hoyC=all.filter(c=>c.fecha===hoyStr);
     const fin=mes.filter(c=>c.estado==='finalizada');
-    const ing=fin.reduce((s,c)=>s+Number(c.precio||0),0);
+    const porCobrar=mes.filter(c=>['pendiente','confirmada','en_atencion'].includes(c.estado));
+    const ing=fin.reduce((s,c)=>s+precio(c),0);
+    const proyectado=porCobrar.reduce((s,c)=>s+precio(c),0);
     document.getElementById('stTotal').textContent=mes.length;
     document.getElementById('stFin').textContent=fin.length;
     document.getElementById('stCanc').textContent=mes.filter(c=>c.estado==='cancelada').length;
     document.getElementById('stIng').innerHTML='&#8353;'+ing.toLocaleString();
+    document.getElementById('stProy').innerHTML='&#8353;'+proyectado.toLocaleString();
     document.getElementById('stHT').textContent=hoyC.length;
     document.getElementById('stHF').textContent=hoyC.filter(c=>c.estado==='finalizada').length;
+    // Por servicio — solo finalizadas
     const mapa={};
-    fin.forEach(c=>{const n=c.serviceName||c.servicio||'Otro';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
+    fin.forEach(c=>{const n=c.serviceName||c.servicio||'Otro';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=precio(c);});
     const el=document.getElementById('statsSrv');
-    const entries=Object.entries(mapa).sort((a,b)=>b[1].cnt-a[1].cnt);
-    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos este mes</p>';return;}
+    const entries=Object.entries(mapa).sort((a,b)=>b[1].ing-a[1].ing);
+    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin citas finalizadas este mes</p>';return;}
     el.innerHTML=entries.map(([n,v])=>`
       <div class="fila">
         <div><div style="font-size:.85rem;font-weight:700;color:var(--humo)">${n}</div><div style="font-size:.72rem;color:var(--gris-t)">${v.cnt} cita${v.cnt!==1?'s':''}</div></div>
@@ -595,7 +607,7 @@ window.bloquearDias=async()=>{
   const sorted=[...diasSeleccionados].sort();
   for(const f of sorted){if(!diasBloqSet.has(f))await addDoc(collection(db,'dias_bloqueados'),{fecha:f});}
   diasSeleccionados.clear();
-  toast(`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}','ok`);
+  toast(`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}`, 'ok');
   cargarBloq();
 };
 window.cargarBloq=async()=>{
