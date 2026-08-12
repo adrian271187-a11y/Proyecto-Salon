@@ -328,7 +328,7 @@ window.cargarAgenda=async()=>{
   }catch(e){el.innerHTML='<div class="empty"><p>Error al cargar.</p></div>';console.error(e);return;}
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>['pendiente','confirmada'].includes(c.estado))
-    .sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
+    .sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||(a.hora||'').localeCompare(b.hora||''));
   if(!citas.length){
     el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas agendadas</p></div>';
     return;
@@ -579,7 +579,7 @@ window.bloquearDias=async()=>{
 window.cargarBloq=async()=>{
   const[ds,hs]=await Promise.all([getDocs(collection(db,'dias_bloqueados')),getDocs(collection(db,'horas_bloqueadas'))]);
   const dias=ds.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
+  const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||(a.hora||'').localeCompare(b.hora||''));
   diasBloqSet=new Set(dias.map(d=>d.fecha));renderCal();
   document.getElementById('listaDias').innerHTML=!dias.length?'<div class="empty"><p>Sin dias bloqueados</p></div>':
     dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
