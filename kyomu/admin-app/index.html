@@ -196,9 +196,9 @@ textarea{resize:vertical;min-height:58px}
   <!-- AGENDA -->
   <div class="sec activa" id="sec-agenda">
     <div class="filtro-bar">
-      <input type="date" id="filtroFecha"/>
-      <button onclick="cargarAgenda()">Ver</button>
-      <button onclick="setHoy()" style="background:var(--gold-d)">Hoy</button>
+      <input type="date" id="filtroFecha" placeholder="Filtrar por fecha"/>
+      <button onclick="cargarAgenda()">Filtrar</button>
+      <button onclick="limpiarFiltro()" style="background:var(--gold-d)">Todas</button>
     </div>
     <div id="alertaAgenda" class="alert"></div>
     <div id="listaAgenda"><div class="spinner"></div></div>
@@ -337,17 +337,48 @@ window.irA=(id,btn)=>{
   document.getElementById('sec-'+id).classList.add('activa');btn.classList.add('active');
 };
 window.setHoy=()=>document.getElementById('filtroFecha').value=fstr(new Date());
+window.limpiarFiltro=()=>{document.getElementById('filtroFecha').value='';cargarAgenda();};
 
-// AGENDA
+// AGENDA — muestra todas las citas activas agrupadas por fecha
 window.cargarAgenda=async()=>{
-  const fecha=document.getElementById('filtroFecha').value;if(!fecha)return;
-  const el=document.getElementById('listaAgenda');el.innerHTML='<div class="spinner"></div>';
-  const snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
+  const fecha=document.getElementById('filtroFecha').value;
+  const el=document.getElementById('listaAgenda');
+  el.innerHTML='<div class="spinner"></div>';
+  const hoy=fstr(new Date());
+  let snap;
+  if(fecha){
+    snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
+  } else {
+    snap=await getDocs(query(collection(db,'appointments'),where('fecha','>=',hoy)));
+  }
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>!['cancelada','finalizada','en_atencion'].includes(c.estado))
-    .sort((a,b)=>a.hora.localeCompare(b.hora));
-  if(!citas.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas para esta fecha</p></div>';return;}
-  el.innerHTML=citas.map(c=>citaHTML(c,'agenda')).join('');
+    .sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
+  if(!citas.length){
+    el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas agendadas</p></div>';
+    return;
+  }
+  // Agrupar por fecha
+  const grupos={};
+  citas.forEach(c=>{if(!grupos[c.fecha])grupos[c.fecha]=[];grupos[c.fecha].push(c);});
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const dias=['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+  el.innerHTML=Object.entries(grupos).map(([f,cs])=>{
+    const d=new Date(f+'T12:00:00');
+    const esHoy=f===hoy;
+    const label=`${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]}`;
+    return `<div style="margin-bottom:18px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;
+        color:${esHoy?'var(--gold)':'var(--rose)'};padding:6px 0;margin-bottom:8px;
+        border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:8px">
+        <i class="fa-regular fa-calendar${esHoy?'-check':''}"></i>
+        ${label}${esHoy?' — Hoy':''}
+        <span style="margin-left:auto;font-size:.75rem;background:var(--gris-m);
+          padding:2px 8px;border-radius:20px;color:var(--gris-t)">${cs.length} cita${cs.length!==1?'s':''}</span>
+      </div>
+      ${cs.map(c=>citaHTML(c,'agenda')).join('')}
+    </div>`;
+  }).join('');
 };
 
 function citaHTML(c,ctx){
