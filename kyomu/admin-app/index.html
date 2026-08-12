@@ -323,7 +323,7 @@ window.cargarAgenda=async()=>{
     if(fecha){
       snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
     }else{
-      snap=await getDocs(query(collection(db,'appointments'),where('fecha','>=',hoy)));
+      snap=await getDocs(collection(db,'appointments'));
     }
   }catch(e){el.innerHTML='<div class="empty"><p>Error al cargar.</p></div>';console.error(e);return;}
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
