@@ -283,14 +283,14 @@ textarea{resize:vertical;min-height:68px}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc, Timestamp }
+import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc, getDoc, Timestamp }
        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nails.firebaseapp.com",
   projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",
   messagingSenderId:"514396956826",appId:"1:514396956826:web:9356c814010b2c730f9723"};
 const WA="50662472397";
-const EJS={svc:"service_pwktaba",tplA:"template_y3zvu9a",tplC:"template_jm35zux",pk:"wbu7jftXOgmyV__Vc"};
+const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"wbu7jftXOgmyV__Vc",correoAdmin:"kyomussalongs@gmail.com"};
 const HINI=9,HFIN=19,INTV=30;
 
 const db=getFirestore(initializeApp(FB));
@@ -406,11 +406,22 @@ window.confirmarCita=async()=>{
     });
     try{
       await emailjs.init(EJS.pk);
-      await emailjs.send(EJS.svc,EJS.tplA,{to_email:'Enviossaloncr@Gmail.com',salon:'Kyomu Nails',
+      // Aviso al admin — nueva cita pendiente
+      await emailjs.send(EJS.svc,EJS.tplAdmin,{
+        to_email:EJS.correoAdmin,salon:'Kyomu Nails',
+        asunto:'Nueva cita pendiente de confirmacion',
+        mensaje:'Tienes una nueva cita pendiente de confirmacion.',
         cliente:nombre,telefono:tel,correo_cliente:correo||'—',
-        servicio:servicioSel.nombre,fecha:ffmt(fechaSel),hora:horaSel,nota:nota||'—'});
-      if(correo)await emailjs.send(EJS.svc,EJS.tplC,{to_email:correo,salon:'Kyomu Nails',
-        cliente:nombre,servicio:servicioSel.nombre,fecha:ffmt(fechaSel),hora:horaSel});
+        servicio:servicioSel.nombre,fecha:ffmt(fechaSel),hora:horaSel,nota:nota||'—'
+      });
+      // Confirmacion al cliente si tiene correo
+      if(correo){
+        await emailjs.send(EJS.svc,EJS.tplCliente,{
+          to_email:correo,correo_cliente:correo,salon:'Kyomu Nails',
+          cliente:nombre,servicio:servicioSel.nombre,fecha:ffmt(fechaSel),hora:horaSel,
+          mensaje:'Recibimos tu solicitud de cita. En breve la confirmaremos.'
+        });
+      }
     }catch(e){console.warn('EmailJS:',e);}
     alerta('✅ ¡Cita reservada! Te contactaremos para confirmarla.','ok');resetReserva();
   }catch(e){alerta('Error al guardar. Intentá de nuevo.','err');console.error(e);}
@@ -444,7 +455,39 @@ window.buscarCitas=async()=>{
       ${c.estado!=='en_atencion'?`<div class="cita-acc"><button class="btn btn-danger btn-sm" onclick="cancelarCita('${c.id}')">Cancelar cita</button></div>`:''}
     </div>`).join('');
 };
-window.cancelarCita=async(id)=>{if(!confirm('¿Cancelar esta cita?'))return;await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});buscarCitas();};
+window.cancelarCita=async(id)=>{
+  if(!confirm('Cancelar esta cita?'))return;
+  const ref=doc(db,'appointments',id);
+  const snap=await getDocs(query(collection(db,'appointments'),where('__name__','==',id)));
+  // Obtener datos de la cita
+  const citaSnap=snap.docs[0]||null;
+  await updateDoc(ref,{estado:'cancelada'});
+  if(citaSnap){
+    const c=citaSnap.data();
+    await emailjs.init(EJS.pk);
+    // Aviso al admin
+    await emailjs.send(EJS.svc,EJS.tplAdmin,{
+      to_email:EJS.correoAdmin,salon:'Kyomu Nails',
+      asunto:'Cita cancelada por el cliente',
+      mensaje:'El cliente cancelo su cita.',
+      cliente:c.nombre||c.name||'',
+      telefono:c.telefono||c.tel||'',
+      servicio:c.serviceName||c.servicio||'',
+      fecha:c.fecha,hora:c.hora
+    });
+    // Confirmacion de cancelacion al cliente
+    if(c.correo){
+      await emailjs.send(EJS.svc,EJS.tplCliente,{
+        to_email:c.correo,correo_cliente:c.correo,salon:'Kyomu Nails',
+        cliente:c.nombre||c.name||'',
+        servicio:c.serviceName||c.servicio||'',
+        fecha:c.fecha,hora:c.hora,
+        mensaje:'Tu cita ha sido cancelada exitosamente.'
+      });
+    }
+  }
+  buscarCitas();
+};
 window.abrirWhatsApp=()=>{const msg=encodeURIComponent('Hola Naty, un gusto saludarte. Me interesa saber mas sobre tus servicios, me podrias dar informacion?');window.open(`https://wa.me/${WA}?text=${msg}`,'_blank');};
 
 function alerta(msg,tipo){
