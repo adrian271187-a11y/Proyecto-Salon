@@ -4,75 +4,227 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Sala de Espera · Kyomu Nails</title>
-<meta name="theme-color" content="#1A1A1A"/>
+<meta name="theme-color" content="#141414"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --negro:#1A1A1A;--gris-o:#252525;--gris-m:#333333;--gris-t:#888888;
-  --humo:#F0F0F0;--blanco:#FFFFFF;
-  --rose:#C9A4A7;--rose-d:#A07070;--rose-l:#F0E0E0;
-  --gold:#C8A96E;--gold-d:#9A7A46;--gold-l:#E8D5A3;
-  --linea:rgba(200,169,110,0.22);
+  --negro:#141414;
+  --carbon:#1C1C1C;
+  --gris-o:#222222;
+  --gris-m:#2C2C2C;
+  --gris-s:#3A3A3A;
+  --gris-t:#6B6B6B;
+  --humo:#D8D8D8;
+  --rose:#B8888C;
+  --rose-d:#8A5A5E;
+  --rose-l:#C9A4A7;
+  --rose-dim:rgba(184,136,140,0.08);
+  --gold:#A8843E;
+  --gold-l:#C8A96E;
+  --gold-dim:rgba(168,132,62,0.15);
+  --linea:rgba(168,132,62,0.18);
+  --linea-rose:rgba(184,136,140,0.2);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:'Lato',sans-serif;background:var(--negro);color:var(--humo);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+body{
+  font-family:'Lato',sans-serif;
+  background:var(--negro);
+  color:var(--humo);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
 
-/* HEADER */
-header{background:linear-gradient(135deg,var(--gris-o) 0%,var(--gris-m) 100%);
-  padding:32px 20px 24px;text-align:center;border-bottom:1px solid var(--linea)}
-.hlogo{width:88px;height:88px;border-radius:50%;object-fit:cover;
-  border:2px solid var(--gold);margin-bottom:14px;box-shadow:0 0 24px rgba(200,169,110,.2);display:block;margin-left:auto;margin-right:auto}
-header h1{font-family:'Cormorant Garamond',serif;color:var(--blanco);font-size:2.2rem;font-weight:700;letter-spacing:4px}
-header p{color:var(--rose);font-size:.75rem;letter-spacing:2.5px;margin-top:5px;text-transform:uppercase}
-.subtitulo{display:inline-block;background:rgba(200,169,110,.12);border:1px solid var(--linea);
-  color:var(--gold-l);padding:5px 16px;border-radius:20px;font-size:.72rem;font-weight:700;margin-top:12px;letter-spacing:1px}
+/* ── HEADER ── */
+header{
+  background:var(--carbon);
+  padding:36px 20px 28px;
+  text-align:center;
+  border-bottom:1px solid var(--linea);
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 50% -10%, rgba(168,132,62,0.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hlogo{
+  width:80px;height:80px;border-radius:50%;object-fit:cover;
+  border:1.5px solid var(--gold);
+  margin:0 auto 16px;display:block;
+  box-shadow:0 0 0 6px rgba(168,132,62,0.07);
+}
+header h1{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--humo);
+  font-size:2rem;font-weight:700;letter-spacing:5px;
+  text-transform:uppercase;
+}
+header .tagline{
+  color:var(--rose);
+  font-size:.68rem;letter-spacing:3px;margin-top:6px;text-transform:uppercase;font-weight:700;
+}
+.subtitulo{
+  display:inline-block;
+  background:var(--gold-dim);
+  border:1px solid var(--linea);
+  color:var(--gold-l);
+  padding:4px 18px;border-radius:2px;
+  font-size:.65rem;font-weight:700;margin-top:14px;
+  letter-spacing:2px;text-transform:uppercase;
+}
 
-/* LIVE */
-.live-bar{background:var(--gris-o);display:flex;align-items:center;justify-content:center;
-  gap:8px;padding:10px;border-bottom:1px solid var(--linea)}
-.dot{width:8px;height:8px;background:#27AE60;border-radius:50%;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
-.live-txt{font-size:.68rem;font-weight:700;color:var(--gris-t);letter-spacing:1.5px;text-transform:uppercase}
+/* ── LIVE BAR ── */
+.live-bar{
+  background:var(--gris-o);
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:9px;border-bottom:1px solid var(--linea);
+}
+.dot{width:7px;height:7px;background:#4A7C59;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}
+.live-txt{font-size:.62rem;font-weight:700;color:var(--gris-t);letter-spacing:2px;text-transform:uppercase}
 
-/* MAIN */
-main{flex:1;max-width:700px;width:100%;margin:0 auto;padding:26px 16px}
+/* ── MAIN ── */
+main{flex:1;max-width:680px;width:100%;margin:0 auto;padding:28px 16px 40px}
 
-/* TURNO */
-.turno-card{background:var(--gris-o);border-radius:16px;padding:20px;margin-bottom:12px;
-  border:1px solid rgba(200,169,110,.15);border-left:4px solid var(--rose-d);
+/* ── TURNO CARD ── */
+.turno-card{
+  background:var(--gris-o);
+  border-radius:4px;
+  padding:22px 20px;
+  margin-bottom:10px;
+  border:1px solid var(--linea-rose);
+  border-left:3px solid var(--rose-d);
   display:flex;justify-content:space-between;align-items:center;
-  animation:slideIn .4s ease;box-shadow:0 4px 16px rgba(0,0,0,.3)}
-@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.t-nombre{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-l)}
-.t-srv{font-size:.85rem;color:var(--gris-t);margin-top:4px}
-.t-badge{background:rgba(201,164,167,.12);border:1px solid var(--rose-d);
-  color:var(--rose);padding:7px 14px;border-radius:20px;font-size:.72rem;
-  font-weight:700;text-align:center;white-space:nowrap;margin-left:14px}
+  animation:slideIn .35s ease;
+  box-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.t-nombre{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.45rem;font-weight:700;color:var(--humo);letter-spacing:.5px;
+}
+.t-srv{font-size:.78rem;color:var(--gris-t);margin-top:5px;letter-spacing:.3px}
+.t-srv strong{color:var(--rose-l);font-weight:400}
+.t-badge{
+  background:var(--rose-dim);
+  border:1px solid var(--rose-d);
+  color:var(--rose-l);
+  padding:6px 14px;border-radius:2px;
+  font-size:.62rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;white-space:nowrap;margin-left:16px;
+}
 
-/* VACÍO */
-.vacio{text-align:center;padding:60px 20px;background:var(--gris-o);
-  border-radius:16px;border:1px solid rgba(200,169,110,.1)}
-.vacio .icono{font-size:3.5rem;margin-bottom:14px;display:block}
-.vacio h2{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.5rem;margin-bottom:8px}
-.vacio p{color:var(--gris-t);font-size:.88rem}
+/* ── VACÍO ── */
+.vacio{
+  text-align:center;padding:56px 20px;
+  background:var(--gris-o);
+  border-radius:4px;border:1px solid var(--linea);
+}
+.vacio .icono{font-size:2.8rem;margin-bottom:16px;display:block;opacity:.5}
+.vacio h2{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--gold-l);font-size:1.4rem;margin-bottom:8px;font-weight:600;
+}
+.vacio p{color:var(--gris-t);font-size:.82rem;line-height:1.6}
 
-/* QR */
-.qr-section{background:var(--gris-o);border-radius:16px;padding:28px;
-  text-align:center;margin-top:24px;border:1px solid var(--linea)}
-.qr-section h2{font-family:'Cormorant Garamond',serif;color:var(--gold-l);
-  font-size:1.4rem;margin-bottom:6px;letter-spacing:1px}
-.qr-section p{color:var(--gris-t);font-size:.82rem;margin-bottom:20px}
-.qr-box{background:var(--blanco);border-radius:14px;padding:16px;
-  display:inline-block;box-shadow:0 4px 16px rgba(0,0,0,.4);border:2px solid var(--linea)}
-.pasos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px}
-.paso{background:var(--gris-m);border-radius:12px;padding:14px;text-align:center;border:1px solid rgba(200,169,110,.12)}
-.paso .num{font-size:1.3rem;margin-bottom:6px}
-.paso p{color:var(--gris-t);font-size:.73rem;line-height:1.5}
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:14px;margin:32px 0 24px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--linea)}
+.divider span{color:var(--gold);font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;white-space:nowrap}
 
-/* FOOTER */
-footer{padding:14px;text-align:center;border-top:1px solid var(--linea);
-  font-size:.7rem;color:var(--gris-t);letter-spacing:.5px}
+/* ── QR SECTION ── */
+.qr-section{
+  background:var(--gris-o);
+  border-radius:4px;padding:32px 24px;
+  text-align:center;border:1px solid var(--linea);
+}
+.qr-section h2{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--humo);font-size:1.3rem;margin-bottom:6px;
+  letter-spacing:2px;font-weight:600;text-transform:uppercase;
+}
+.qr-section p{color:var(--gris-t);font-size:.78rem;margin-bottom:22px;line-height:1.6}
+.qr-box{
+  background:var(--gris-m);
+  border-radius:4px;padding:16px;
+  display:inline-block;
+  border:1px solid var(--linea);
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+/* ── PASOS ANIMADOS ── */
+.pasos-wrap{margin-top:24px;position:relative;height:110px;}
+.paso-anim{
+  position:absolute;inset:0;
+  background:var(--gris-m);
+  border-radius:4px;
+  border:1px solid rgba(168,132,62,0.12);
+  display:flex;align-items:center;gap:18px;
+  padding:18px 22px;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity .5s ease, transform .5s ease;
+  pointer-events:none;
+}
+.paso-anim.activo{
+  opacity:1;transform:translateY(0);pointer-events:auto;
+}
+.paso-anim.saliendo{
+  opacity:0;transform:translateY(-10px);
+}
+.paso-num-wrap{
+  width:48px;height:48px;flex-shrink:0;
+  border-radius:50%;
+  background:var(--negro);
+  border:1px solid var(--linea);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  position:relative;
+}
+/* anillo que se llena según el paso activo */
+.paso-num-wrap svg{
+  position:absolute;inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px);
+  transform:rotate(-90deg);
+}
+.paso-num-wrap svg circle{
+  fill:none;stroke:var(--gold);stroke-width:1.5;
+  stroke-dasharray:157;stroke-dashoffset:157;
+  transition:stroke-dashoffset 2.8s linear;
+  stroke-linecap:round;
+}
+.paso-anim.activo .paso-num-wrap svg circle{
+  stroke-dashoffset:0;
+}
+.paso-texto{text-align:left;}
+.paso-label{
+  font-size:.57rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin-bottom:5px;
+}
+.paso-desc{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--humo);font-size:1.05rem;font-weight:600;line-height:1.4;
+}
+/* puntitos indicadores */
+.pasos-dots{
+  display:flex;justify-content:center;gap:7px;margin-top:14px;
+}
+.pasos-dots span{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--gris-s);
+  transition:background .3s, transform .3s;
+}
+.pasos-dots span.activo{
+  background:var(--gold);transform:scale(1.3);
+}
+
+/* ── FOOTER ── */
+footer{
+  padding:14px;text-align:center;
+  border-top:1px solid var(--linea);
+  font-size:.63rem;color:var(--gris-t);letter-spacing:1px;text-transform:uppercase;
+}
 footer span{color:var(--gold)}
 </style>
 </head>
@@ -81,7 +233,7 @@ footer span{color:var(--gold)}
 <header>
   <img src="img/logo.jpeg" alt="Kyomu Nails" class="hlogo" onerror="this.style.display='none'"/>
   <h1>Kyomu Nails</h1>
-  <p>Arte en tus manos</p>
+  <div class="tagline">Arte en tus manos</div>
   <div class="subtitulo">Sala de Espera</div>
 </header>
 
@@ -91,22 +243,65 @@ footer span{color:var(--gold)}
 </div>
 
 <main>
-  <div id="contenido"><div style="text-align:center;padding:40px;color:var(--gris-t)">Cargando...</div></div>
+  <div id="contenido">
+    <div style="text-align:center;padding:40px;color:var(--gris-t);font-size:.82rem;letter-spacing:1px">Cargando...</div>
+  </div>
+
+  <div class="divider"><span>Reservá tu turno</span></div>
 
   <div class="qr-section">
-    <h2>📱 Reservá tu cita</h2>
-    <p>Escaneá el código con tu cámara y agendá desde el celular</p>
+    <h2>Agendá desde tu celular</h2>
+    <p>Escaneá el código con la cámara y reservá tu cita en segundos</p>
     <div class="qr-box" id="qrBox"></div>
-    <div class="pasos">
-      <div class="paso"><div class="num">📷</div><p>Abrí la cámara</p></div>
-      <div class="paso"><div class="num">🔗</div><p>Escaneá el QR</p></div>
-      <div class="paso"><div class="num">📋</div><p>Elegí servicio y hora</p></div>
-      <div class="paso"><div class="num">✅</div><p>¡Confirmá tu cita!</p></div>
+    <div class="pasos-wrap" id="pasosWrap">
+      <div class="paso-anim" data-idx="0">
+        <div class="paso-num-wrap">
+          <svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="25"/></svg>
+          📷
+        </div>
+        <div class="paso-texto">
+          <div class="paso-label">Paso 1 de 4</div>
+          <div class="paso-desc">Abrí la cámara de tu celular</div>
+        </div>
+      </div>
+      <div class="paso-anim" data-idx="1">
+        <div class="paso-num-wrap">
+          <svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="25"/></svg>
+          🔗
+        </div>
+        <div class="paso-texto">
+          <div class="paso-label">Paso 2 de 4</div>
+          <div class="paso-desc">Escaneá el código QR de arriba</div>
+        </div>
+      </div>
+      <div class="paso-anim" data-idx="2">
+        <div class="paso-num-wrap">
+          <svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="25"/></svg>
+          📋
+        </div>
+        <div class="paso-texto">
+          <div class="paso-label">Paso 3 de 4</div>
+          <div class="paso-desc">Elegí tu servicio y horario</div>
+        </div>
+      </div>
+      <div class="paso-anim" data-idx="3">
+        <div class="paso-num-wrap">
+          <svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="25"/></svg>
+          ✅
+        </div>
+        <div class="paso-texto">
+          <div class="paso-label">Paso 4 de 4</div>
+          <div class="paso-desc">¡Confirmá tu reserva!</div>
+        </div>
+      </div>
+    </div>
+    <div class="pasos-dots" id="pasosDots">
+      <span></span><span></span><span></span><span></span>
     </div>
   </div>
 </main>
 
-<footer>Kyomu Nails © 2026 · <span>Arte en tus manos</span></footer>
+<footer>Kyomu Nails © 2026 &nbsp;·&nbsp; <span>Arte en tus manos</span></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
@@ -122,27 +317,67 @@ const db=getFirestore(initializeApp({
 
 new QRCode(document.getElementById('qrBox'),{
   text:'https://proyecto-salon-production.up.railway.app/kyomu/cliente/',
-  width:160,height:160,colorDark:'#A07070',colorLight:'#ffffff',
+  width:160,height:160,
+  colorDark:'#1C1C1C',
+  colorLight:'#ffffff',
   correctLevel:QRCode.CorrectLevel.H
 });
 
 onSnapshot(query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),snap=>{
-  const en=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.estado==='en_atencion')
-    .sort((a,b)=>a.hora.localeCompare(b.hora));
+  const en=snap.docs.map(d=>({id:d.id,...d.data()}))
+    .filter(c=>c.estado==='en_atencion')
+    .sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
   const div=document.getElementById('contenido');
   if(!en.length){
-    div.innerHTML='<div class="vacio"><span class="icono">✨</span><h2>¡Todo tranquilo!</h2><p>No hay clientes en atención en este momento.</p></div>';
+    div.innerHTML=`<div class="vacio">
+      <span class="icono">✦</span>
+      <h2>Sin clientes en atención</h2>
+      <p>En este momento la sala está libre.</p>
+    </div>`;
     return;
   }
   div.innerHTML=en.map((c,i)=>`
     <div class="turno-card">
       <div>
         <div class="t-nombre">${c.nombre||c.name||'Cliente'}</div>
-        <div class="t-srv">💅 ${c.serviceName||c.servicio||'—'} · ⏰ ${c.hora}</div>
+        <div class="t-srv"><strong>${c.serviceName||c.servicio||'—'}</strong> &nbsp;·&nbsp; ${c.hora||''}</div>
       </div>
-      <div class="t-badge">En atención${i===0?' 🌸':''}</div>
+      <div class="t-badge">En atención</div>
     </div>`).join('');
 });
+</script>
+
+<script>
+// ── Pasos animados ──
+const pasos = document.querySelectorAll('.paso-anim');
+const dots  = document.querySelectorAll('.pasos-dots span');
+const DURACION = 3200; // ms por paso
+let pasoActual = 0;
+let timer = null;
+
+function mostrarPaso(idx) {
+  pasos.forEach((p, i) => {
+    p.classList.remove('activo', 'saliendo');
+    dots[i].classList.remove('activo');
+  });
+  pasos[idx].classList.add('activo');
+  dots[idx].classList.add('activo');
+}
+
+function siguiente() {
+  const anterior = pasoActual;
+  pasoActual = (pasoActual + 1) % pasos.length;
+  // salida del actual
+  pasos[anterior].classList.add('saliendo');
+  setTimeout(() => {
+    pasos[anterior].classList.remove('activo', 'saliendo');
+  }, 500);
+  // entrada del siguiente
+  setTimeout(() => mostrarPaso(pasoActual), 200);
+}
+
+mostrarPaso(0);
+timer = setInterval(siguiente, DURACION);
 </script>
 </body>
 </html>

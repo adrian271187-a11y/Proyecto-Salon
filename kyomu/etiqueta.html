@@ -6,41 +6,148 @@
 <title>Etiqueta QR · Kyomu Nails</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
-:root{--rose:#C9A4A7;--rose-dark:#9E7070;--gold:#C8A96E;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Lato',sans-serif;background:#f0f0f0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-
-/* Controles (solo pantalla) */
-.controles{margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.controles button{padding:10px 20px;border:none;border-radius:20px;cursor:pointer;font-weight:700;font-size:.85rem}
-.btn-print{background:linear-gradient(135deg,var(--rose-dark),var(--rose));color:#fff}
-.btn-secundario{background:#fff;color:var(--rose-dark);border:1.5px solid var(--rose)}
-.controles select{padding:9px 14px;border:1.5px solid var(--rose);border-radius:20px;font-size:.85rem;color:var(--rose-dark);font-weight:700;background:#fff}
-
-/* ETIQUETA */
-.etiqueta-wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
-.etiqueta{
-  background:#fff;border-radius:16px;
-  box-shadow:0 4px 20px rgba(180,120,120,.2);
-  border:1.5px solid var(--rose);
-  padding:18px 14px;
-  text-align:center;
-  width:200px;
+:root{
+  --negro:#141414;
+  --gris-o:#222222;
+  --gris-m:#2C2C2C;
+  --gris-s:#3A3A3A;
+  --gris-t:#6B6B6B;
+  --humo:#D8D8D8;
+  --rose:#B8888C;
+  --rose-d:#8A5A5E;
+  --rose-l:#C9A4A7;
+  --gold:#A8843E;
+  --gold-l:#C8A96E;
+  --linea:rgba(168,132,62,0.2);
 }
-.etiqueta .logo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rose);margin-bottom:8px}
-.etiqueta h2{font-family:'Cormorant Garamond',serif;color:var(--rose-dark);font-size:1rem;margin-bottom:2px}
-.etiqueta .slogan{font-size:.65rem;color:#888;margin-bottom:10px;letter-spacing:.5px}
-.etiqueta .qr-inner{background:#fff;border:1px solid var(--rose);border-radius:10px;padding:10px;display:inline-block;margin-bottom:8px}
-.etiqueta .scan-txt{font-size:.65rem;color:var(--rose-dark);font-weight:700;letter-spacing:.5px}
-.etiqueta .linea{height:1px;background:linear-gradient(90deg,transparent,var(--rose),transparent);margin:8px 0}
-.etiqueta .url-txt{font-size:.58rem;color:#999;word-break:break-all}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Lato',sans-serif;
+  background:var(--negro);
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:28px 20px;
+  -webkit-font-smoothing:antialiased;
+}
 
-/* PRINT */
+/* ── CONTROLES ── */
+.controles{
+  margin-bottom:28px;
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;
+}
+.controles select{
+  padding:9px 16px;
+  border:1px solid var(--linea);
+  border-radius:2px;
+  font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--gold-l);
+  background:var(--gris-o);
+  cursor:pointer;
+  font-family:'Lato',sans-serif;
+}
+.controles select option{background:var(--gris-o);color:var(--humo)}
+.btn-print{
+  padding:10px 22px;
+  background:transparent;
+  color:var(--gold-l);
+  border:1px solid var(--linea);
+  border-radius:2px;cursor:pointer;
+  font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  font-family:'Lato',sans-serif;transition:.2s;
+}
+.btn-print:hover{background:rgba(168,132,62,0.1);border-color:var(--gold);}
+.btn-sec{
+  padding:10px 22px;
+  background:transparent;
+  color:var(--rose-l);
+  border:1px solid rgba(184,136,140,0.25);
+  border-radius:2px;cursor:pointer;
+  font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  font-family:'Lato',sans-serif;transition:.2s;
+  text-decoration:none;display:inline-block;
+}
+.btn-sec:hover{background:rgba(184,136,140,0.08);}
+
+/* ── GRID ETIQUETAS ── */
+.etiqueta-wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+
+/* ── ETIQUETA ── */
+.etiqueta{
+  background:var(--gris-o);
+  border-radius:4px;
+  border:1px solid var(--linea);
+  padding:20px 16px;
+  text-align:center;
+  width:188px;
+  position:relative;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+/* línea dorada top */
+.etiqueta::before{
+  content:'';
+  position:absolute;top:0;left:15%;right:15%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+.et-logo{
+  width:44px;height:44px;border-radius:50%;object-fit:cover;
+  border:1px solid var(--gold);
+  margin:0 auto 10px;display:block;
+  box-shadow:0 0 0 4px rgba(168,132,62,0.06);
+}
+.et-eyebrow{
+  font-size:.52rem;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin-bottom:3px;
+}
+.et-nombre{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--humo);font-size:.95rem;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:2px;
+}
+.et-slogan{font-size:.55rem;color:var(--gris-t);letter-spacing:1.5px;margin-bottom:12px;text-transform:uppercase}
+
+.et-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--linea),transparent);
+  margin:0 0 12px;
+}
+
+.et-qr{
+  background:var(--gris-m);
+  border-radius:4px;padding:10px;
+  display:inline-block;
+  border:1px solid rgba(168,132,62,0.15);
+  margin-bottom:10px;
+}
+
+.et-scan{
+  font-size:.56rem;color:var(--rose-l);font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;
+}
+.et-divider2{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,136,140,0.15),transparent);
+  margin:0 0 8px;
+}
+.et-url{font-size:.5rem;color:var(--gris-t);word-break:break-all;letter-spacing:.3px}
+
+/* ── PRINT ── */
 @media print{
-  body{background:#fff;padding:0;display:block}
+  body{background:#fff;padding:10px}
   .controles{display:none}
   .etiqueta-wrap{gap:8px}
-  .etiqueta{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+  .etiqueta{
+    box-shadow:none;
+    background:#fff;
+    border:1px solid #ccc;
+    break-inside:avoid;
+  }
+  .etiqueta::before{background:linear-gradient(90deg,transparent,#C8A96E,transparent);}
+  .et-eyebrow{color:#A8843E}
+  .et-nombre,.et-slogan{color:#222}
+  .et-qr{background:#fff;border:1px solid #ddd;}
+  .et-scan{color:#8A5A5E}
+  .et-url{color:#999}
 }
 </style>
 </head>
@@ -54,8 +161,8 @@ body{font-family:'Lato',sans-serif;background:#f0f0f0;display:flex;flex-directio
     <option value="6">6 etiquetas</option>
     <option value="9">9 etiquetas</option>
   </select>
-  <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
-  <button class="btn-secundario" onclick="window.location.href='sala-espera.html'">← Sala espera</button>
+  <button class="btn-print" onclick="window.print()">Imprimir</button>
+  <a class="btn-sec" href="sala-espera.html">← Sala espera</a>
 </div>
 
 <div class="etiqueta-wrap" id="etiquetaWrap"></div>
@@ -68,13 +175,15 @@ function crearEtiqueta(idx){
   const div = document.createElement('div');
   div.className = 'etiqueta';
   div.innerHTML = `
-    <img src="img/logo.jpeg" alt="KN" class="logo" onerror="this.style.display='none'"/>
-    <h2>Kyomu Nails</h2>
-    <div class="slogan">Arte en tus manos</div>
-    <div class="qr-inner" id="qr-${idx}"></div>
-    <div class="scan-txt">📷 Escaneá para reservar</div>
-    <div class="linea"></div>
-    <div class="url-txt">${APP_URL}</div>
+    <img src="img/logo.jpeg" alt="KN" class="et-logo" onerror="this.style.display='none'"/>
+    <div class="et-eyebrow">Kyomu Nails</div>
+    <div class="et-nombre">Reservá</div>
+    <div class="et-slogan">Arte en tus manos</div>
+    <div class="et-divider"></div>
+    <div class="et-qr" id="qr-${idx}"></div>
+    <div class="et-scan">📷 Escaneá para reservar</div>
+    <div class="et-divider2"></div>
+    <div class="et-url">${APP_URL}</div>
   `;
   return div;
 }
@@ -83,16 +192,18 @@ function renderEtiquetas(){
   const wrap = document.getElementById('etiquetaWrap');
   wrap.innerHTML = '';
   const cant = parseInt(document.getElementById('cantSel').value);
-  for(let i=0;i<cant;i++){
+  for(let i = 0; i < cant; i++){
     const et = crearEtiqueta(i);
     wrap.appendChild(et);
     setTimeout(()=>{
       new QRCode(document.getElementById('qr-'+i),{
-        text:APP_URL, width:110, height:110,
-        colorDark:'#9E7070', colorLight:'#ffffff',
+        text: APP_URL,
+        width: 108, height: 108,
+        colorDark: '#1C1C1C',
+        colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
       });
-    }, i*50);
+    }, i * 50);
   }
 }
 
