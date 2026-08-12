@@ -263,13 +263,13 @@ const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nai
   projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",
   messagingSenderId:"514396956826",appId:"1:514396956826:web:9356c814010b2c730f9723"};
 const WA="50662472397",AU="Naty",AP="Naty2026";
-const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"wbu7jftXOgmyV__Vc",correoAdmin:"kyomussalongs@gmail.com"};
+const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"wbu7jftXOgmyV__Vc",correoAdmin:"kyomusalongs@gmail.com"};
 const db=getFirestore(initializeApp(FB));
 let salaU=null,statsU=null,histCache=[],histF='todas';
 
 // Utilidades
 function fstr(d){return d.toISOString().split('T')[0];}
-function ffmt(f){const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return `${d} ${ms[parseInt(m)-1]} ${y}`;}
+function ffmt(f){if(!f)return '—';const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return `${d} ${ms[parseInt(m)-1]} ${y}`;}
 function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atencion',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
 function mAlerta(id,msg,tipo){const a=document.getElementById(id);a.textContent=msg;a.className='alert show alert-'+(tipo==='ok'?'ok':'err');setTimeout(()=>a.classList.remove('show'),4000);}
 async function enviarCorreo(tpl,params){
