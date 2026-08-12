@@ -139,13 +139,14 @@ textarea{resize:vertical;min-height:58px}
   </header>
   <nav>
     <button class="active" onclick="irA('agenda',this)">Agenda</button>
-    <button onclick="irA('espera',this)">Espera</button>
+    <button onclick="irA('espera',this)">Sala de Espera</button>
     <button onclick="irA('historial',this)">Historial</button>
     <button onclick="irA('stats',this)">Stats</button>
     <button onclick="irA('servicios',this)">Servicios</button>
     <button onclick="irA('bloqueados',this)">Bloqueados</button>
   </nav>
 
+  <!-- AGENDA: pendiente y confirmada solamente -->
   <div class="sec activa" id="sec-agenda">
     <div class="filtro-bar">
       <input type="date" id="filtroFecha"/>
@@ -156,6 +157,7 @@ textarea{resize:vertical;min-height:58px}
     <div id="listaAgenda"><div class="spinner"></div></div>
   </div>
 
+  <!-- SALA DE ESPERA: en_atencion — se finaliza aqui -->
   <div class="sec" id="sec-espera">
     <div class="card">
       <h2><i class="fa-regular fa-clock"></i> En atencion ahora</h2>
@@ -163,6 +165,7 @@ textarea{resize:vertical;min-height:58px}
     </div>
   </div>
 
+  <!-- HISTORIAL -->
   <div class="sec" id="sec-historial">
     <div class="filtro-bar">
       <input type="date" id="histDesde"/>
@@ -177,6 +180,7 @@ textarea{resize:vertical;min-height:58px}
     <div id="listaHistorial"><div class="spinner"></div></div>
   </div>
 
+  <!-- STATS -->
   <div class="sec" id="sec-stats">
     <div class="card">
       <h2><i class="fa-solid fa-chart-bar"></i> Mes actual</h2>
@@ -200,11 +204,12 @@ textarea{resize:vertical;min-height:58px}
     </div>
   </div>
 
+  <!-- SERVICIOS -->
   <div class="sec" id="sec-servicios">
     <div class="card">
       <h2><i class="fa-solid fa-plus"></i> Nuevo servicio</h2>
       <div id="alertaServ" class="alert"></div>
-      <div class="fg"><label>Nombre</label><input type="text" id="srvNom" placeholder="Ej: Manicure semipermanente"/></div>
+      <div class="fg"><label>Nombre</label><input type="text" id="srvNom" placeholder="Ej: Gel X"/></div>
       <div class="row2">
         <div class="fg"><label>Duracion (min)</label><input type="number" id="srvDur" placeholder="60" min="10" step="5"/></div>
         <div class="fg"><label>Precio</label><input type="number" id="srvPrecio" placeholder="12000"/></div>
@@ -217,6 +222,7 @@ textarea{resize:vertical;min-height:58px}
     </div>
   </div>
 
+  <!-- BLOQUEADOS -->
   <div class="sec" id="sec-bloqueados">
     <div class="card">
       <h2><i class="fa-regular fa-calendar-xmark"></i> Bloquear dias</h2>
@@ -228,7 +234,7 @@ textarea{resize:vertical;min-height:58px}
       <button class="btn btn-red btn-full" onclick="bloquearDias()"><i class="fa-solid fa-lock"></i> Bloquear seleccionados</button>
     </div>
     <div class="card">
-      <h2><i class="fa-regular fa-clock"></i> Bloquear hora</h2>
+      <h2><i class="fa-regular fa-clock"></i> Bloquear hora especifica</h2>
       <div class="row2" style="align-items:flex-end;margin-bottom:4px">
         <div class="fg"><label>Fecha</label><input type="date" id="horaFecha"/></div>
         <div class="fg"><label>Hora</label><input type="time" id="horaHora" step="1800"/></div>
@@ -271,21 +277,7 @@ async function enviarCorreo(tpl,params){
   catch(e){console.warn('EmailJS:',e);}
 }
 
-// SESSION — persiste al refrescar, se borra al cerrar el navegador
-function iniciarApp(u){
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('mainApp').style.display='block';
-  document.getElementById('adminNom').textContent=u;
-  document.getElementById('loginErr').style.display='none';
-  document.getElementById('filtroFecha').value=fstr(new Date());
-  cargarAgenda();
-  iniciarEspera();
-  iniciarStats();
-  cargarSrv();
-  cargarBloq();
-}
-
-
+// SESSION
 window.doLogin=()=>{
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value.trim();
@@ -301,6 +293,18 @@ window.doLogout=()=>{
 };
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
 
+function iniciarApp(u){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  document.getElementById('adminNom').textContent=u;
+  document.getElementById('filtroFecha').value=fstr(new Date());
+  cargarAgenda();
+  iniciarEspera();
+  iniciarStats();
+  cargarSrv();
+  cargarBloq();
+}
+
 window.irA=(id,btn)=>{
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('activa'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
@@ -308,7 +312,7 @@ window.irA=(id,btn)=>{
 };
 window.limpiarFiltro=()=>{document.getElementById('filtroFecha').value='';cargarAgenda();};
 
-// AGENDA — todas las citas activas desde hoy agrupadas por fecha
+// AGENDA — solo pendiente y confirmada (en_atencion va a sala de espera)
 window.cargarAgenda=async()=>{
   const fecha=document.getElementById('filtroFecha').value;
   const el=document.getElementById('listaAgenda');
@@ -321,12 +325,9 @@ window.cargarAgenda=async()=>{
     }else{
       snap=await getDocs(query(collection(db,'appointments'),where('fecha','>=',hoy)));
     }
-  }catch(e){
-    el.innerHTML='<div class="empty"><p>Error al cargar. Intenta de nuevo.</p></div>';
-    console.error(e);return;
-  }
+  }catch(e){el.innerHTML='<div class="empty"><p>Error al cargar.</p></div>';console.error(e);return;}
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>!['cancelada','finalizada','en_atencion'].includes(c.estado))
+    .filter(c=>['pendiente','confirmada'].includes(c.estado))
     .sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
   if(!citas.length){
     el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas agendadas</p></div>';
@@ -354,12 +355,15 @@ window.cargarAgenda=async()=>{
 function citaHTML(c,ctx){
   const acc=[];
   if(ctx==='agenda'){
-    if(c.estado==='pendiente')acc.push(`<button class="btn btn-green" onclick="cambiarEstado('${c.id}','confirmada')"><i class="fa-solid fa-check"></i> Confirmar</button>`);
-    if(c.estado==='confirmada'){
-      acc.push(`<button class="btn btn-rose" onclick="checkIn('${c.id}')"><i class="fa-solid fa-right-to-bracket"></i> Check-in</button>`);
-      acc.push(`<button class="btn btn-wa" onclick="envWA('${c.id}','${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')"><i class="fa-brands fa-whatsapp"></i> WA</button>`);
+    if(c.estado==='pendiente'){
+      acc.push(`<button class="btn btn-green" onclick="confirmar('${c.id}')"><i class="fa-solid fa-check"></i> Confirmar</button>`);
+      acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
     }
-    acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
+    if(c.estado==='confirmada'){
+      acc.push(`<button class="btn btn-wa" onclick="envWA('${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')"><i class="fa-brands fa-whatsapp"></i> WA</button>`);
+      acc.push(`<button class="btn btn-rose" onclick="checkIn('${c.id}')"><i class="fa-solid fa-right-to-bracket"></i> Check-in</button>`);
+      acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
+    }
   }
   if(ctx==='espera'){
     acc.push(`<button class="btn btn-gold" onclick="finalizar('${c.id}')"><i class="fa-solid fa-flag-checkered"></i> Finalizar</button>`);
@@ -369,7 +373,7 @@ function citaHTML(c,ctx){
     <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-clock"></i> ${c.hora}</div></div>
     <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'&mdash;'} &nbsp;&middot;&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'&mdash;'}</div>
     ${c.nota?`<div style="font-size:.75rem;color:var(--gris-t);margin-bottom:4px;font-style:italic"><i class="fa-regular fa-note-sticky"></i> ${c.nota}</div>`:''}
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
       <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
       <span class="ci-precio">&#8353;${Number(c.precio||0).toLocaleString()}</span>
     </div>
@@ -377,13 +381,12 @@ function citaHTML(c,ctx){
   </div>`;
 }
 
-// Confirmar cita + correo al cliente
-window.cambiarEstado=async(id,estado)=>{
+// Confirmar — cambia estado y envia correo al cliente
+window.confirmar=async(id)=>{
   const ref=doc(db,'appointments',id);
-  const snap=await getDoc(ref);
-  const c=snap.data();
-  await updateDoc(ref,{estado});
-  if(estado==='confirmada'&&c.correo){
+  const snap=await getDoc(ref);const c=snap.data();
+  await updateDoc(ref,{estado:'confirmada'});
+  if(c.correo){
     await enviarCorreo(EJS.tplCliente,{
       correo_cliente:c.correo,cliente:c.nombre||c.name||'',
       salon:'Kyomu Nails',servicio:c.serviceName||c.servicio||'',
@@ -394,14 +397,20 @@ window.cambiarEstado=async(id,estado)=>{
   cargarAgenda();
 };
 
+// Check-in — sale de agenda, entra a sala de espera
 window.checkIn=async(id)=>{
-  const ref=doc(db,'appointments',id);const s=await getDoc(ref);const c=s.data();
+  const ref=doc(db,'appointments',id);const snap=await getDoc(ref);const c=snap.data();
   await updateDoc(ref,{estado:'en_atencion'});
-  await addDoc(collection(db,'queue'),{name:c.nombre||c.name,service:c.serviceName||c.servicio,appointmentId:id,createdAt:Timestamp.now()});
+  await addDoc(collection(db,'queue'),{
+    name:c.nombre||c.name,
+    service:c.serviceName||c.servicio,
+    appointmentId:id,
+    createdAt:Timestamp.now()
+  });
   cargarAgenda();
 };
 
-// Cancelar desde admin
+// Cancelar — admin cancela desde agenda
 window.cancelar=async(id)=>{
   if(!confirm('Cancelar esta cita?'))return;
   const ref=doc(db,'appointments',id);
@@ -417,25 +426,35 @@ window.cancelar=async(id)=>{
   cargarAgenda();
 };
 
+// Finalizar — desde sala de espera, va al historial
 window.finalizar=async(id)=>{
   await updateDoc(doc(db,'appointments',id),{estado:'finalizada'});
   const s=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
   for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
 };
 
-window.envWA=(id,tel,nombre,srv,fecha,hora)=>{
+// WA — confirmacion al cliente
+window.envWA=(tel,nombre,srv,fecha,hora)=>{
   const msg=`Hola ${nombre}, te confirmamos tu cita en *Kyomu Nails*:\n\n- *Servicio:* ${srv}\n- *Fecha:* ${ffmt(fecha)}\n- *Hora:* ${hora}\n\nTe esperamos!\n\nSi necesitas cambiar o cancelar tu cita, podes hacerlo desde la app en la seccion *Mis Citas*, ingresa tu numero de telefono y selecciona cancelar. Recibiras un correo de confirmacion de la cancelacion.`;
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 };
 
-// ESPERA
+// SALA DE ESPERA — onSnapshot permanente, muestra en_atencion
 function iniciarEspera(){
   const el=document.getElementById('listaEspera');
-  salaU=onSnapshot(query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),snap=>{
-    const en=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.estado==='en_atencion').sort((a,b)=>a.hora.localeCompare(b.hora));
-    if(!en.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-face-smile"></i></div><p>Sala vacia</p></div>';return;}
-    el.innerHTML=en.map(c=>citaHTML(c,'espera')).join('');
-  });
+  salaU=onSnapshot(
+    query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),
+    snap=>{
+      const en=snap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(c=>c.estado==='en_atencion')
+        .sort((a,b)=>a.hora.localeCompare(b.hora));
+      if(!en.length){
+        el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-face-smile"></i></div><p>Sala vacia</p></div>';
+        return;
+      }
+      el.innerHTML=en.map(c=>citaHTML(c,'espera')).join('');
+    }
+  );
 }
 
 // HISTORIAL
@@ -456,7 +475,7 @@ function renderHist(){
     <div class="cita-item" style="border-left-color:${c.estado==='finalizada'?'var(--green)':'var(--red)'}">
       <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-calendar"></i> ${ffmt(c.fecha)}</div></div>
       <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'&mdash;'} &nbsp;&middot;&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'&mdash;'}</div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
         <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
         <span class="ci-precio">&#8353;${Number(c.precio||0).toLocaleString()}</span>
       </div>
@@ -464,7 +483,7 @@ function renderHist(){
 }
 window.filtrarH=(f,btn)=>{histF=f;document.querySelectorAll('.hist-filtros button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHist();};
 
-// STATS
+// STATS — onSnapshot en tiempo real
 function iniciarStats(){
   const hoy=new Date(),prim=fstr(new Date(hoy.getFullYear(),hoy.getMonth(),1)),hoyStr=fstr(hoy);
   statsU=onSnapshot(collection(db,'appointments'),snap=>{
@@ -519,18 +538,13 @@ window.eliminarSrv=async(id)=>{if(!confirm('Eliminar este servicio?'))return;awa
 // BLOQUEADOS
 let calMes=new Date().getMonth(),calAnio=new Date().getFullYear();
 let diasSeleccionados=new Set(),diasBloqSet=new Set();
-
 function renderCal(){
   const hoy=fstr(new Date());
   const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const primerDia=new Date(calAnio,calMes,1).getDay();
   const totalDias=new Date(calAnio,calMes+1,0).getDate();
   const grid=document.getElementById('calGrid');
-  let html=`<div class="cal-nav">
-    <button onclick="calNav(-1)">&#8249;</button>
-    <span>${meses[calMes]} ${calAnio}</span>
-    <button onclick="calNav(1)">&#8250;</button>
-  </div>
+  let html=`<div class="cal-nav"><button onclick="calNav(-1)">&#8249;</button><span>${meses[calMes]} ${calAnio}</span><button onclick="calNav(1)">&#8250;</button></div>
   <div class="cal-dias-header"><span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span></div>
   <div class="cal-grid">`;
   for(let i=0;i<primerDia;i++)html+=`<div class="cal-dia vacio"></div>`;
@@ -567,11 +581,9 @@ window.cargarBloq=async()=>{
   const dias=ds.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
   diasBloqSet=new Set(dias.map(d=>d.fecha));renderCal();
-  const dEl=document.getElementById('listaDias');
-  dEl.innerHTML=!dias.length?'<div class="empty"><p>Sin dias bloqueados</p></div>':
+  document.getElementById('listaDias').innerHTML=!dias.length?'<div class="empty"><p>Sin dias bloqueados</p></div>':
     dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
-  const hEl=document.getElementById('listaHoras');
-  hEl.innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
+  document.getElementById('listaHoras').innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
     horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(h.fecha)} &middot; ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
 };
 window.bloquearHora=async()=>{
@@ -584,7 +596,7 @@ window.bloquearHora=async()=>{
 window.desBloqD=async(id,fecha)=>{await deleteDoc(doc(db,'dias_bloqueados',id));diasBloqSet.delete(fecha);cargarBloq();};
 window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
 
-// Restaurar sesion al refrescar — al final para que todas las funciones estén definidas
+// Restaurar sesion al refrescar — al final para que todas las funciones esten definidas
 const sesion=sessionStorage.getItem('kyomu_admin');
 if(sesion) iniciarApp(sesion);
 </script>
