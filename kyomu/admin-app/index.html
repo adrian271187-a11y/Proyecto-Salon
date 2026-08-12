@@ -312,18 +312,27 @@ const WA="50662472397",AU="Naty",AP="Naty2026";
 const db=getFirestore(initializeApp(FB));
 let salaU=null,statsU=null,histCache=[],histF='todas';
 
+function iniciarApp(u){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  document.getElementById('adminNom').textContent=u;
+  document.getElementById('loginErr').style.display='none';
+  cargarAgenda();iniciarEspera();iniciarStats();cargarSrv();cargarBloq();
+}
+// Restaurar sesión al refrescar
+const sesion=sessionStorage.getItem('kyomu_admin');
+if(sesion)iniciarApp(sesion);
+
 window.doLogin=()=>{
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value.trim();
   if(u===AU&&p===AP){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('mainApp').style.display='block';
-    document.getElementById('adminNom').textContent=u;
-    document.getElementById('loginErr').style.display='none';
-    setHoy();cargarAgenda();iniciarEspera();iniciarStats();cargarSrv();cargarBloq();
+    sessionStorage.setItem('kyomu_admin',u);
+    iniciarApp(u);
   }else document.getElementById('loginErr').style.display='block';
 };
 window.doLogout=()=>{
+  sessionStorage.removeItem('kyomu_admin');
   if(salaU)salaU();if(statsU)statsU();
   document.getElementById('mainApp').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
