@@ -1,4 +1,4 @@
-const CACHE = 'kyomu-admin-v6';
+const CACHE = 'kyomu-admin-v7';
 const ASSETS = [
   '/kyomu/admin-app/',
   '/kyomu/admin-app/index.html',
