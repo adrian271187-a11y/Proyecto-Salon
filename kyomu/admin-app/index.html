@@ -23,15 +23,15 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Lato',sans-serif;background:var(--negro);color:var(--humo);min-height:100vh;-webkit-font-smoothing:antialiased}
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--negro)}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
 .login-card{background:var(--gris-o);border-radius:20px;padding:36px 28px;width:100%;max-width:340px;box-shadow:var(--sh);text-align:center;border:1px solid var(--linea)}
-.llogo{width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:14px;box-shadow:0 0 16px rgba(200,169,110,.2)}
+.llogo{width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:14px}
 .login-card h1{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.6rem;font-weight:700;letter-spacing:2px;margin-bottom:4px}
 .login-card p{color:var(--gris-t);font-size:.78rem;margin-bottom:24px;letter-spacing:1px;text-transform:uppercase}
 .login-card input{width:100%;padding:11px 14px;border:1px solid rgba(200,169,110,.2);border-radius:var(--rs);font-size:.9rem;margin-bottom:10px;outline:none;font-family:'Lato',sans-serif;background:var(--gris-m);color:var(--humo)}
-.login-card input::placeholder{color:var(--gris-s)}
 .login-card input:focus{border-color:var(--rose)}
-.login-card button{width:100%;padding:12px;background:linear-gradient(135deg,var(--rose-d),var(--rose));color:var(--blanco);border:none;border-radius:var(--rs);font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif}
+.login-card input::placeholder{color:var(--gris-s)}
+.login-card button{width:100%;padding:12px;background:linear-gradient(135deg,var(--rose-d),var(--rose));color:#fff;border:none;border-radius:var(--rs);font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif}
 #loginErr{color:#F1948A;font-size:.8rem;margin-top:8px;display:none}
 #mainApp{display:none}
 header{background:linear-gradient(135deg,var(--gris-o),var(--gris-m));padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--linea)}
@@ -39,7 +39,6 @@ header img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5p
 header div h1{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.1rem;font-weight:600;letter-spacing:1px}
 header div p{color:var(--gris-t);font-size:.7rem}
 .logout{margin-left:auto;background:transparent;border:1px solid rgba(200,169,110,.25);color:var(--gris-t);padding:6px 13px;border-radius:20px;cursor:pointer;font-size:.72rem;font-weight:700;font-family:'Lato',sans-serif}
-.logout:hover{border-color:var(--rose);color:var(--rose)}
 nav{background:var(--gris-o);display:flex;overflow-x:auto;border-bottom:1px solid var(--linea);position:sticky;top:0;z-index:100}
 nav::-webkit-scrollbar{display:none}
 nav button{flex-shrink:0;padding:12px 14px;border:none;background:none;cursor:pointer;font-family:'Lato',sans-serif;font-size:.72rem;font-weight:700;color:var(--gris-t);border-bottom:2px solid transparent;transition:.2s;white-space:nowrap;letter-spacing:.6px;text-transform:uppercase}
@@ -77,8 +76,8 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .fg{margin-bottom:12px}
 label{display:block;font-size:.7rem;font-weight:700;color:var(--gris-t);margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px}
 input,select,textarea{width:100%;padding:9px 12px;border:1px solid rgba(200,169,110,.18);border-radius:var(--rs);font-family:'Lato',sans-serif;font-size:.86rem;color:var(--humo);background:var(--gris-m);outline:none;transition:.2s}
-input::placeholder,textarea::placeholder{color:var(--gris-s)}
 input:focus,select:focus,textarea:focus{border-color:var(--rose)}
+input::placeholder,textarea::placeholder{color:var(--gris-s)}
 textarea{resize:vertical;min-height:58px}
 .row2{display:flex;gap:8px;align-items:flex-end}
 .row2 .fg{flex:1;margin-bottom:0}
@@ -112,9 +111,13 @@ textarea{resize:vertical;min-height:58px}
 .cal-dia.vacio{background:transparent;border-color:transparent;cursor:default}
 .cal-dia.pasado{opacity:.35;cursor:default}
 .tag-dia{background:rgba(192,57,43,.18);color:#F1948A;border:1px solid rgba(192,57,43,.3);border-radius:20px;padding:3px 10px;font-size:.74rem;font-weight:700;display:flex;align-items:center;gap:5px}
-.tag-dia button{background:none;border:none;color:#F1948A;cursor:pointer;font-size:.9rem;line-height:1;padding:0}
+.tag-dia button{background:none;border:none;color:#F1948A;cursor:pointer;font-size:.9rem;padding:0}
 .grupo-fecha{margin-bottom:18px}
 .grupo-header{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;padding:6px 0;margin-bottom:8px;border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:8px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gris-m);color:var(--humo);padding:10px 20px;border-radius:20px;font-size:.82rem;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:999;border:1px solid var(--linea)}
+#toast.show{opacity:1}
+#toast.error{background:var(--red)}
+#toast.ok{background:var(--green)}
 </style>
 </head>
 <body>
@@ -146,18 +149,17 @@ textarea{resize:vertical;min-height:58px}
     <button onclick="irA('bloqueados',this)">Bloqueados</button>
   </nav>
 
-  <!-- AGENDA: pendiente y confirmada solamente -->
+  <!-- AGENDA -->
   <div class="sec activa" id="sec-agenda">
     <div class="filtro-bar">
       <input type="date" id="filtroFecha"/>
-      <button onclick="cargarAgenda()">Filtrar</button>
-      <button onclick="limpiarFiltro()" style="background:var(--gold-d)">Todas</button>
+      <button onclick="filtrarFecha()">Filtrar</button>
+      <button onclick="limpiarFecha()" style="background:var(--gold-d)">Todas</button>
     </div>
-    <div id="alertaAgenda" class="alert"></div>
     <div id="listaAgenda"><div class="spinner"></div></div>
   </div>
 
-  <!-- SALA DE ESPERA: en_atencion — se finaliza aqui -->
+  <!-- SALA DE ESPERA -->
   <div class="sec" id="sec-espera">
     <div class="card">
       <h2><i class="fa-regular fa-clock"></i> En atencion ahora</h2>
@@ -170,7 +172,8 @@ textarea{resize:vertical;min-height:58px}
     <div class="filtro-bar">
       <input type="date" id="histDesde"/>
       <input type="date" id="histHasta" style="flex:1"/>
-      <button onclick="cargarHistorial()">Filtrar</button>
+      <button onclick="filtrarHistorial()">Filtrar</button>
+      <button onclick="limpiarHistorial()" style="background:var(--gold-d)">Todas</button>
     </div>
     <div class="hist-filtros">
       <button class="active" onclick="filtrarH('todas',this)">Todas</button>
@@ -186,7 +189,7 @@ textarea{resize:vertical;min-height:58px}
       <h2><i class="fa-solid fa-chart-bar"></i> Mes actual</h2>
       <div class="stats-row">
         <div class="stat-box"><div class="val" id="stTotal">0</div><div class="lbl">Total</div></div>
-        <div class="stat-box"><div class="val gold" id="stIng">0</div><div class="lbl">Ingresos</div></div>
+        <div class="stat-box"><div class="val gold" id="stIng">&#8353;0</div><div class="lbl">Ingresos</div></div>
         <div class="stat-box"><div class="val" id="stFin">0</div><div class="lbl">Finalizadas</div></div>
         <div class="stat-box"><div class="val" id="stCanc">0</div><div class="lbl">Canceladas</div></div>
       </div>
@@ -212,7 +215,7 @@ textarea{resize:vertical;min-height:58px}
       <div class="fg"><label>Nombre</label><input type="text" id="srvNom" placeholder="Ej: Gel X"/></div>
       <div class="row2">
         <div class="fg"><label>Duracion (min)</label><input type="number" id="srvDur" placeholder="60" min="10" step="5"/></div>
-        <div class="fg"><label>Precio</label><input type="number" id="srvPrecio" placeholder="12000"/></div>
+        <div class="fg"><label>Precio (&#8353;)</label><input type="number" id="srvPrecio" placeholder="12000"/></div>
       </div>
       <button class="btn btn-rose btn-full" onclick="guardarSrv()">Guardar servicio</button>
     </div>
@@ -252,32 +255,43 @@ textarea{resize:vertical;min-height:58px}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init("dPvxljdyBh_j2-ogt");</script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, where, getDocs,
-         doc, updateDoc, deleteDoc, onSnapshot, Timestamp, getDoc }
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc,
+         deleteDoc, query, where, onSnapshot, Timestamp, getDoc }
        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nails.firebaseapp.com",
   projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",
   messagingSenderId:"514396956826",appId:"1:514396956826:web:9356c814010b2c730f9723"};
-const WA="50662472397",AU="Naty",AP="Naty2026";
-const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"wbu7jftXOgmyV__Vc",correoAdmin:"kyomusalongs@gmail.com"};
+const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",correoAdmin:"kyomusalongs@gmail.com"};
+const AU="Naty",AP="Naty2026";
 const db=getFirestore(initializeApp(FB));
-let salaU=null,statsU=null,histCache=[],histF='todas';
 
-// Utilidades
+// ── Utilidades ──
+const mesesN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const mesesC=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const diasSemana=['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
 function fstr(d){return d.toISOString().split('T')[0];}
-function ffmt(f){if(!f)return '—';const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return `${d} ${ms[parseInt(m)-1]} ${y}`;}
-function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atencion',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
-function mAlerta(id,msg,tipo){const a=document.getElementById(id);a.textContent=msg;a.className='alert show alert-'+(tipo==='ok'?'ok':'err');setTimeout(()=>a.classList.remove('show'),4000);}
+function ffmt(f){if(!f||!f.includes('-'))return f||'—';const[y,m,d]=f.split('-');return`${parseInt(d)} de ${mesesN[parseInt(m)-1]} de ${y}`;}
+function ffmtCorto(f){if(!f||!f.includes('-'))return f||'—';const[y,m,d]=f.split('-');return`${d} ${mesesC[parseInt(m)-1].slice(0,3)} ${y}`;}
+function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En Atencion',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
+function toast(msg,tipo=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show'+(tipo?' '+tipo:'');
+  setTimeout(()=>t.className='',3000);
+}
 async function enviarCorreo(tpl,params){
-  try{await emailjs.init(EJS.pk);await emailjs.send(EJS.svc,tpl,params);}
+  try{await emailjs.send(EJS.svc,tpl,params);}
   catch(e){console.warn('EmailJS:',e);}
 }
 
-// SESSION
+// ── Login con sessionStorage ──
 window.doLogin=()=>{
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value.trim();
@@ -286,7 +300,9 @@ window.doLogin=()=>{
 };
 window.doLogout=()=>{
   sessionStorage.removeItem('kyomu_admin');
-  if(salaU)salaU();if(statsU)statsU();
+  if(citasUnsub)citasUnsub();
+  if(esperaUnsub)esperaUnsub();
+  if(statsUnsub)statsUnsub();
   document.getElementById('mainApp').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
@@ -297,10 +313,9 @@ function iniciarApp(u){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
   document.getElementById('adminNom').textContent=u;
-  document.getElementById('filtroFecha').value=fstr(new Date());
-  cargarAgenda();
-  iniciarEspera();
-  iniciarStats();
+  inicializarCitas();
+  inicializarEspera();
+  inicializarStats();
   cargarSrv();
   cargarBloq();
 }
@@ -310,49 +325,48 @@ window.irA=(id,btn)=>{
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('activa');btn.classList.add('active');
 };
-window.limpiarFiltro=()=>{document.getElementById('filtroFecha').value='';cargarAgenda();};
 
-// AGENDA — solo pendiente y confirmada (en_atencion va a sala de espera)
-window.cargarAgenda=async()=>{
-  const fecha=document.getElementById('filtroFecha').value;
+// ── AGENDA — onSnapshot en tiempo real ──
+let todasLasCitas=[],fechaFiltroAgenda=null,filtroHist='todas',fechaFiltroHist=null;
+let citasUnsub=null,esperaUnsub=null,statsUnsub=null;
+
+function inicializarCitas(){
+  if(citasUnsub)citasUnsub();
+  citasUnsub=onSnapshot(collection(db,'appointments'),snap=>{
+    todasLasCitas=snap.docs.map(d=>({id:d.id,...d.data()}));
+    todasLasCitas.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||(a.hora||'').localeCompare(b.hora||''));
+    renderAgenda();
+    renderHistorial();
+  },e=>console.error('citas:',e));
+}
+
+window.filtrarFecha=()=>{fechaFiltroAgenda=document.getElementById('filtroFecha').value||null;renderAgenda();};
+window.limpiarFecha=()=>{fechaFiltroAgenda=null;document.getElementById('filtroFecha').value='';renderAgenda();};
+
+function renderAgenda(){
   const el=document.getElementById('listaAgenda');
-  el.innerHTML='<div class="spinner"></div>';
+  let citas=todasLasCitas.filter(c=>['pendiente','confirmada'].includes(c.estado));
+  if(fechaFiltroAgenda)citas=citas.filter(c=>c.fecha===fechaFiltroAgenda);
+  if(!citas.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas agendadas</p></div>';return;}
   const hoy=fstr(new Date());
-  let snap;
-  try{
-    if(fecha){
-      snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
-    }else{
-      snap=await getDocs(collection(db,'appointments'));
-    }
-  }catch(e){el.innerHTML='<div class="empty"><p>Error al cargar.</p></div>';console.error(e);return;}
-  const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>['pendiente','confirmada'].includes(c.estado))
-    .sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||(a.hora||'').localeCompare(b.hora||''));
-  if(!citas.length){
-    el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-calendar"></i></div><p>Sin citas agendadas</p></div>';
-    return;
-  }
   const grupos={};
   citas.forEach(c=>{if(!grupos[c.fecha])grupos[c.fecha]=[];grupos[c.fecha].push(c);});
-  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const dias=['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
   el.innerHTML=Object.entries(grupos).map(([f,cs])=>{
-    const d=new Date(f+'T12:00:00');
+    const d=new Date((f||hoy)+'T12:00:00');
     const esHoy=f===hoy;
-    const label=`${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]}`;
+    const label=`${diasSemana[d.getDay()]} ${d.getDate()} de ${mesesC[d.getMonth()]}`;
     return `<div class="grupo-fecha">
       <div class="grupo-header" style="color:${esHoy?'var(--gold)':'var(--rose)'}">
         <i class="fa-regular fa-calendar${esHoy?'-check':''}"></i>
         ${label}${esHoy?' &mdash; Hoy':''}
         <span style="margin-left:auto;font-size:.75rem;background:var(--gris-m);padding:2px 8px;border-radius:20px;color:var(--gris-t)">${cs.length} cita${cs.length!==1?'s':''}</span>
       </div>
-      ${cs.map(c=>citaHTML(c,'agenda')).join('')}
+      ${cs.map(c=>citaCard(c,'agenda')).join('')}
     </div>`;
   }).join('');
-};
+}
 
-function citaHTML(c,ctx){
+function citaCard(c,ctx){
   const acc=[];
   if(ctx==='agenda'){
     if(c.estado==='pendiente'){
@@ -360,7 +374,7 @@ function citaHTML(c,ctx){
       acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
     }
     if(c.estado==='confirmada'){
-      acc.push(`<button class="btn btn-wa" onclick="envWA('${c.telefono||c.tel||''}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha}','${c.hora}')"><i class="fa-brands fa-whatsapp"></i> WA</button>`);
+      acc.push(`<button class="btn btn-wa" onclick="envWA('${(c.telefono||c.tel||'').replace(/'/g,"\\'")}','${(c.nombre||c.name||'').replace(/'/g,"\\'")}','${(c.serviceName||c.servicio||'').replace(/'/g,"\\'")}','${c.fecha||''}','${c.hora||''}')"><i class="fa-brands fa-whatsapp"></i> WA</button>`);
       acc.push(`<button class="btn btn-rose" onclick="checkIn('${c.id}')"><i class="fa-solid fa-right-to-bracket"></i> Check-in</button>`);
       acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
     }
@@ -370,7 +384,7 @@ function citaHTML(c,ctx){
     acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
   }
   return `<div class="cita-item">
-    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-clock"></i> ${c.hora}</div></div>
+    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-clock"></i> ${c.hora||'—'}</div></div>
     <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'&mdash;'} &nbsp;&middot;&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'&mdash;'}</div>
     ${c.nota?`<div style="font-size:.75rem;color:var(--gris-t);margin-bottom:4px;font-style:italic"><i class="fa-regular fa-note-sticky"></i> ${c.nota}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
@@ -381,99 +395,109 @@ function citaHTML(c,ctx){
   </div>`;
 }
 
-// Confirmar — cambia estado y envia correo al cliente
+// Confirmar — cambia estado + correo al cliente
 window.confirmar=async(id)=>{
   const ref=doc(db,'appointments',id);
   const snap=await getDoc(ref);const c=snap.data();
-  await updateDoc(ref,{estado:'confirmada'});
-  if(c.correo){
-    await enviarCorreo(EJS.tplCliente,{
-      correo_cliente:c.correo,cliente:c.nombre||c.name||'',
-      salon:'Kyomu Nails',servicio:c.serviceName||c.servicio||'',
-      fecha:ffmt(c.fecha),hora:c.hora,
-      mensaje:'Tu cita ha sido confirmada. Te esperamos!'
-    });
-  }
-  cargarAgenda();
+  try{
+    await updateDoc(ref,{estado:'confirmada'});
+    toast('Cita confirmada','ok');
+    if(c.correo){
+      await enviarCorreo(EJS.tplCliente,{
+        correo_cliente:c.correo,cliente:c.nombre||c.name||'',
+        salon:'Kyomu Nails',servicio:c.serviceName||c.servicio||'',
+        fecha:ffmt(c.fecha),hora:c.hora||'',
+        mensaje:'Tu cita ha sido confirmada. Te esperamos!'
+      });
+    }
+  }catch(e){toast('Error al confirmar','error');}
 };
 
 // Check-in — sale de agenda, entra a sala de espera
 window.checkIn=async(id)=>{
   const ref=doc(db,'appointments',id);const snap=await getDoc(ref);const c=snap.data();
-  await updateDoc(ref,{estado:'en_atencion'});
-  await addDoc(collection(db,'queue'),{
-    name:c.nombre||c.name,
-    service:c.serviceName||c.servicio,
-    appointmentId:id,
-    createdAt:Timestamp.now()
-  });
-  cargarAgenda();
+  try{
+    await updateDoc(ref,{estado:'en_atencion'});
+    await addDoc(collection(db,'queue'),{
+      name:c.nombre||c.name||'',
+      service:c.serviceName||c.servicio||'',
+      appointmentId:id,
+      createdAt:Timestamp.now()
+    });
+    toast('Check-in realizado','ok');
+  }catch(e){toast('Error en check-in','error');}
 };
 
-// Cancelar — admin cancela desde agenda
+// Cancelar
 window.cancelar=async(id)=>{
   if(!confirm('Cancelar esta cita?'))return;
   const ref=doc(db,'appointments',id);
   const snap=await getDoc(ref);const c=snap.data();
-  await updateDoc(ref,{estado:'cancelada'});
-  await enviarCorreo(EJS.tplAdmin,{
-    to_email:EJS.correoAdmin,salon:'Kyomu Nails',
-    asunto:'Cita cancelada desde el panel admin',
-    mensaje:'Se cancelo una cita desde el panel administrativo.',
-    cliente:c.nombre||c.name||'',telefono:c.telefono||c.tel||'',
-    servicio:c.serviceName||c.servicio||'',fecha:ffmt(c.fecha),hora:c.hora
-  });
-  cargarAgenda();
+  try{
+    await updateDoc(ref,{estado:'cancelada'});
+    toast('Cita cancelada');
+    await enviarCorreo(EJS.tplAdmin,{
+      to_email:EJS.correoAdmin,salon:'Kyomu Nails',
+      asunto:'Cita cancelada desde el panel admin',
+      mensaje:'Se cancelo una cita desde el panel administrativo.',
+      cliente:c.nombre||c.name||'',telefono:c.telefono||c.tel||'',
+      servicio:c.serviceName||c.servicio||'',
+      fecha:ffmt(c.fecha),hora:c.hora||''
+    });
+  }catch(e){toast('Error al cancelar','error');}
 };
 
-// Finalizar — desde sala de espera, va al historial
+// Finalizar — desde sala de espera
 window.finalizar=async(id)=>{
-  await updateDoc(doc(db,'appointments',id),{estado:'finalizada'});
-  const s=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
-  for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
+  try{
+    await updateDoc(doc(db,'appointments',id),{estado:'finalizada'});
+    const s=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
+    for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
+    toast('Turno finalizado','ok');
+  }catch(e){toast('Error al finalizar','error');}
 };
 
-// WA — confirmacion al cliente
+// WA
 window.envWA=(tel,nombre,srv,fecha,hora)=>{
-  const msg=`Hola ${nombre}, te confirmamos tu cita en *Kyomu Nails*:\n\n- *Servicio:* ${srv}\n- *Fecha:* ${ffmt(fecha)}\n- *Hora:* ${hora}\n\nTe esperamos!\n\nSi necesitas cambiar o cancelar tu cita, podes hacerlo desde la app en la seccion *Mis Citas*, ingresa tu numero de telefono y selecciona cancelar. Recibiras un correo de confirmacion de la cancelacion.`;
+  const msg=`Hola ${nombre}, te confirmamos tu cita en *Kyomu Nails*:\n\n- *Servicio:* ${srv}\n- *Fecha:* ${ffmt(fecha)}\n- *Hora:* ${hora}\n\nTe esperamos!\n\nSi necesitas cambiar o cancelar, ingresa a la app en *Mis Citas*, escribe tu numero y selecciona cancelar. Recibiras un correo de confirmacion.`;
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 };
 
-// SALA DE ESPERA — onSnapshot permanente, muestra en_atencion
-function iniciarEspera(){
+// ── SALA DE ESPERA — onSnapshot permanente ──
+function inicializarEspera(){
+  if(esperaUnsub)return;
   const el=document.getElementById('listaEspera');
-  salaU=onSnapshot(
+  esperaUnsub=onSnapshot(
     query(collection(db,'appointments'),where('estado','in',['en_atencion','confirmada'])),
     snap=>{
       const en=snap.docs.map(d=>({id:d.id,...d.data()}))
         .filter(c=>c.estado==='en_atencion')
-        .sort((a,b)=>a.hora.localeCompare(b.hora));
-      if(!en.length){
-        el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-face-smile"></i></div><p>Sala vacia</p></div>';
-        return;
-      }
-      el.innerHTML=en.map(c=>citaHTML(c,'espera')).join('');
-    }
+        .sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+      if(!en.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-face-smile"></i></div><p>Sala vacia</p></div>';return;}
+      el.innerHTML=en.map(c=>citaCard(c,'espera')).join('');
+    },
+    e=>console.error('espera:',e)
   );
 }
 
-// HISTORIAL
-window.cargarHistorial=async()=>{
-  const desde=document.getElementById('histDesde').value,hasta=document.getElementById('histHasta').value;
-  document.getElementById('listaHistorial').innerHTML='<div class="spinner"></div>';
-  const snap=await getDocs(query(collection(db,'appointments'),where('estado','in',['finalizada','cancelada'])));
-  histCache=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(c=>{let ok=true;if(desde)ok=ok&&c.fecha>=desde;if(hasta)ok=ok&&c.fecha<=hasta;return ok;})
-    .sort((a,b)=>b.fecha.localeCompare(a.fecha)||b.hora.localeCompare(a.hora));
-  renderHist();
-};
-function renderHist(){
+// ── HISTORIAL ──
+window.filtrarH=(f,btn)=>{filtroHist=f;document.querySelectorAll('.hist-filtros button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHistorial();};
+window.filtrarHistorial=()=>{fechaFiltroHist=document.getElementById('histDesde').value||null;renderHistorial();};
+window.limpiarHistorial=()=>{fechaFiltroHist=null;document.getElementById('histDesde').value='';document.getElementById('histHasta').value='';renderHistorial();};
+
+function renderHistorial(){
   const el=document.getElementById('listaHistorial');
-  let data=histF==='todas'?histCache:histCache.filter(c=>c.estado===histF);
+  if(!el)return;
+  const hasta=document.getElementById('histHasta').value||null;
+  let data=todasLasCitas.filter(c=>['finalizada','cancelada'].includes(c.estado));
+  if(filtroHist!=='todas')data=data.filter(c=>c.estado===filtroHist);
+  if(fechaFiltroHist)data=data.filter(c=>c.fecha>=fechaFiltroHist);
+  if(hasta)data=data.filter(c=>c.fecha<=hasta);
+  data.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')||(b.hora||'').localeCompare(a.hora||''));
   if(!data.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-folder-open"></i></div><p>Sin registros</p></div>';return;}
   el.innerHTML=data.map(c=>`
     <div class="cita-item" style="border-left-color:${c.estado==='finalizada'?'var(--green)':'var(--red)'}">
-      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-calendar"></i> ${ffmt(c.fecha)}</div></div>
+      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-calendar"></i> ${ffmtCorto(c.fecha)}</div></div>
       <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'&mdash;'} &nbsp;&middot;&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'&mdash;'}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
         <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
@@ -481,12 +505,12 @@ function renderHist(){
       </div>
     </div>`).join('');
 }
-window.filtrarH=(f,btn)=>{histF=f;document.querySelectorAll('.hist-filtros button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHist();};
 
-// STATS — onSnapshot en tiempo real
-function iniciarStats(){
+// ── STATS — onSnapshot en tiempo real ──
+function inicializarStats(){
+  if(statsUnsub)statsUnsub();
   const hoy=new Date(),prim=fstr(new Date(hoy.getFullYear(),hoy.getMonth(),1)),hoyStr=fstr(hoy);
-  statsU=onSnapshot(collection(db,'appointments'),snap=>{
+  statsUnsub=onSnapshot(collection(db,'appointments'),snap=>{
     const all=snap.docs.map(d=>({id:d.id,...d.data()}));
     const mes=all.filter(c=>c.fecha>=prim&&c.fecha<=hoyStr);
     const hoyC=all.filter(c=>c.fecha===hoyStr);
@@ -499,24 +523,24 @@ function iniciarStats(){
     document.getElementById('stHT').textContent=hoyC.length;
     document.getElementById('stHF').textContent=hoyC.filter(c=>c.estado==='finalizada').length;
     const mapa={};
-    fin.forEach(c=>{const n=c.serviceName||c.servicio||'&mdash;';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
+    fin.forEach(c=>{const n=c.serviceName||c.servicio||'Otro';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
     const el=document.getElementById('statsSrv');
     const entries=Object.entries(mapa).sort((a,b)=>b[1].cnt-a[1].cnt);
-    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos aun</p>';return;}
+    if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos este mes</p>';return;}
     el.innerHTML=entries.map(([n,v])=>`
       <div class="fila">
         <div><div style="font-size:.85rem;font-weight:700;color:var(--humo)">${n}</div><div style="font-size:.72rem;color:var(--gris-t)">${v.cnt} cita${v.cnt!==1?'s':''}</div></div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold)">&#8353;${v.ing.toLocaleString()}</div>
       </div>`).join('');
-  });
+  },e=>console.error('stats:',e));
 }
 
-// SERVICIOS
+// ── SERVICIOS ──
 window.cargarSrv=async()=>{
   const snap=await getDocs(collection(db,'servicios'));
   const srvs=snap.docs.map(d=>({id:d.id,...d.data()}));
   const el=document.getElementById('listaSrv');
-  if(!srvs.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-solid fa-scissors"></i></div><p>Sin servicios</p></div>';return;}
+  if(!srvs.length){el.innerHTML='<div class="empty"><p>Sin servicios</p></div>';return;}
   el.innerHTML=srvs.map(s=>`
     <div class="fila">
       <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div>
@@ -528,23 +552,22 @@ window.guardarSrv=async()=>{
   const n=document.getElementById('srvNom').value.trim();
   const d=parseInt(document.getElementById('srvDur').value);
   const p=parseInt(document.getElementById('srvPrecio').value);
-  if(!n||!d||!p){mAlerta('alertaServ','Completa todos los campos','err');return;}
+  if(!n||!d||!p){const a=document.getElementById('alertaServ');a.textContent='Completa todos los campos';a.className='alert show alert-err';setTimeout(()=>a.classList.remove('show'),3000);return;}
   await addDoc(collection(db,'servicios'),{nombre:n,duracion:d,precio:p});
   ['srvNom','srvDur','srvPrecio'].forEach(id=>document.getElementById(id).value='');
-  mAlerta('alertaServ','Servicio guardado','ok');cargarSrv();
+  toast('Servicio guardado','ok');cargarSrv();
 };
-window.eliminarSrv=async(id)=>{if(!confirm('Eliminar este servicio?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
+window.eliminarSrv=async(id)=>{if(!confirm('Eliminar este servicio?'))return;await deleteDoc(doc(db,'servicios',id));toast('Eliminado');cargarSrv();};
 
-// BLOQUEADOS
+// ── BLOQUEADOS ──
 let calMes=new Date().getMonth(),calAnio=new Date().getFullYear();
 let diasSeleccionados=new Set(),diasBloqSet=new Set();
 function renderCal(){
   const hoy=fstr(new Date());
-  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const primerDia=new Date(calAnio,calMes,1).getDay();
   const totalDias=new Date(calAnio,calMes+1,0).getDate();
   const grid=document.getElementById('calGrid');
-  let html=`<div class="cal-nav"><button onclick="calNav(-1)">&#8249;</button><span>${meses[calMes]} ${calAnio}</span><button onclick="calNav(1)">&#8250;</button></div>
+  let html=`<div class="cal-nav"><button onclick="calNav(-1)">&#8249;</button><span>${mesesC[calMes]} ${calAnio}</span><button onclick="calNav(1)">&#8250;</button></div>
   <div class="cal-dias-header"><span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span></div>
   <div class="cal-grid">`;
   for(let i=0;i<primerDia;i++)html+=`<div class="cal-dia vacio"></div>`;
@@ -555,8 +578,7 @@ function renderCal(){
     if(esBloq)cls+=' bloqueado';
     else if(esPasado)cls+=' pasado';
     else if(esSel)cls+=' seleccionado';
-    const click=(!esBloq&&!esPasado)?`onclick="toggleDia('${f}')"`:'' ;
-    html+=`<div class="${cls}" ${click}>${d}</div>`;
+    html+=`<div class="${cls}" ${(!esBloq&&!esPasado)?`onclick="toggleDia('${f}')"`:''}>${d}</div>`;
   }
   html+='</div>';
   grid.innerHTML=html;renderTags();
@@ -566,39 +588,39 @@ window.toggleDia=(f)=>{if(diasSeleccionados.has(f))diasSeleccionados.delete(f);e
 function renderTags(){
   const el=document.getElementById('diasSeleccionados');
   if(!diasSeleccionados.size){el.innerHTML='<span style="font-size:.75rem;color:var(--gris-t)">Toca los dias que queres bloquear</span>';return;}
-  el.innerHTML=[...diasSeleccionados].sort().map(f=>`<div class="tag-dia">${ffmt(f)}<button onclick="toggleDia('${f}')">x</button></div>`).join('');
+  el.innerHTML=[...diasSeleccionados].sort().map(f=>`<div class="tag-dia">${ffmtCorto(f)}<button onclick="toggleDia('${f}')">x</button></div>`).join('');
 }
 window.bloquearDias=async()=>{
-  if(!diasSeleccionados.size){mAlerta('alertaDisp','Selecciona al menos un dia','err');return;}
+  if(!diasSeleccionados.size){const a=document.getElementById('alertaDisp');a.textContent='Selecciona al menos un dia';a.className='alert show alert-err';setTimeout(()=>a.classList.remove('show'),3000);return;}
   const sorted=[...diasSeleccionados].sort();
   for(const f of sorted){if(!diasBloqSet.has(f))await addDoc(collection(db,'dias_bloqueados'),{fecha:f});}
   diasSeleccionados.clear();
-  mAlerta('alertaDisp',`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''},'ok`);
+  toast(`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}','ok`);
   cargarBloq();
 };
 window.cargarBloq=async()=>{
   const[ds,hs]=await Promise.all([getDocs(collection(db,'dias_bloqueados')),getDocs(collection(db,'horas_bloqueadas'))]);
   const dias=ds.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||(a.hora||'').localeCompare(b.hora||''));
+  const horas=hs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora));
   diasBloqSet=new Set(dias.map(d=>d.fecha));renderCal();
   document.getElementById('listaDias').innerHTML=!dias.length?'<div class="empty"><p>Sin dias bloqueados</p></div>':
-    dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
+    dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmtCorto(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
   document.getElementById('listaHoras').innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
-    horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(h.fecha)} &middot; ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
+    horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmtCorto(h.fecha)} &middot; ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
 };
 window.bloquearHora=async()=>{
   const f=document.getElementById('horaFecha').value,h=document.getElementById('horaHora').value;
-  if(!f||!h){mAlerta('alertaDisp','Completa fecha y hora','err');return;}
+  if(!f||!h){toast('Completa fecha y hora','error');return;}
   await addDoc(collection(db,'horas_bloqueadas'),{fecha:f,hora:h.substring(0,5)});
-  mAlerta('alertaDisp','Hora bloqueada','ok');
+  toast('Hora bloqueada','ok');
   document.getElementById('horaFecha').value='';document.getElementById('horaHora').value='';cargarBloq();
 };
 window.desBloqD=async(id,fecha)=>{await deleteDoc(doc(db,'dias_bloqueados',id));diasBloqSet.delete(fecha);cargarBloq();};
 window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
 
-// Restaurar sesion al refrescar — al final para que todas las funciones esten definidas
+// ── Restaurar sesion al refrescar ──
 const sesion=sessionStorage.getItem('kyomu_admin');
-if(sesion) iniciarApp(sesion);
+if(sesion)iniciarApp(sesion);
 </script>
 </body>
 </html>
