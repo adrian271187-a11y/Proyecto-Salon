@@ -285,8 +285,6 @@ function iniciarApp(u){
   cargarBloq();
 }
 
-const sesion=sessionStorage.getItem('kyomu_admin');
-if(sesion) iniciarApp(sesion);
 
 window.doLogin=()=>{
   const u=document.getElementById('loginUser').value.trim();
@@ -585,6 +583,10 @@ window.bloquearHora=async()=>{
 };
 window.desBloqD=async(id,fecha)=>{await deleteDoc(doc(db,'dias_bloqueados',id));diasBloqSet.delete(fecha);cargarBloq();};
 window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
+
+// Restaurar sesion al refrescar — al final para que todas las funciones estén definidas
+const sesion=sessionStorage.getItem('kyomu_admin');
+if(sesion) iniciarApp(sesion);
 </script>
 </body>
 </html>
