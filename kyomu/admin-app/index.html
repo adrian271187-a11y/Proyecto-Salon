@@ -390,8 +390,8 @@ window.finalizar=async(id)=>{
   for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
 };
 window.envWA=(id,tel,nombre,srv,fecha,hora)=>{
-  const msg=`Hola ${nombre}, confirmamos tu cita en *Kyomu Nails*:\n- Servicio: *${srv}*\n- Fecha: ${ffmt(fecha)}\n- Hora: ${hora}\n\nTe esperamos!`;
-  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
+  const msg=`Hola ${nombre}, te confirmamos tu cita en *Kyomu Nails*:\n\n- *Servicio:* ${srv}\n- *Fecha:* ${ffmt(fecha)}\n- *Hora:* ${hora}\n\nTe esperamos! Si necesitas cambiar o cancelar tu cita, avisanos con anticipacion.`;
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 };
 
 // ESPERA
