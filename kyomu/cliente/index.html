@@ -366,7 +366,7 @@ async function selFecha(f,el){
   const g=document.getElementById('horasGrid');g.innerHTML='';
   const snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',f),where('estado','!=','cancelada')));
   const ocup=snap.docs.map(d=>d.data().hora);
-  const bloqH=horasBloq.filter(h=>h.fecha===f||!h.fecha).map(h=>h.hora);
+  const bloqH=horasBloq.filter(h=>h.fecha===f).map(h=>h.hora);
   const horas=[];for(let m=HINI*60;m<HFIN*60;m+=INTV){const h=Math.floor(m/60),min=m%60;horas.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);}
   horas.forEach(h=>{
     const btn=document.createElement('button');btn.className='hora-btn';btn.textContent=h;
