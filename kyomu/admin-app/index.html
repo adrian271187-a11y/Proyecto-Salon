@@ -246,6 +246,7 @@ textarea{resize:vertical;min-height:58px}
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs,
@@ -256,38 +257,42 @@ const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nai
   projectId:"kyomu-nails",storageBucket:"kyomu-nails.firebasestorage.app",
   messagingSenderId:"514396956826",appId:"1:514396956826:web:9356c814010b2c730f9723"};
 const WA="50662472397",AU="Naty",AP="Naty2026";
+const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"wbu7jftXOgmyV__Vc",correoAdmin:"kyomussalongs@gmail.com"};
 const db=getFirestore(initializeApp(FB));
 let salaU=null,statsU=null,histCache=[],histF='todas';
-const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"wbu7jftXOgmyV__Vc",correoAdmin:"kyomussalongs@gmail.com"};
-async function enviarCorreo(tpl,params){try{await emailjs.init(EJS.pk);await emailjs.send(EJS.svc,tpl,params);}catch(e){console.warn('EmailJS:',e);}}
 
-// Utilidades — al inicio para que estén disponibles en todo el script
+// Utilidades
 function fstr(d){return d.toISOString().split('T')[0];}
 function ffmt(f){const[y,m,d]=f.split('-');const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return `${d} ${ms[parseInt(m)-1]} ${y}`;}
 function etq(e){return{pendiente:'Pendiente',confirmada:'Confirmada',en_atencion:'En atencion',finalizada:'Finalizada',cancelada:'Cancelada'}[e]||e;}
 function mAlerta(id,msg,tipo){const a=document.getElementById(id);a.textContent=msg;a.className='alert show alert-'+(tipo==='ok'?'ok':'err');setTimeout(()=>a.classList.remove('show'),4000);}
+async function enviarCorreo(tpl,params){
+  try{await emailjs.init(EJS.pk);await emailjs.send(EJS.svc,tpl,params);}
+  catch(e){console.warn('EmailJS:',e);}
+}
 
-// SESSION
+// SESSION — persiste al refrescar, se borra al cerrar el navegador
 function iniciarApp(u){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
   document.getElementById('adminNom').textContent=u;
   document.getElementById('loginErr').style.display='none';
   document.getElementById('filtroFecha').value=fstr(new Date());
-  cargarAgenda();iniciarEspera();iniciarStats();cargarSrv();cargarBloq();
+  cargarAgenda();
+  iniciarEspera();
+  iniciarStats();
+  cargarSrv();
+  cargarBloq();
 }
 
-// Restaurar sesion al refrescar
 const sesion=sessionStorage.getItem('kyomu_admin');
 if(sesion) iniciarApp(sesion);
 
 window.doLogin=()=>{
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value.trim();
-  if(u===AU&&p===AP){
-    sessionStorage.setItem('kyomu_admin',u);
-    iniciarApp(u);
-  }else document.getElementById('loginErr').style.display='block';
+  if(u===AU&&p===AP){sessionStorage.setItem('kyomu_admin',u);iniciarApp(u);}
+  else document.getElementById('loginErr').style.display='block';
 };
 window.doLogout=()=>{
   sessionStorage.removeItem('kyomu_admin');
@@ -305,17 +310,22 @@ window.irA=(id,btn)=>{
 };
 window.limpiarFiltro=()=>{document.getElementById('filtroFecha').value='';cargarAgenda();};
 
-// AGENDA
+// AGENDA — todas las citas activas desde hoy agrupadas por fecha
 window.cargarAgenda=async()=>{
   const fecha=document.getElementById('filtroFecha').value;
   const el=document.getElementById('listaAgenda');
   el.innerHTML='<div class="spinner"></div>';
   const hoy=fstr(new Date());
   let snap;
-  if(fecha){
-    snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
-  }else{
-    snap=await getDocs(query(collection(db,'appointments'),where('fecha','>=',hoy)));
+  try{
+    if(fecha){
+      snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',fecha)));
+    }else{
+      snap=await getDocs(query(collection(db,'appointments'),where('fecha','>=',hoy)));
+    }
+  }catch(e){
+    el.innerHTML='<div class="empty"><p>Error al cargar. Intenta de nuevo.</p></div>';
+    console.error(e);return;
   }
   const citas=snap.docs.map(d=>({id:d.id,...d.data()}))
     .filter(c=>!['cancelada','finalizada','en_atencion'].includes(c.estado))
@@ -335,7 +345,7 @@ window.cargarAgenda=async()=>{
     return `<div class="grupo-fecha">
       <div class="grupo-header" style="color:${esHoy?'var(--gold)':'var(--rose)'}">
         <i class="fa-regular fa-calendar${esHoy?'-check':''}"></i>
-        ${label}${esHoy?' — Hoy':''}
+        ${label}${esHoy?' &mdash; Hoy':''}
         <span style="margin-left:auto;font-size:.75rem;background:var(--gris-m);padding:2px 8px;border-radius:20px;color:var(--gris-t)">${cs.length} cita${cs.length!==1?'s':''}</span>
       </div>
       ${cs.map(c=>citaHTML(c,'agenda')).join('')}
@@ -358,8 +368,8 @@ function citaHTML(c,ctx){
     acc.push(`<button class="btn btn-red" onclick="cancelar('${c.id}')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`);
   }
   return `<div class="cita-item">
-    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora"><i class="fa-regular fa-clock"></i> ${c.hora}</div></div>
-    <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'—'} &nbsp;·&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'—'}</div>
+    <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-clock"></i> ${c.hora}</div></div>
+    <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'&mdash;'} &nbsp;&middot;&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'&mdash;'}</div>
     ${c.nota?`<div style="font-size:.75rem;color:var(--gris-t);margin-bottom:4px;font-style:italic"><i class="fa-regular fa-note-sticky"></i> ${c.nota}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center">
       <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
@@ -369,55 +379,52 @@ function citaHTML(c,ctx){
   </div>`;
 }
 
-window.cambiarEstado=async(id,e)=>{
+// Confirmar cita + correo al cliente
+window.cambiarEstado=async(id,estado)=>{
   const ref=doc(db,'appointments',id);
-  const snap=await getDoc(ref);const c=snap.data();
-  await updateDoc(ref,{estado:e});
-  if(e==='confirmada'&&c.correo){
+  const snap=await getDoc(ref);
+  const c=snap.data();
+  await updateDoc(ref,{estado});
+  if(estado==='confirmada'&&c.correo){
     await enviarCorreo(EJS.tplCliente,{
-      correo_cliente:c.correo,
-      cliente:c.nombre||c.name||'',
-      salon:'Kyomu Nails',
-      servicio:c.serviceName||c.servicio||'',
-      fecha:c.fecha,hora:c.hora,
+      correo_cliente:c.correo,cliente:c.nombre||c.name||'',
+      salon:'Kyomu Nails',servicio:c.serviceName||c.servicio||'',
+      fecha:ffmt(c.fecha),hora:c.hora,
       mensaje:'Tu cita ha sido confirmada. Te esperamos!'
     });
   }
   cargarAgenda();
 };
+
 window.checkIn=async(id)=>{
   const ref=doc(db,'appointments',id);const s=await getDoc(ref);const c=s.data();
   await updateDoc(ref,{estado:'en_atencion'});
   await addDoc(collection(db,'queue'),{name:c.nombre||c.name,service:c.serviceName||c.servicio,appointmentId:id,createdAt:Timestamp.now()});
   cargarAgenda();
 };
+
+// Cancelar desde admin
 window.cancelar=async(id)=>{
   if(!confirm('Cancelar esta cita?'))return;
   const ref=doc(db,'appointments',id);
   const snap=await getDoc(ref);const c=snap.data();
   await updateDoc(ref,{estado:'cancelada'});
-  // Correo al admin
   await enviarCorreo(EJS.tplAdmin,{
-    to_email:EJS.correoAdmin,
-    salon:'Kyomu Nails',
-    asunto:'Cita cancelada por el admin',
-    cliente:c.nombre||c.name||'',
-    telefono:c.telefono||c.tel||'',
-    servicio:c.serviceName||c.servicio||'',
-    fecha:c.fecha,hora:c.hora,
-    mensaje:'Se cancelo una cita desde el panel admin.'
+    to_email:EJS.correoAdmin,salon:'Kyomu Nails',
+    asunto:'Cita cancelada desde el panel admin',
+    mensaje:'Se cancelo una cita desde el panel administrativo.',
+    cliente:c.nombre||c.name||'',telefono:c.telefono||c.tel||'',
+    servicio:c.serviceName||c.servicio||'',fecha:ffmt(c.fecha),hora:c.hora
   });
   cargarAgenda();
 };
-  if(!confirm('Cancelar esta cita?'))return;
-  await updateDoc(doc(db,'appointments',id),{estado:'cancelada'});
-  cargarAgenda();
-};
+
 window.finalizar=async(id)=>{
   await updateDoc(doc(db,'appointments',id),{estado:'finalizada'});
   const s=await getDocs(query(collection(db,'queue'),where('appointmentId','==',id)));
   for(const d of s.docs)await deleteDoc(doc(db,'queue',d.id));
 };
+
 window.envWA=(id,tel,nombre,srv,fecha,hora)=>{
   const msg=`Hola ${nombre}, te confirmamos tu cita en *Kyomu Nails*:\n\n- *Servicio:* ${srv}\n- *Fecha:* ${ffmt(fecha)}\n- *Hora:* ${hora}\n\nTe esperamos!\n\nSi necesitas cambiar o cancelar tu cita, podes hacerlo desde la app en la seccion *Mis Citas*, ingresa tu numero de telefono y selecciona cancelar. Recibiras un correo de confirmacion de la cancelacion.`;
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
@@ -449,8 +456,8 @@ function renderHist(){
   if(!data.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-regular fa-folder-open"></i></div><p>Sin registros</p></div>';return;}
   el.innerHTML=data.map(c=>`
     <div class="cita-item" style="border-left-color:${c.estado==='finalizada'?'var(--green)':'var(--red)'}">
-      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'—'}</div><div class="ci-hora"><i class="fa-regular fa-calendar"></i> ${ffmt(c.fecha)}</div></div>
-      <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'—'} &nbsp;·&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'—'}</div>
+      <div class="ci-top"><div class="ci-srv">${c.serviceName||c.servicio||'&mdash;'}</div><div class="ci-hora"><i class="fa-regular fa-calendar"></i> ${ffmt(c.fecha)}</div></div>
+      <div class="ci-cliente"><i class="fa-regular fa-user"></i> ${c.nombre||c.name||'&mdash;'} &nbsp;&middot;&nbsp; <i class="fa-solid fa-phone"></i> ${c.telefono||c.tel||'&mdash;'}</div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span class="badge badge-${c.estado}">${etq(c.estado)}</span>
         <span class="ci-precio">&#8353;${Number(c.precio||0).toLocaleString()}</span>
@@ -475,7 +482,7 @@ function iniciarStats(){
     document.getElementById('stHT').textContent=hoyC.length;
     document.getElementById('stHF').textContent=hoyC.filter(c=>c.estado==='finalizada').length;
     const mapa={};
-    fin.forEach(c=>{const n=c.serviceName||c.servicio||'—';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
+    fin.forEach(c=>{const n=c.serviceName||c.servicio||'&mdash;';if(!mapa[n])mapa[n]={cnt:0,ing:0};mapa[n].cnt++;mapa[n].ing+=Number(c.precio||0);});
     const el=document.getElementById('statsSrv');
     const entries=Object.entries(mapa).sort((a,b)=>b[1].cnt-a[1].cnt);
     if(!entries.length){el.innerHTML='<p style="color:var(--gris-t);font-size:.82rem">Sin datos aun</p>';return;}
@@ -495,7 +502,8 @@ window.cargarSrv=async()=>{
   if(!srvs.length){el.innerHTML='<div class="empty"><div class="icon"><i class="fa-solid fa-scissors"></i></div><p>Sin servicios</p></div>';return;}
   el.innerHTML=srvs.map(s=>`
     <div class="fila">
-      <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div><div style="font-size:.74rem;color:var(--gris-t)"><i class="fa-regular fa-clock"></i> ${s.duracion} min &nbsp;·&nbsp; &#8353;${Number(s.precio).toLocaleString()}</div></div>
+      <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div>
+      <div style="font-size:.74rem;color:var(--gris-t)"><i class="fa-regular fa-clock"></i> ${s.duracion} min &nbsp;&middot;&nbsp; &#8353;${Number(s.precio).toLocaleString()}</div></div>
       <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')"><i class="fa-solid fa-xmark"></i></button>
     </div>`).join('');
 };
@@ -508,7 +516,7 @@ window.guardarSrv=async()=>{
   ['srvNom','srvDur','srvPrecio'].forEach(id=>document.getElementById(id).value='');
   mAlerta('alertaServ','Servicio guardado','ok');cargarSrv();
 };
-window.eliminarSrv=async(id)=>{if(!confirm('Eliminar?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
+window.eliminarSrv=async(id)=>{if(!confirm('Eliminar este servicio?'))return;await deleteDoc(doc(db,'servicios',id));cargarSrv();};
 
 // BLOQUEADOS
 let calMes=new Date().getMonth(),calAnio=new Date().getFullYear();
@@ -553,7 +561,7 @@ window.bloquearDias=async()=>{
   const sorted=[...diasSeleccionados].sort();
   for(const f of sorted){if(!diasBloqSet.has(f))await addDoc(collection(db,'dias_bloqueados'),{fecha:f});}
   diasSeleccionados.clear();
-  mAlerta('alertaDisp',`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''}','ok`);
+  mAlerta('alertaDisp',`${sorted.length} dia${sorted.length>1?'s':''} bloqueado${sorted.length>1?'s':''},'ok`);
   cargarBloq();
 };
 window.cargarBloq=async()=>{
@@ -566,7 +574,7 @@ window.cargarBloq=async()=>{
     dias.map(d=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(d.fecha)}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqD('${d.id}','${d.fecha}')">Desbloquear</button></div>`).join('');
   const hEl=document.getElementById('listaHoras');
   hEl.innerHTML=!horas.length?'<div class="empty"><p>Sin horas bloqueadas</p></div>':
-    horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(h.fecha)} · ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
+    horas.map(h=>`<div class="fila"><span style="font-weight:700;font-size:.86rem">${ffmt(h.fecha)} &middot; ${h.hora}</span><button class="btn btn-outline" style="padding:5px 10px;font-size:.72rem" onclick="desBloqH('${h.id}')">Quitar</button></div>`).join('');
 };
 window.bloquearHora=async()=>{
   const f=document.getElementById('horaFecha').value,h=document.getElementById('horaHora').value;
@@ -578,6 +586,5 @@ window.bloquearHora=async()=>{
 window.desBloqD=async(id,fecha)=>{await deleteDoc(doc(db,'dias_bloqueados',id));diasBloqSet.delete(fecha);cargarBloq();};
 window.desBloqH=async(id)=>{await deleteDoc(doc(db,'horas_bloqueadas',id));cargarBloq();};
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </body>
 </html>
