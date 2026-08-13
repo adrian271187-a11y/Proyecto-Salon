@@ -98,6 +98,13 @@ textarea{resize:vertical;min-height:58px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty{text-align:center;padding:28px;color:var(--gris-t)}
 .empty .icon{font-size:2.2rem;margin-bottom:8px}
+/* MODAL EDITAR SERVICIO */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--gris-o);border-radius:var(--r);padding:24px;width:100%;max-width:340px;border:1px solid var(--linea);box-shadow:var(--sh)}
+.modal-box h3{font-family:'Cormorant Garamond',serif;color:var(--gold-l);font-size:1.1rem;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--linea)}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.modal-btns button{flex:1;padding:10px;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Lato',sans-serif;font-size:.83rem;font-weight:700}
 .cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .cal-nav button{background:transparent;border:1px solid rgba(200,169,110,.25);color:var(--gold);border-radius:var(--rs);padding:4px 11px;cursor:pointer;font-size:.82rem;font-family:'Lato',sans-serif}
 .cal-nav span{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold-l)}
@@ -255,6 +262,23 @@ textarea{resize:vertical;min-height:58px}
     <div class="card">
       <h2><i class="fa-regular fa-clock"></i> Horas bloqueadas</h2>
       <div id="listaHoras"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR SERVICIO -->
+<div class="modal-overlay" id="modalEditSrv">
+  <div class="modal-box">
+    <h3><i class="fa-solid fa-pen"></i> Editar servicio</h3>
+    <input type="hidden" id="editSrvId"/>
+    <div class="fg"><label>Nombre</label><input type="text" id="editSrvNom"/></div>
+    <div class="row2">
+      <div class="fg"><label>Duración (min)</label><input type="number" id="editSrvDur" min="10" step="5"/></div>
+      <div class="fg"><label>Precio (₡)</label><input type="number" id="editSrvPrecio"/></div>
+    </div>
+    <div class="modal-btns">
+      <button style="background:var(--gris-s);color:var(--humo)" onclick="cerrarEditSrv()">Cancelar</button>
+      <button style="background:var(--rose-d);color:#fff" onclick="guardarEditSrv()">Guardar</button>
     </div>
   </div>
 </div>
@@ -557,7 +581,10 @@ window.cargarSrv=async()=>{
     <div class="fila">
       <div><div style="font-weight:700;font-size:.86rem;color:var(--humo)">${s.nombre}</div>
       <div style="font-size:.74rem;color:var(--gris-t)"><i class="fa-regular fa-clock"></i> ${s.duracion} min &nbsp;&middot;&nbsp; &#8353;${Number(s.precio).toLocaleString()}</div></div>
-      <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')"><i class="fa-solid fa-xmark"></i></button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-gold" style="padding:5px 10px" onclick="abrirEditSrv('${s.id}','${s.nombre.replace(/'/g,"\\'")}',${s.duracion},${s.precio})"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-red" style="padding:5px 10px" onclick="eliminarSrv('${s.id}')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
     </div>`).join('');
 };
 window.guardarSrv=async()=>{
@@ -570,6 +597,23 @@ window.guardarSrv=async()=>{
   toast('Servicio guardado','ok');cargarSrv();
 };
 window.eliminarSrv=async(id)=>{if(!confirm('Eliminar este servicio?'))return;await deleteDoc(doc(db,'servicios',id));toast('Eliminado');cargarSrv();};
+window.abrirEditSrv=(id,nom,dur,precio)=>{
+  document.getElementById('editSrvId').value=id;
+  document.getElementById('editSrvNom').value=nom;
+  document.getElementById('editSrvDur').value=dur;
+  document.getElementById('editSrvPrecio').value=precio;
+  document.getElementById('modalEditSrv').classList.add('show');
+};
+window.cerrarEditSrv=()=>document.getElementById('modalEditSrv').classList.remove('show');
+window.guardarEditSrv=async()=>{
+  const id=document.getElementById('editSrvId').value;
+  const nom=document.getElementById('editSrvNom').value.trim();
+  const dur=parseInt(document.getElementById('editSrvDur').value);
+  const precio=parseInt(document.getElementById('editSrvPrecio').value);
+  if(!nom||!dur||!precio){toast('Completa todos los campos','error');return;}
+  await updateDoc(doc(db,'servicios',id),{nombre:nom,duracion:dur,precio});
+  cerrarEditSrv();toast('Servicio actualizado','ok');cargarSrv();
+};
 
 // ── BLOQUEADOS ──
 let calMes=new Date().getMonth(),calAnio=new Date().getFullYear();
