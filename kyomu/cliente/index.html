@@ -291,7 +291,7 @@ const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nai
   messagingSenderId:"514396956826",appId:"1:514396956826:web:9356c814010b2c730f9723"};
 const WA="50662472397";
 const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"dPvxljdyBh_j2-ogt",correoAdmin:"kyomusalongs@gmail.com"};
-const HINI=9,HFIN=19,INTV=30;
+const HINI=7,HFIN=19,INTV=30;
 
 const db=getFirestore(initializeApp(FB));
 let servicios=[],servicioSel=null,fechaSel=null,horaSel=null;
@@ -364,12 +364,11 @@ async function selFecha(f,el){
   document.querySelectorAll('.cal-day.sel').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel');
   const g=document.getElementById('horasGrid');g.innerHTML='';
-  // Consultas separadas por estado para evitar índice compuesto con !=
+  // Traer todas las citas del día y filtrar canceladas en cliente (evita índices compuestos)
   let ocup=[];
   try{
-    const estados=['pendiente','confirmada','en_atencion'];
-    const snaps=await Promise.all(estados.map(est=>getDocs(query(collection(db,'appointments'),where('fecha','==',f),where('estado','==',est)))));
-    ocup=snaps.flatMap(s=>s.docs.map(d=>d.data().hora));
+    const snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',f)));
+    ocup=snap.docs.map(d=>d.data()).filter(c=>c.estado!=='cancelada'&&c.estado!=='finalizada').map(c=>c.hora);
   }catch(e){console.warn('Error cargando citas:',e);}
   const bloqH=horasBloq.filter(h=>h.fecha===f).map(h=>h.hora);
   const horas=[];for(let m=HINI*60;m<HFIN*60;m+=INTV){const h=Math.floor(m/60),min=m%60;horas.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);}
