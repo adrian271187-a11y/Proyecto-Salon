@@ -292,6 +292,9 @@ const FB={apiKey:"AIzaSyCaSmB7zGTDDDNEbPeYm-dqyJY-FP0P14Q",authDomain:"kyomu-nai
 const WA="50662472397";
 const EJS={svc:"service_0ofo09g",tplAdmin:"template_n4a3ape",tplCliente:"template_zbsyfa5",pk:"dPvxljdyBh_j2-ogt",correoAdmin:"kyomusalongs@gmail.com"};
 const HINI=7,HFIN=19,INTV=30;
+const TZ='America/Costa_Rica';
+function hoyTZ(){return new Date().toLocaleDateString('en-CA',{timeZone:TZ});}
+function ahoraTZ(){const s=new Date().toLocaleTimeString('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit'});const[h,m]=s.split(':').map(Number);return h*60+m;}
 
 const db=getFirestore(initializeApp(FB));
 let servicios=[],servicioSel=null,fechaSel=null,horaSel=null;
@@ -340,20 +343,20 @@ async function cargarBloqueados(){
 }
 
 function renderCal(){
-  const hoy=new Date();hoy.setHours(0,0,0,0);
+  const hoyStr=hoyTZ();
   const label=new Date(calY,calM,1).toLocaleString('es',{month:'long',year:'numeric'});
   document.getElementById('mesLabel').textContent=label.charAt(0).toUpperCase()+label.slice(1);
   const grid=document.getElementById('calGrid');grid.innerHTML='';
   const first=new Date(calY,calM,1).getDay(),days=new Date(calY,calM+1,0).getDate();
   for(let i=0;i<first;i++){const d=document.createElement('div');d.className='cal-day vacio';grid.appendChild(d);}
   for(let d=1;d<=days;d++){
-    const fecha=new Date(calY,calM,d),fs=fstr(fecha);
+    const fs=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const el=document.createElement('div');el.textContent=d;
     let cls='cal-day';
-    if(fecha<hoy)cls+=' pasado';
+    if(fs<hoyStr)cls+=' pasado';
     else if(diasBloq.includes(fs))cls+=' bloq';
     else{cls+=' disponible';el.onclick=()=>selFecha(fs,el);}
-    if(fs===fstr(hoy))cls+=' hoy';if(fechaSel===fs)cls+=' sel';
+    if(fs===hoyStr)cls+=' hoy';if(fechaSel===fs)cls+=' sel';
     el.className=cls;grid.appendChild(el);
   }
 }
@@ -364,22 +367,20 @@ async function selFecha(f,el){
   document.querySelectorAll('.cal-day.sel').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel');
   const g=document.getElementById('horasGrid');g.innerHTML='';
-  // Traer todas las citas del día y filtrar canceladas en cliente (evita índices compuestos)
   let ocup=[];
   try{
     const snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',f)));
     ocup=snap.docs.map(d=>d.data()).filter(c=>c.estado!=='cancelada'&&c.estado!=='finalizada').map(c=>c.hora);
-  }catch(e){console.warn('Error cargando citas:',e);}
+  }catch(e){console.warn('Error citas:',e);}
   const bloqH=horasBloq.filter(h=>h.fecha===f).map(h=>h.hora);
   const horas=[];for(let m=HINI*60;m<HFIN*60;m+=INTV){const h=Math.floor(m/60),min=m%60;horas.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);}
-  const ahora=new Date();
-  const esHoy=f===fstr(ahora);
+  const esHoy=f===hoyTZ();
+  const minActual=esHoy?ahoraTZ():0;
   horas.forEach(h=>{
-    // Bloquear horas pasadas si la fecha seleccionada es hoy
+    // Bloquear horas pasadas en hora de Costa Rica
     if(esHoy){
       const [hh,mm]=h.split(':').map(Number);
-      const slot=new Date();slot.setHours(hh,mm,0,0);
-      if(slot<=ahora)return;
+      if(hh*60+mm<=minActual)return;
     }
     const btn=document.createElement('button');btn.className='hora-btn';btn.textContent=h;
     if(ocup.includes(h)||bloqH.includes(h)){btn.classList.add('bloq');btn.disabled=true;}
