@@ -368,7 +368,15 @@ async function selFecha(f,el){
   const ocup=snap.docs.map(d=>d.data().hora);
   const bloqH=horasBloq.filter(h=>h.fecha===f).map(h=>h.hora);
   const horas=[];for(let m=HINI*60;m<HFIN*60;m+=INTV){const h=Math.floor(m/60),min=m%60;horas.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);}
+  const ahora=new Date();
+  const esHoy=f===fstr(ahora);
   horas.forEach(h=>{
+    // Bloquear horas pasadas si la fecha seleccionada es hoy
+    if(esHoy){
+      const [hh,mm]=h.split(':').map(Number);
+      const slot=new Date();slot.setHours(hh,mm,0,0);
+      if(slot<=ahora)return;
+    }
     const btn=document.createElement('button');btn.className='hora-btn';btn.textContent=h;
     if(ocup.includes(h)||bloqH.includes(h)){btn.classList.add('bloq');btn.disabled=true;}
     else btn.onclick=()=>selHora(h,btn);
