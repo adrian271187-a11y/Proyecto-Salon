@@ -364,8 +364,13 @@ async function selFecha(f,el){
   document.querySelectorAll('.cal-day.sel').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel');
   const g=document.getElementById('horasGrid');g.innerHTML='';
-  const snap=await getDocs(query(collection(db,'appointments'),where('fecha','==',f),where('estado','!=','cancelada')));
-  const ocup=snap.docs.map(d=>d.data().hora);
+  // Consultas separadas por estado para evitar índice compuesto con !=
+  let ocup=[];
+  try{
+    const estados=['pendiente','confirmada','en_atencion'];
+    const snaps=await Promise.all(estados.map(est=>getDocs(query(collection(db,'appointments'),where('fecha','==',f),where('estado','==',est)))));
+    ocup=snaps.flatMap(s=>s.docs.map(d=>d.data().hora));
+  }catch(e){console.warn('Error cargando citas:',e);}
   const bloqH=horasBloq.filter(h=>h.fecha===f).map(h=>h.hora);
   const horas=[];for(let m=HINI*60;m<HFIN*60;m+=INTV){const h=Math.floor(m/60),min=m%60;horas.push(`${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`);}
   const ahora=new Date();
